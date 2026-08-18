@@ -8,16 +8,14 @@
 
 const collection = {
   // What does your archive collect? e.g. "Khmer Proverbs"
-  name: "Pchum Ben Archive",
+  name: "Yike Archive",
 
   // One sentence: what is this archive, and why does it matter?
-  description: "Pchum ben is a major cambodian buddhist festival dedicated to remembering deceased relatives and ancestors. It is a time for Cambodians to pay respects to their loved ones who have passed away, and to make offerings to the spirits of the dead. The word 'Pchum' refers to coming together, while 'Ben' reers to ball/lump of food, traditionally rice balls.",
-
+  description: "Yike is a traditional Khmer theater form that combines music, dance, and storytelling. Yike is more than entertainment. It carries Khmer stories, language, music, traditions, and cultural knowledge from one generation to another. Preserving it helps prevent this knowledge from being lost, especially after the major disruption of Cambodian arts and cultural traditions during the Khmer Rouge period.",
   // Who is building this archive? Your name, as you want it shown.
   curator: "Keo Phlyna",
 
   // Where does your knowledge come from? A person, a place, a community.
-  source: "I have learned about Pchum Ben from my family and my community. As i have atteneded the festival for many years, I have gained a deep understanding of its significance and traditions. Also, i have researched through various sources from articles, and online resources. ",
+  source: "I have learned and understood about Yike from various resources including community elders, articles, and online resources. I have also attended the Yike performances and workshops last time when i was a freshman at university and I can say that it is not only a form of entertainment but also a way to preserve and promote the rich cultural heritage of Cambodia."
 };
-
 export default collection;
