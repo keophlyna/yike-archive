@@ -13,7 +13,7 @@ const styles = {
     letterSpacing: 1,
   },
   title: {
-    fontSize: 40,
+    fontSize: 52,
     fontWeight: 700,
     margin: "16px 0 12px",
     lineHeight: 1.1,
@@ -44,7 +44,7 @@ const styles = {
   count: {
     fontFamily: "'Courier New', monospace",
     fontSize: 14,
-    color: "#2EE6A8",
+    color: "#FFB703",
     marginTop: 48,
   },
   footer: {
@@ -71,13 +71,16 @@ export default function Home() {
         <p style={styles.cardLabel}>SOURCE</p>
         <p style={styles.cardValue}>{collection.source}</p>
       </div>
+      <div style={styles.card}>
+        <p style={styles.cardLabel}>PROVINCE</p>
+        <p style={styles.cardValue}>{collection.province}</p>
+      </div>
 
-      <p style={styles.count}>entries in the archive: 0 (for now)</p>
+      <p style={styles.count}>entries in the archive: 1 (for now)</p>
 
       <footer style={styles.footer}>
-        Built in ICT 340 — Vibe Coding, American University of Phnom Penh, Fall
-        2026. This archive is under construction all semester. Come back in
-        December. Code with Vibe, Vibe with Bugs.
+        A growing record of Yike, built with care in ICT 340 at the American
+        University of Phnom Penh, Fall 2026.
       </footer>
     </main>
   );
