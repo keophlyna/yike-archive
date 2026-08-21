@@ -7,13 +7,13 @@ const styles = {
     padding: "80px 24px",
   },
   kicker: {
-    fontFamily: "'Courier New', monospace",
-    color: "#2EE6A8",
+    fontFamily: "'Courier New', Montserrat",
+    color: "#9e1212",
     fontSize: 14,
     letterSpacing: 1,
   },
   title: {
-    fontSize: 48,
+    fontSize: 40,
     fontWeight: 700,
     margin: "16px 0 12px",
     lineHeight: 1.1,
@@ -77,7 +77,7 @@ export default function Home() {
       <footer style={styles.footer}>
         Built in ICT 340 — Vibe Coding, American University of Phnom Penh, Fall
         2026. This archive is under construction all semester. Come back in
-        December.
+        December. Code with Vibe, Vibe with Bugs.
       </footer>
     </main>
   );
