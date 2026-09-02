@@ -1,4 +1,4 @@
-// ============================================================
+﻿// ============================================================
 //  EntryCard
 //
 //  Renders a single Yike archive entry: its title, a short
@@ -26,6 +26,7 @@ const styles = {
   title: {
     fontSize: 24,
     fontWeight: 700,
+    fontFamily: "'Arial Black', sans-serif",
     margin: "0 0 12px",
   },
   description: {
