@@ -1,18 +1,29 @@
 ﻿import collection from "../collection.config.js";
 import EntryCard from "../components/EntryCard.js";
 import entries from "../data/data_entries.js";
+import ThemeToggle from "./ThemeToggle.js";
 import {
   fraunces,
   sourceSerif4,
   ibmPlexMono,
 } from "../app/fonts.js";
 
+const COLOR_TRANSITION =
+  "background-color 450ms cubic-bezier(.4,0,.2,1), color 450ms cubic-bezier(.4,0,.2,1), border-color 450ms cubic-bezier(.4,0,.2,1)";
+
 const styles = {
   wrap: {
     maxWidth: 720,
     margin: "0 auto",
     padding: "80px 24px",
-    backgroundColor: "#faf9f6",
+    backgroundColor: "var(--page-bg)",
+    transition: COLOR_TRANSITION,
+  },
+  topBar: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    margin: 0,
   },
   kicker: {
     fontFamily: ibmPlexMono.className,
@@ -26,37 +37,42 @@ const styles = {
     fontFamily: fraunces.className,
     fontSize: 52,
     fontWeight: 600,
-    color: "#1F2A33",
+    color: "var(--text-primary)",
     margin: "16px 0 12px",
     lineHeight: 1.1,
+    transition: COLOR_TRANSITION,
   },
   description: {
     fontFamily: sourceSerif4.className,
     fontSize: 18,
-    color: "#496580",
+    color: "var(--text-secondary)",
     lineHeight: 1.6,
     margin: 0,
+    transition: COLOR_TRANSITION,
   },
   card: {
     marginTop: 48,
     padding: 24,
-    backgroundColor: "#ffffff",
-    border: "1px solid #D8EAFF",
+    backgroundColor: "var(--card-bg)",
+    border: "1px solid var(--card-border)",
     borderRadius: 6,
+    transition: COLOR_TRANSITION,
   },
   cardLabel: {
     fontFamily: ibmPlexMono.className,
     fontSize: 12,
-    color: "#496580",
+    color: "var(--text-secondary)",
     textTransform: "uppercase",
     letterSpacing: 1,
     margin: 0,
+    transition: COLOR_TRANSITION,
   },
   cardValue: {
     fontFamily: sourceSerif4.className,
     fontSize: 16,
-    color: "#1F2A33",
+    color: "var(--text-primary)",
     margin: "6px 0 0",
+    transition: COLOR_TRANSITION,
   },
   section: {
     marginTop: 64,
@@ -64,23 +80,28 @@ const styles = {
   count: {
     fontFamily: ibmPlexMono.className,
     fontSize: 14,
-    color: "#b8892f",
+    color: "var(--accent-peach)",
     marginTop: 48,
+    transition: COLOR_TRANSITION,
   },
   footer: {
     marginTop: 64,
     paddingTop: 24,
-    borderTop: "1px solid #D8EAFF",
+    borderTop: "1px solid var(--card-border)",
     fontSize: 13,
-    color: "#496580",
+    color: "var(--text-secondary)",
     fontFamily: sourceSerif4.className,
+    transition: COLOR_TRANSITION,
   },
 };
 
 export default function Home() {
   return (
     <main style={styles.wrap}>
-      <p style={styles.kicker}>KHMER LIVING ARCHIVE</p>
+      <div style={styles.topBar}>
+        <p style={styles.kicker}>KHMER LIVING ARCHIVE</p>
+        <ThemeToggle />
+      </div>
       <h1 style={styles.title}>{collection.name}</h1>
       <p style={styles.description}>{collection.description}</p>
 
