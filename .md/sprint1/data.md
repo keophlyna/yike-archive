@@ -21,7 +21,7 @@ Add two fields to each existing entry: `titleKh` (Khmer title, string, can be em
 
 **Entry 2** (Performance Structure, Staging & Movement):
 
-- titleKh: "[fill in real Khmer title]"
+- titleKh: "រចនាសម្ព័ន្ធការសម្តែង ការរៀបចំ និងចលនា"
 - category: "Performance"
 
 Keep all existing fields (title, description, contributor, place, photo) exactly as they are — only add the two new fields.

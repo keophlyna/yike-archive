@@ -1,4 +1,4 @@
-const entries = [
+﻿const entries = [
   {
     title: "History & Cultural Context of Lakhon Yike",
     description:
@@ -6,6 +6,8 @@ const entries = [
     contributor: "Royal University of Fine Arts (RUFA)",
     place: "Cambodia",
     photo: "/entries/entry1.jpg",
+    titleKh: "ប្រវត្តិសាស្ត្រ និងបរិបទវប្បធម៌នៃល្ខោនយីកេ",
+    category: "History",
   },
   {
     title: "Performance Structure, Staging & Movement",
@@ -14,6 +16,8 @@ const entries = [
     contributor: "Yike - Wikipedia",
     place: "Cambodia",
     photo: "/entries/entry2.png",
+    titleKh: "រចនាសម្ព័ន្ធការសម្តែង ការរៀបចំ និងចលនា",
+    category: "Performance",
   },
 ];
 
