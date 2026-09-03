@@ -40,6 +40,7 @@ const styles = {
     letterSpacing: 1,
     padding: "5px 10px",
     borderRadius: 999,
+    whiteSpace: "nowrap",
   },
   entryBadge: {
     top: 12,
@@ -108,6 +109,7 @@ const styles = {
   },
   footerCol: {
     flex: 1,
+    minWidth: 0,
     display: "flex",
     flexDirection: "column",
   },
@@ -127,6 +129,20 @@ const styles = {
   },
 };
 
+const responsiveCss = `
+  .ec-card       { box-sizing: border-box; }
+  @media (max-width: 600px) {
+    .ec-card       { margin: 0 16px; }
+    .ec-body       { padding: 18px !important; }
+    .ec-title      { font-size: 18px !important; }
+    .ec-titleKh    { font-size: 15px !important; }
+    .ec-photoOverlay { font-size: 10px !important; }
+  }
+  @media (max-width: 360px) {
+    .ec-footer     { flex-direction: column !important; gap: 16px !important; }
+  }
+`;
+
 export default function EntryCard({
   title,
   titleKh = "",
@@ -138,15 +154,22 @@ export default function EntryCard({
   entryNumber = "",
 }) {
   return (
-    <article style={styles.card}>
+    <article className="ec-card" style={styles.card}>
+      <style dangerouslySetInnerHTML={{ __html: responsiveCss }} />
       {photo && (
         <div style={styles.photoWrap}>
           {entryNumber && (
-            <span style={{ ...styles.photoOverlay, ...styles.entryBadge }}>
+            <span
+              className="ec-photoOverlay"
+              style={{ ...styles.photoOverlay, ...styles.entryBadge }}
+            >
               {entryNumber}
             </span>
           )}
-          <span style={{ ...styles.photoOverlay, ...styles.visualBadge }}>
+          <span
+            className="ec-photoOverlay"
+            style={{ ...styles.photoOverlay, ...styles.visualBadge }}
+          >
             Visual
           </span>
           <Image
@@ -159,14 +182,14 @@ export default function EntryCard({
         </div>
       )}
 
-      <div style={styles.body}>
+      <div className="ec-body" style={styles.body}>
         {category && <span style={styles.categoryPill}>{category}</span>}
-        <h3 style={styles.title}>{title}</h3>
-        {titleKh && <p style={styles.titleKh}>{titleKh}</p>}
+        <h3 className="ec-title" style={styles.title}>{title}</h3>
+        {titleKh && <p className="ec-titleKh" style={styles.titleKh}>{titleKh}</p>}
         <hr style={styles.rule} />
         <p style={styles.description}>{description}</p>
 
-        <div style={styles.footer}>
+        <div className="ec-footer" style={styles.footer}>
           <div style={styles.footerCol}>
             <p style={styles.footerLabel}>Source</p>
             <p style={styles.footerValue}>{contributor}</p>
