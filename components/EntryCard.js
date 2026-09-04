@@ -8,14 +8,14 @@
 
 import Image from "next/image";
 import {
-  fraunces,
+  roboto,
   notoSerifKhmer,
-  sourceSerif4,
-  ibmPlexMono,
 } from "../app/fonts.js";
 
 const COLOR_TRANSITION =
   "background-color 450ms cubic-bezier(.4,0,.2,1), color 450ms cubic-bezier(.4,0,.2,1), border-color 450ms cubic-bezier(.4,0,.2,1)";
+
+const FONT_STACK = '"var(--font-roboto)", "Arial", "sans-serif"';
 
 const styles = {
   card: {
@@ -38,7 +38,7 @@ const styles = {
   photoOverlay: {
     position: "absolute",
     zIndex: 2,
-    fontFamily: ibmPlexMono.className,
+    fontFamily: FONT_STACK,
     fontSize: 11,
     textTransform: "uppercase",
     letterSpacing: 1,
@@ -68,7 +68,7 @@ const styles = {
   },
   categoryPill: {
     alignSelf: "flex-start",
-    fontFamily: ibmPlexMono.className,
+    fontFamily: FONT_STACK,
     fontSize: 11,
     textTransform: "uppercase",
     letterSpacing: 1,
@@ -80,9 +80,9 @@ const styles = {
     transition: COLOR_TRANSITION,
   },
   title: {
-    fontFamily: fraunces.className,
+    fontFamily: FONT_STACK,
     fontSize: 23,
-    fontWeight: 600,
+    fontWeight: 700,
     color: "var(--text-primary)",
     margin: 0,
     lineHeight: 1.25,
@@ -105,7 +105,7 @@ const styles = {
     transition: COLOR_TRANSITION,
   },
   description: {
-    fontFamily: sourceSerif4.className,
+    fontFamily: FONT_STACK,
     fontSize: 15.5,
     lineHeight: 1.6,
     color: "var(--text-secondary)",
@@ -127,7 +127,7 @@ const styles = {
     flexDirection: "column",
   },
   footerLabel: {
-    fontFamily: ibmPlexMono.className,
+    fontFamily: FONT_STACK,
     fontSize: 11,
     textTransform: "uppercase",
     letterSpacing: 1,
@@ -136,7 +136,7 @@ const styles = {
     transition: COLOR_TRANSITION,
   },
   footerValue: {
-    fontFamily: sourceSerif4.className,
+    fontFamily: FONT_STACK,
     fontSize: 14,
     color: "var(--text-primary)",
     margin: "4px 0 0",

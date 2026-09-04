@@ -1,5 +1,5 @@
 ﻿import collection from "../collection.config.js";
-import { montserrat } from "./fonts.js";
+import { roboto } from "./fonts.js";
 import ThemeProvider from "./ThemeContext.js";
 
 export const metadata = {
@@ -51,18 +51,19 @@ const themeBootstrap = `
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <style dangerouslySetInnerHTML={{ __html: themeCss }} />
         <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
       </head>
       <body
-        className={montserrat.className}
+        className={roboto.className}
         suppressHydrationWarning
         style={{
           margin: 0,
           backgroundColor: "var(--page-bg)",
           color: "var(--text-primary)",
+          fontFamily: '"var(--font-roboto)", "Arial", "sans-serif"',
           minHeight: "100vh",
         }}
       >

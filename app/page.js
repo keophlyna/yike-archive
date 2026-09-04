@@ -1,15 +1,16 @@
-﻿import collection from "../collection.config.js";
+﻿"use client";
+
+import { useState } from "react";
+import collection from "../collection.config.js";
 import EntryCard from "../components/EntryCard.js";
 import entries from "../data/data_entries.js";
 import ThemeToggle from "./ThemeToggle.js";
-import {
-  fraunces,
-  sourceSerif4,
-  ibmPlexMono,
-} from "../app/fonts.js";
+import { roboto } from "../app/fonts.js";
 
 const COLOR_TRANSITION =
   "background-color 450ms cubic-bezier(.4,0,.2,1), color 450ms cubic-bezier(.4,0,.2,1), border-color 450ms cubic-bezier(.4,0,.2,1)";
+
+const FONT_STACK = '"var(--font-roboto)", "Arial", "sans-serif"';
 
 const styles = {
   wrap: {
@@ -26,7 +27,7 @@ const styles = {
     margin: 0,
   },
   kicker: {
-    fontFamily: ibmPlexMono.className,
+    fontFamily: FONT_STACK,
     color: "#9e1212",
     fontSize: 14,
     letterSpacing: 1,
@@ -34,16 +35,16 @@ const styles = {
     margin: 0,
   },
   title: {
-    fontFamily: fraunces.className,
+    fontFamily: FONT_STACK,
     fontSize: 52,
-    fontWeight: 600,
+    fontWeight: 700,
     color: "var(--text-primary)",
     margin: "16px 0 12px",
     lineHeight: 1.1,
     transition: COLOR_TRANSITION,
   },
   description: {
-    fontFamily: sourceSerif4.className,
+    fontFamily: FONT_STACK,
     fontSize: 18,
     color: "var(--text-secondary)",
     lineHeight: 1.6,
@@ -59,7 +60,7 @@ const styles = {
     transition: COLOR_TRANSITION,
   },
   cardLabel: {
-    fontFamily: ibmPlexMono.className,
+    fontFamily: FONT_STACK,
     fontSize: 12,
     color: "var(--text-secondary)",
     textTransform: "uppercase",
@@ -68,7 +69,7 @@ const styles = {
     transition: COLOR_TRANSITION,
   },
   cardValue: {
-    fontFamily: sourceSerif4.className,
+    fontFamily: FONT_STACK,
     fontSize: 16,
     color: "var(--text-primary)",
     margin: "6px 0 0",
@@ -77,8 +78,48 @@ const styles = {
   section: {
     marginTop: 64,
   },
+  searchSticky: {
+    position: "sticky",
+    top: 0,
+    zIndex: 10,
+    backgroundColor: "var(--page-bg)",
+    padding: "16px 0",
+    marginBottom: 16,
+    transition: COLOR_TRANSITION,
+  },
+  searchInput: {
+    width: "100%",
+    padding: "12px 16px",
+    borderRadius: 6,
+    border: "1px solid var(--card-border)",
+    backgroundColor: "var(--card-bg)",
+    color: "var(--text-primary)",
+    fontFamily: FONT_STACK,
+    fontSize: 16,
+    outline: "none",
+    transition: COLOR_TRANSITION,
+    boxSizing: "border-box",
+  },
+  filterCount: {
+    fontFamily: FONT_STACK,
+    fontSize: 12,
+    color: "var(--text-secondary)",
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    margin: "12px 0 0",
+    transition: COLOR_TRANSITION,
+  },
+  empty: {
+    padding: "40px 24px",
+    border: "1px dashed var(--card-border)",
+    borderRadius: 6,
+    textAlign: "center",
+    color: "var(--text-secondary)",
+    fontFamily: FONT_STACK,
+    transition: COLOR_TRANSITION,
+  },
   count: {
-    fontFamily: ibmPlexMono.className,
+    fontFamily: FONT_STACK,
     fontSize: 14,
     color: "var(--accent-peach)",
     marginTop: 48,
@@ -90,14 +131,40 @@ const styles = {
     borderTop: "1px solid var(--card-border)",
     fontSize: 13,
     color: "var(--text-secondary)",
-    fontFamily: sourceSerif4.className,
+    fontFamily: FONT_STACK,
     transition: COLOR_TRANSITION,
   },
 };
 
 export default function Home() {
+  const [query, setQuery] = useState("");
+  const q = query.trim().toLowerCase();
+  const filtered = q === ""
+    ? entries
+    : entries.filter(
+        (e) =>
+          (e.title || "").toLowerCase().includes(q) ||
+          (e.description || "").toLowerCase().includes(q) ||
+          (e.titleKh || "").toLowerCase().includes(q)
+      );
+
   return (
     <main style={styles.wrap}>
+      <div style={styles.searchSticky}>
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search entries…"
+          style={styles.searchInput}
+        />
+        {q !== "" && (
+          <p style={styles.filterCount}>
+            {filtered.length} of {entries.length} entries shown
+          </p>
+        )}
+      </div>
+
       <div style={styles.topBar}>
         <p style={styles.kicker}>KHMER LIVING ARCHIVE</p>
         <ThemeToggle />
@@ -120,20 +187,25 @@ export default function Home() {
 
       <section style={styles.section}>
         <p style={styles.cardLabel}>Latest entries</p>
-        {entries.map((entry, index) => (
-          <div key={entry.title} style={{ marginTop: 16 }}>
-            <EntryCard
-              entryNumber={`Entry 0${index + 1}`}
-              title={entry.title}
-              titleKh={entry.titleKh}
-              description={entry.description}
-              contributor={entry.contributor}
-              place={entry.place}
-              category={entry.category}
-              photo={entry.photo}
-            />
-          </div>
-        ))}
+
+        {filtered.length > 0 ? (
+          filtered.map((entry, index) => (
+            <div key={entry.title} style={{ marginTop: 16 }}>
+              <EntryCard
+                entryNumber={`Entry 0${index + 1}`}
+                title={entry.title}
+                titleKh={entry.titleKh}
+                description={entry.description}
+                contributor={entry.contributor}
+                place={entry.place}
+                category={entry.category}
+                photo={entry.photo}
+              />
+            </div>
+          ))
+        ) : (
+          <div style={styles.empty}></div>
+        )}
       </section>
 
       <p style={styles.count}>entries in the archive: 2 (for now)</p>
