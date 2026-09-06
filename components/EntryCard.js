@@ -1,9 +1,10 @@
 ﻿// ============================================================
 //  EntryCard
 //
-//  Renders a single Yike archive entry: its title, Khmer title,
-//  category, photo with overlay badges, description, and a
-//  two-column Source / Place footer.
+//  Renders a single Yike archive entry as a horizontal split
+//  section: photo (or placeholder) on one side, content on the
+//  other. Alternates left/right based on entry position. Stacks
+//  to a single column on narrow screens.
 // ============================================================
 
 import Image from "next/image";
@@ -23,17 +24,46 @@ const styles = {
     border: "1px solid var(--card-border)",
     borderRadius: 6,
     boxShadow: "0 1px 2px rgba(31, 42, 51, 0.04), 0 4px 12px rgba(31, 42, 51, 0.05)",
-    maxWidth: 540,
+    maxWidth: 960,
     overflow: "hidden",
     display: "flex",
-    flexDirection: "column",
+    flexDirection: "row",
+    alignItems: "center",
     transition: COLOR_TRANSITION,
   },
   photoWrap: {
     position: "relative",
-    width: "100%",
-    aspectRatio: "3 / 2",
+    width: "50%",
+    aspectRatio: "1 / 1",
     overflow: "hidden",
+    flexShrink: 0,
+  },
+  photoPlaceholder: {
+    position: "relative",
+    width: "50%",
+    aspectRatio: "1 / 1",
+    overflow: "hidden",
+    backgroundColor: "var(--card-border)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+    transition: COLOR_TRANSITION,
+  },
+  photoOrderLeft: { order: 1 },
+  photoOrderRight: { order: 2 },
+  bodyOrderLeft: { order: 2 },
+  bodyOrderRight: { order: 1 },
+  placeholderCategory: {
+    fontFamily: FONT_STACK,
+    fontSize: 48,
+    fontWeight: 700,
+    color: "var(--accent-mint)",
+    opacity: 0.5,
+    letterSpacing: 1,
+    textTransform: "uppercase",
+    userSelect: "none",
+    transition: COLOR_TRANSITION,
   },
   photoOverlay: {
     position: "absolute",
@@ -62,6 +92,10 @@ const styles = {
     transition: COLOR_TRANSITION,
   },
   body: {
+    width: "50%",
+    flex: 1,
+    minWidth: 0,
+    flexShrink: 0,
     padding: 30,
     display: "flex",
     flexDirection: "column",
@@ -150,6 +184,11 @@ const responsiveCss = `
   [data-theme="dark"] .ec-titleKh { color: var(--accent-peach); }
   [data-theme="dark"] .ec-footerLabel { color: var(--accent-mint); }
   [data-theme="dark"] .ec-categoryPill { color: var(--text-on-accent); }
+  @media (max-width: 700px) {
+    .ec-card         { flex-direction: column !important; align-items: stretch !important; }
+    .ec-photo        { width: 100% !important; aspect-ratio: 3 / 2 !important; order: unset !important; }
+    .ec-body         { width: 100% !important; order: unset !important; }
+  }
   @media (max-width: 600px) {
     .ec-card         { margin: 0 16px; }
     .ec-body         { padding: 18px !important; }
@@ -172,36 +211,60 @@ export default function EntryCard({
   photo,
   entryNumber = "",
 }) {
+  const isRight =
+    (() => {
+      const m = /0*(\d+)/.exec(entryNumber || "");
+      if (!m) return false;
+      const n = parseInt(m[1], 10);
+      return n > 0 && n % 2 === 0;
+    })();
+
   return (
     <article className="ec-card" style={styles.card}>
       <style dangerouslySetInnerHTML={{ __html: responsiveCss }} />
-      {photo && (
-        <div style={styles.photoWrap}>
-          {entryNumber && (
-            <span
-              className="ec-photoOverlay"
-              style={{ ...styles.photoOverlay, ...styles.entryBadge }}
-            >
-              {entryNumber}
-            </span>
-          )}
+      <div
+        className="ec-photo"
+        style={{
+          ...(photo ? styles.photoWrap : styles.photoPlaceholder),
+          ...(isRight ? styles.photoOrderRight : styles.photoOrderLeft),
+        }}
+      >
+        {entryNumber && (
           <span
             className="ec-photoOverlay"
-            style={{ ...styles.photoOverlay, ...styles.visualBadge }}
+            style={{ ...styles.photoOverlay, ...styles.entryBadge }}
           >
-            Visual
+            {entryNumber}
           </span>
+        )}
+        <span
+          className="ec-photoOverlay"
+          style={{ ...styles.photoOverlay, ...styles.visualBadge }}
+        >
+          Visual
+        </span>
+        {photo ? (
           <Image
             src={photo}
             alt={title}
             fill
-            sizes="(max-width: 540px) 100vw, 540px"
+            sizes="(max-width: 700px) 100vw, 480px"
             style={{ objectFit: "cover" }}
           />
-        </div>
-      )}
+        ) : (
+          <span style={styles.placeholderCategory}>
+            {category || "Entry"}
+          </span>
+        )}
+      </div>
 
-      <div className="ec-body" style={styles.body}>
+      <div
+        className="ec-body"
+        style={{
+          ...styles.body,
+          ...(isRight ? styles.bodyOrderLeft : styles.bodyOrderRight),
+        }}
+      >
         {category && (
           <span className="ec-categoryPill" style={styles.categoryPill}>
             {category}

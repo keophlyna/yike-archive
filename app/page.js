@@ -27,7 +27,7 @@ const styles = {
     boxShadow: "0 8px 24px rgba(15, 24, 32, 0.10)",
   },
   headerInner: {
-    maxWidth: 960,
+    maxWidth: 720,
     margin: "0 auto",
     padding: "16px 24px",
     boxSizing: "border-box",
@@ -122,7 +122,7 @@ const styles = {
     border: 0,
   },
   wrap: {
-    maxWidth: 960,
+    maxWidth: 720,
     margin: "0 auto",
     padding: "48px 24px 80px",
     backgroundColor: "var(--page-bg)",
@@ -136,7 +136,6 @@ const styles = {
     color: "var(--text-primary)",
     margin: "0 0 12px",
     lineHeight: 1.1,
-    maxWidth: 720,
     transition: COLOR_TRANSITION,
   },
   description: {
@@ -145,7 +144,6 @@ const styles = {
     color: "var(--text-secondary)",
     lineHeight: 1.6,
     margin: 0,
-    maxWidth: 680,
     transition: COLOR_TRANSITION,
   },
   metaGrid: {
@@ -185,6 +183,12 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: 10,
+  },
+  entryList: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 48,
+    marginTop: 24,
   },
   countPill: {
     fontFamily: FONT_STACK,
@@ -266,17 +270,6 @@ const globalCss = `
   .yk-clear-btn:hover {
     background-color: var(--card-border) !important;
     color: var(--text-primary) !important;
-  }
-  .yk-entry-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 24px;
-    margin-top: 20px;
-  }
-  @media (max-width: 520px) {
-    .yk-entry-grid {
-      grid-template-columns: 1fr;
-    }
   }
 `;
 
@@ -424,15 +417,15 @@ export default function Home() {
         <section style={styles.section}>
           <div style={styles.sectionHeaderRow}>
             <p style={styles.cardLabel}>Latest entries</p>
-            <span style={styles.countPill}>{entries.length}</span>
+            <span style={styles.countPill}>{filtered.length}</span>
           </div>
 
           {filtered.length > 0 ? (
-            <div className="yk-entry-grid">
+            <div style={styles.entryList}>
               {filtered.map((entry, index) => (
                 <EntryCard
-                  key={entry.title}
-                  entryNumber={`Entry 0${index + 1}`}
+                  key={entry.id || entry.title || index}
+                  entryNumber={`Entry ${String(index + 1).padStart(2, "0")}`}
                   title={entry.title}
                   titleKh={entry.titleKh}
                   description={entry.description}
@@ -440,6 +433,7 @@ export default function Home() {
                   place={entry.place}
                   category={entry.category}
                   photo={entry.photo}
+                  gallery={entry.gallery}
                 />
               ))}
             </div>
@@ -461,7 +455,6 @@ export default function Home() {
             </div>
           )}
         </section>
-
         <p style={styles.count}>entries in the archive: {entries.length}</p>
 
         <footer style={styles.footer}>
