@@ -31,7 +31,7 @@ const styles = {
   featureTitle: { margin: 0, color: "var(--ink)", font: `600 clamp(22px, 2.4vw, 32px)/1.15 ${fontSerif}` },
   featureKhmer: { margin: "9px 0 0", color: "var(--ink-soft)", font: `400 clamp(16px, 1.6vw, 21px)/1.4 ${fontKhmer}` },
   featureDescription: { maxWidth: "56ch", margin: "14px 0 0", color: "var(--ink-soft)", font: `400 15px/1.7 ${fontSans}` },
-  featurePhoto: { display: "flex", alignItems: "center", justifyContent: "center", minHeight: 150, background: "var(--surface)", border: "1px solid var(--surface-border)", color: "var(--ink-soft)" },
+  featurePhoto: { position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "100%", height: "clamp(180px, 22vw, 300px)", minHeight: 0, aspectRatio: "4 / 3", overflow: "hidden", background: "var(--surface)", border: "1px solid var(--surface-border)", color: "var(--ink-soft)" },
   featurePhotoText: { margin: 0, font: `italic 500 16px ${fontSerif}`, textAlign: "center" },
   featurePhotoCaption: { margin: "7px 0 0", font: `400 11px ${fontSans}`, textAlign: "center" },
   stagingBlock: { display: "grid", gridTemplateColumns: "minmax(260px, .8fr) 1.2fr", gap: "clamp(28px, 5vw, 72px)", alignItems: "center", marginTop: "clamp(48px, 7vh, 96px)", paddingTop: "clamp(28px, 5vh, 56px)", borderTop: "1px solid var(--rule)" },
@@ -91,10 +91,11 @@ const responsiveCss = `
     .ec-arena { max-width: 360px; }
     .ec-archetype-grid { grid-template-columns: repeat(2, 1fr) !important; }
     .ec-garment-grid { grid-template-columns: repeat(2, 1fr) !important; }
+    .ec-phase-photo, .ec-archetype .ec-feature-photo, .ec-garment .ec-feature-photo { height: clamp(180px, 28vw, 260px) !important; }
   }
   @media (max-width: 520px) {
     .ec-phase { grid-template-columns: 1fr !important; padding-left: 34px !important; }
-    .ec-phase-photo { min-height: 180px !important; }
+    .ec-phase-photo, .ec-archetype .ec-feature-photo, .ec-garment .ec-feature-photo { height: clamp(180px, 58vw, 260px) !important; }
     .ec-archetype-grid { grid-template-columns: 1fr !important; }
     .ec-garment-grid { grid-template-columns: 1fr !important; }
   }
@@ -104,8 +105,8 @@ const responsiveCss = `
   }
 `;
 
-function PendingPhoto({ className = "" }) {
-  return <div className={className} style={styles.featurePhoto}><div><p style={styles.featurePhotoText}>Photograph pending</p><p style={styles.featurePhotoCaption}>Image to be added</p></div></div>;
+function PendingPhoto({ className = "", photo, alt = "" }) {
+  return <div className={className} style={styles.featurePhoto}>{photo ? <Image src={photo} alt={alt} fill sizes="(max-width: 860px) 90vw, 25vw" style={{ objectFit: "cover" }} /> : <div><p style={styles.featurePhotoText}>Photograph pending</p><p style={styles.featurePhotoCaption}>Image to be added</p></div>}</div>;
 }
 
 function PerformanceSection({ accent, phases }) {
@@ -117,7 +118,7 @@ function PerformanceSection({ accent, phases }) {
       <span className="ec-timeline-line" style={styles.timelineLine} aria-hidden="true" />
       {phases.map((phase, index) => { const phaseAccent = index % 2 === 0 ? accent : alternateAccent; return <article className="ec-phase yk-reveal" style={styles.timelineItem} key={phase.title}>
         <span className="ec-phase-marker" style={{ ...styles.timelineMarker, borderColor: phaseAccent }} aria-hidden="true" />
-        <PendingPhoto className="ec-phase-photo" />
+        <PendingPhoto className="ec-phase-photo" photo={phase.photo} alt={phase.title} />
         <div><span style={{ ...styles.archetypeTag, color: phaseAccent }}>{phase.num} / {phase.phase}</span><h5 style={{ ...styles.featureTitle, color: phaseAccent }}>{phase.title}</h5><p style={styles.featureKhmer}>{phase.kh}</p><p style={styles.featureDescription}>{phase.text}</p></div>
       </article>; })}
     </div>
@@ -140,14 +141,14 @@ function CostumeSection({ accent, characters, garments }) {
     <p style={styles.featureKicker}>Costume study</p>
     <h3 id="character-archetypes-heading" style={{ ...styles.featureHeading, color: accent }}>Character Archetypes</h3>
     <div className="ec-archetype-grid" style={styles.archetypeGrid}>{characters.map((character, index) => { const characterAccent = index % 2 === 0 ? accent : alternateAccent; return <article className="ec-archetype yk-reveal" style={{ ...styles.archetypeCard, borderTopColor: characterAccent }} key={character.role}>
-      <PendingPhoto />
+      <PendingPhoto photo={character.photo} alt={character.role} />
       <h5 style={{ ...styles.featureTitle, marginTop: 20, color: characterAccent }}>{character.role}</h5><p style={styles.featureKhmer}>{character.kh}</p><span style={styles.archetypeTag}>{character.tag}</span><p style={styles.featureDescription}>{character.text}</p>
     </article>; })}</div>
     <div className="ec-garments" style={styles.featureSection}>
       <p style={styles.featureKicker}>Material language</p>
       <h3 style={{ ...styles.featureHeading, color: accent }}>Key Garment Symbolism</h3>
       <div className="ec-garment-grid" style={styles.garmentGrid}>{garments.map((garment, index) => { const garmentAccent = index % 2 === 0 ? accent : alternateAccent; return <article className="ec-garment yk-reveal" style={{ ...styles.garmentCard, borderTopColor: garmentAccent }} key={garment.name}>
-        <PendingPhoto />
+        <PendingPhoto photo={garment.photo} alt={garment.name} />
         <h5 style={{ ...styles.featureTitle, marginTop: 20, color: garmentAccent }}>{garment.name}</h5><p style={styles.featureKhmer}>{garment.kh}</p><p style={styles.featureDescription}>{garment.text}</p>
       </article>; })}</div>
     </div>
