@@ -21,28 +21,27 @@
   },
   {
     title: "Music, Instrumentation & Narrative Soundscapes",
-    titleKh: "",
+    titleKh: "តន្ត្រី និងឧបករណ៍សម្រាប់បង្ហាញរឿង",
     category: "Music",
     description:
       "A complete catalog of Yike musical accompaniment, showing how rhythmic patterns drive dramatic narrative. Centers on the Skor Yike (graduated frame drums), alongside the Tromuo (spiked fiddle), Krap (bamboo clappers), and Chhing (finger cymbals) — with tempo signaling tension, royal arrivals, comedy, or battle.",
     contributor:
       "Master Yike percussionists; acoustic field recordings and musical transcriptions",
     place: "Cambodia",
-    photo: null,
+    photo: "/entries/khmer-traditional-music-instruments.jpg",
   },
   {
     title: "Costume Symbolism & Character Archetypes",
-    titleKh: "",
-    category: "Visual",
-    description:
-      "Traditional Yike wardrobe communicates character and status the moment a performer steps into view. Gilded crowns, painted colors, and carved horns identify archetypes instantly — including the Neak Rea (King/Royalty), Neang (Princess/Heroine), Yeak (Ogre/Antagonist), and Lok Ta (Hermit/Wise Sage).",
+    titleKh: "និមិត្តសញ្ញាសំលៀកបំពាក់ និងគំរូតួអង្គ",
+    category: "Costume",
+    description: "In Lakhon Yike, costumes and character designs bridge the gap between sacred court traditions and rural folk accessibility. Unlike classical court dance dramas that enforce rigid, ornate costuming, Yike balances traditional visual symbolism with practical, expressive mobility suited for village audiences.", 
     contributor: "Dept. of Performing Arts costume designers; senior wardrobe masters",
     place: "Cambodia",
     photo: null,
   },
   {
     title: "Living Traditions: Oral History of Yike Performers",
-    titleKh: "",
+    titleKh: "ប្រវត្តិសាស្ត្រដ៏រស់នៅ: ការពិភាក្សាប្រវត្តិនៃអ្នកសម្តែង Yike",
     category: "Oral History",
     description:
       "Human-centered oral histories of veteran and contemporary Yike artists — knowledge transmission, passion for preserving Khmer heritage, post-war struggle, and reflections on performance art's future in the digital age.",
