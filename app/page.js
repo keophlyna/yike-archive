@@ -11,23 +11,6 @@ const fontSans = "var(--font-work-sans), sans-serif";
 const fontSerif = "var(--font-fraunces), serif";
 const fontKhmer = "var(--font-noto-serif-khmer), serif";
 
-const siteSearchText = [
-  "A living record of Khmer performance",
-  "Latest entries",
-  "Search the archive",
-  "In-The-Round Staging",
-  "Unlike Western proscenium arches or formal court stages, Lakhon Yike is traditionally performed in an open arena circle.",
-  "This 360-degree layout removes boundaries between actors and common villagers. Musicians sit adjacent to the acting space, allowing the lead Skor Mei drummer to dynamically adjust performance tempo based on live audience reactions.",
-  "Audience Musicians Action Area Rom Kbach",
-  "Photograph pending Image to be added",
-  "A growing record of Yike, built with care in ICT 340 at the American University of Phnom Penh, Fall 2026.",
-  collection.name,
-  collection.description,
-  collection.curator,
-  collection.province,
-  collection.source,
-].join(" ").toLocaleLowerCase();
-
 const styles = {
   header: { position: "sticky", top: 0, zIndex: 40, width: "100%", background: "var(--page-bg)", borderBottomWidth: 1, borderBottomStyle: "solid", borderBottomColor: "transparent", transition: "box-shadow 250ms ease, border-color 250ms ease" },
   headerScrolled: { borderBottomWidth: 1, borderBottomStyle: "solid", borderBottomColor: "var(--rule)", boxShadow: "0 8px 24px var(--shadow)" },
@@ -40,8 +23,14 @@ const styles = {
   searchHint: { position: "absolute", right: 3, color: "var(--ink-soft)", font: `500 12px monospace` },
   clearBtn: { position: "absolute", right: 0, width: 24, height: 24, border: 0, background: "transparent", color: "var(--ink-soft)", cursor: "pointer", fontSize: 14 },
   resultCount: { margin: "7px 0 0", color: "var(--ink-soft)", font: `400 12px ${fontSans}` },
-  resultLinks: { display: "flex", flexWrap: "wrap", gap: "6px 14px", margin: "10px 0 0", padding: 0, listStyle: "none" },
-  resultLink: { color: "var(--red)", font: `500 12px ${fontSans}`, textDecoration: "underline", textUnderlineOffset: 3 },
+  resultLabel: { margin: "14px 0 0", color: "var(--gold)", font: `600 10px ${fontSans}`, letterSpacing: ".08em", textTransform: "uppercase" },
+  resultLinks: { display: "grid", gap: 0, margin: "4px 0 0", padding: 0, listStyle: "none", borderTop: "1px solid var(--rule)" },
+  resultItem: { borderBottom: "1px solid var(--rule)" },
+  resultLink: { display: "grid", gridTemplateColumns: "24px 1fr auto", alignItems: "baseline", gap: 8, width: "100%", padding: "9px 6px", color: "var(--red)", font: `500 12px ${fontSans}`, textDecoration: "none", transition: "background-color 220ms ease, color 220ms ease" },
+  resultNumber: { color: "var(--ink-soft)", font: `500 11px ${fontSans}` },
+  resultInfo: { display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: "3px 8px", minWidth: 0 },
+  resultKhmer: { color: "var(--ink-soft)", font: `400 14px ${fontKhmer}`, textDecoration: "none" },
+  resultCategory: { color: "var(--ink-soft)", font: `600 10px ${fontSans}`, letterSpacing: ".04em" },
   hero: { background: "var(--hero-bg)", color: "var(--hero-fg)" },
   heroInner: { width: contentWidth, margin: "0 auto", padding: "clamp(58px, 10vw, 138px) 0 clamp(50px, 8vw, 112px)" },
   kicker: { margin: "0 0 18px", color: "var(--gold)", font: `600 12px ${fontSans}`, letterSpacing: ".08em" },
@@ -67,7 +56,7 @@ const styles = {
 
 const globalCss = `
   .yk-search-input::placeholder { color: var(--ink-soft); opacity: 1; }
-  .yk-result-link:hover { color: var(--jade) !important; }
+  .yk-result-link:hover, .yk-result-link:focus-visible { background: var(--surface); color: var(--jade) !important; }
   .yk-clear-btn:hover, .yk-empty-clear:hover { background: var(--red) !important; color: var(--hero-fg) !important; }
   .yk-back-top { opacity: 0; pointer-events: none; transform: translateY(8px); transition: opacity 220ms ease, transform 220ms ease; }
   .yk-back-top.is-visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
@@ -165,9 +154,12 @@ export default function Home() {
                 {query ? <button type="button" className="yk-clear-btn" style={styles.clearBtn} onClick={clearSearch} aria-label="Clear search">x</button> : <span style={styles.searchHint} aria-hidden="true">/</span>}
               </div>
               <p style={styles.resultCount} aria-live="polite">{normalizedQuery ? `${filtered.length} of ${entries.length} entries match` : `${entries.length} entries in the archive`}</p>
-              {normalizedQuery && filtered.length > 0 && <ul style={styles.resultLinks} aria-label="Matching entries">
-                {filtered.map((entry, index) => <li key={entry.title}><a className="yk-result-link" style={styles.resultLink} href={`#entry-${index + 1}`}>{entry.title}</a></li>)}
-              </ul>}
+              {normalizedQuery && filtered.length > 0 && <>
+                <p style={styles.resultLabel}>Matching entries</p>
+                <ul style={styles.resultLinks} aria-label="Matching entries">
+                  {filtered.map((entry, index) => <li style={styles.resultItem} key={entry.title}><a className="yk-result-link" style={styles.resultLink} href={`#entry-${index + 1}`}><span style={styles.resultNumber}>{String(index + 1).padStart(2, "0")}</span><span style={styles.resultInfo}><span>{entry.title}</span>{entry.titleKh && <span className="yk-result-khmer" style={styles.resultKhmer}>{entry.titleKh}</span>}</span>{entry.category && <span style={styles.resultCategory}>{entry.category}</span>}</a></li>)}
+                </ul>
+              </>}
             </form>
             <ThemeToggle />
           </div>
