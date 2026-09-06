@@ -11,9 +11,26 @@ const fontSans = "var(--font-work-sans), sans-serif";
 const fontSerif = "var(--font-fraunces), serif";
 const fontKhmer = "var(--font-noto-serif-khmer), serif";
 
+const siteSearchText = [
+  "A living record of Khmer performance",
+  "Latest entries",
+  "Search the archive",
+  "In-The-Round Staging",
+  "Unlike Western proscenium arches or formal court stages, Lakhon Yike is traditionally performed in an open arena circle.",
+  "This 360-degree layout removes boundaries between actors and common villagers. Musicians sit adjacent to the acting space, allowing the lead Skor Mei drummer to dynamically adjust performance tempo based on live audience reactions.",
+  "Audience Musicians Action Area Rom Kbach",
+  "Photograph pending Image to be added",
+  "A growing record of Yike, built with care in ICT 340 at the American University of Phnom Penh, Fall 2026.",
+  collection.name,
+  collection.description,
+  collection.curator,
+  collection.province,
+  collection.source,
+].join(" ").toLocaleLowerCase();
+
 const styles = {
-  header: { position: "sticky", top: 0, zIndex: 40, width: "100%", background: "var(--page-bg)", borderBottom: "1px solid transparent", transition: "box-shadow 250ms ease, border-color 250ms ease" },
-  headerScrolled: { borderBottomColor: "var(--rule)", boxShadow: "0 8px 24px var(--shadow)" },
+  header: { position: "sticky", top: 0, zIndex: 40, width: "100%", background: "var(--page-bg)", borderBottomWidth: 1, borderBottomStyle: "solid", borderBottomColor: "transparent", transition: "box-shadow 250ms ease, border-color 250ms ease" },
+  headerScrolled: { borderBottomWidth: 1, borderBottomStyle: "solid", borderBottomColor: "var(--rule)", boxShadow: "0 8px 24px var(--shadow)" },
   headerInner: { width: contentWidth, margin: "0 auto", padding: "16px 0 13px" },
   headerTop: { display: "grid", gridTemplateColumns: "1fr minmax(280px, 520px) auto", alignItems: "start", gap: "clamp(20px, 5vw, 90px)" },
   wordmark: { fontFamily: fontSerif, fontStyle: "italic", fontSize: 24, color: "var(--ink)", margin: 0, lineHeight: 1.1 },
@@ -70,6 +87,27 @@ const globalCss = `
   }
 `;
 
+function getEntrySearchText(entry) {
+  const nestedText = [
+    ...(entry.phases || []).flatMap((phase) => [phase.num, phase.phase, phase.title, phase.kh, phase.text]),
+    ...(entry.characters || []).flatMap((character) => [character.role, character.kh, character.tag, character.text]),
+    ...(entry.garments || []).flatMap((garment) => [garment.name, garment.kh, garment.text]),
+  ];
+
+  return [
+    entry.title,
+    entry.titleKh,
+    entry.description,
+    entry.category,
+    entry.contributor,
+    entry.place,
+    ...nestedText,
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLocaleLowerCase();
+}
+
 export default function Home() {
   const [query, setQuery] = useState("");
   const [scrolled, setScrolled] = useState(false);
@@ -102,9 +140,14 @@ export default function Home() {
     return () => revealObserver.disconnect();
   }, [query]);
 
-  const normalizedQuery = query.trim().toLowerCase();
-  const filtered = normalizedQuery ? entries.filter((entry) => [entry.title, entry.titleKh, entry.description, entry.category, entry.contributor, entry.place].some((value) => (value || "").toLowerCase().includes(normalizedQuery))) : entries;
-  const submitSearch = (event) => { event.preventDefault(); setQuery(query.trim()); };
+  const normalizedQuery = query.trim().toLocaleLowerCase();
+  const searchTerms = normalizedQuery.split(/\s+/).filter(Boolean);
+  const filtered = searchTerms.length > 0
+    ? entries.filter((entry) => {
+        const searchableText = getEntrySearchText(entry);
+        return searchTerms.every((term) => searchableText.includes(term));
+      })
+    : entries;
   const clearSearch = () => { setQuery(""); inputRef.current?.focus(); };
 
   return (
@@ -115,7 +158,7 @@ export default function Home() {
         <div className="yk-header-inner" style={styles.headerInner}>
           <div className="yk-header-top" style={styles.headerTop}>
             <p className="yk-wordmark" style={styles.wordmark}>Khmer Living Archive</p>
-            <form className="yk-search-wrap" style={styles.searchWrap} role="search" onSubmit={submitSearch}>
+            <form className="yk-search-wrap" style={styles.searchWrap} role="search" onSubmit={(event) => event.preventDefault()}>
               <label htmlFor="archive-search" style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0,0,0,0)" }}>Search entries</label>
               <div style={styles.searchField}>
                 <input id="archive-search" ref={inputRef} type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search the archive" className="yk-search-input" style={styles.searchInput} autoComplete="off" />
