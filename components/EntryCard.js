@@ -1,17 +1,17 @@
 import Image from "next/image";
 
-const fontSans = "var(--font-work-sans), sans-serif";
-const fontSerif = "var(--font-fraunces), serif";
+const fontSans = "var(--font-google-sans), sans-serif";
+const fontSerif = "var(--font-google-sans), sans-serif";
 const fontKhmer = "var(--font-noto-serif-khmer), serif";
 
 const styles = {
   card: { display: "grid", gridTemplateColumns: "1.15fr 1fr", gap: "clamp(28px, 5vw, 72px)", padding: "clamp(48px, 7vh, 96px) 0", borderBottom: "1px solid var(--rule)" },
   media: { position: "relative", width: "100%", height: "clamp(360px, 60vh, 720px)", overflow: "hidden" },
   placeholder: { display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "var(--surface)", border: "1px solid var(--surface-border)", color: "var(--ink-soft)" },
-  placeholderCategory: { margin: 0, font: `italic 500 clamp(28px, 4vw, 52px) ${fontSerif}`, color: "var(--ink)" },
+  placeholderCategory: { margin: 0, font: `600 clamp(28px, 4vw, 52px) ${fontSerif}`, color: "var(--ink)" },
   placeholderCaption: { margin: "12px 0 0", font: `400 12px ${fontSans}`, color: "var(--ink-soft)" },
   text: { alignSelf: "center", maxWidth: 620 },
-  folio: { margin: 0, color: "var(--gold)", font: `300 clamp(52px, 8vw, 96px)/.8 ${fontSerif}`, fontStyle: "italic" },
+  folio: { margin: 0, color: "var(--gold)", font: `700 clamp(52px, 8vw, 96px)/.8 ${fontSerif}` },
   category: { margin: "30px 0 12px", font: `600 12px ${fontSans}`, letterSpacing: ".08em" },
   title: { margin: 0, color: "var(--ink)", font: `600 clamp(28px, 3.1vw, 40px)/1.1 ${fontSerif}` },
   titleKh: { margin: "12px 0 0", color: "var(--ink)", font: `600 clamp(23px, 2.5vw, 34px)/1.35 ${fontKhmer}` },
@@ -21,7 +21,7 @@ const styles = {
   footerLabel: { margin: 0, color: "var(--ink-soft)", font: `600 11px ${fontSans}`, letterSpacing: ".06em" },
   footerValue: { margin: "5px 0 0", color: "var(--ink)", font: `500 14px/1.4 ${fontSans}` },
   featureSection: { gridColumn: "1 / -1", order: 3, paddingTop: "clamp(28px, 5vh, 72px)" },
-  featureHeading: { margin: 0, color: "var(--ink)", font: `italic 500 clamp(28px, 3vw, 42px)/1 ${fontSerif}` },
+  featureHeading: { margin: 0, color: "var(--ink)", font: `600 clamp(28px, 3vw, 42px)/1 ${fontSerif}` },
   featureKicker: { margin: "0 0 10px", color: "var(--gold)", font: `600 11px ${fontSans}`, letterSpacing: ".08em", textTransform: "uppercase" },
   featureIntro: { maxWidth: "56ch", margin: "14px 0 0", color: "var(--ink-soft)", font: `400 16px/1.7 ${fontSans}` },
   timeline: { position: "relative", display: "grid", gap: "clamp(28px, 5vw, 72px)", marginTop: "clamp(28px, 5vh, 56px)" },
@@ -32,14 +32,14 @@ const styles = {
   featureKhmer: { margin: "9px 0 0", color: "var(--ink-soft)", font: `400 clamp(16px, 1.6vw, 21px)/1.4 ${fontKhmer}` },
   featureDescription: { maxWidth: "56ch", margin: "14px 0 0", color: "var(--ink-soft)", font: `400 15px/1.7 ${fontSans}` },
   featurePhoto: { position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "100%", height: "clamp(180px, 22vw, 300px)", minHeight: 0, aspectRatio: "4 / 3", overflow: "hidden", background: "var(--surface)", border: "1px solid var(--surface-border)", color: "var(--ink-soft)" },
-  featurePhotoText: { margin: 0, font: `italic 500 16px ${fontSerif}`, textAlign: "center" },
+  featurePhotoText: { margin: 0, font: `600 16px ${fontSerif}`, textAlign: "center" },
   featurePhotoCaption: { margin: "7px 0 0", font: `400 11px ${fontSans}`, textAlign: "center" },
   stagingBlock: { display: "grid", gridTemplateColumns: "minmax(260px, .8fr) 1.2fr", gap: "clamp(28px, 5vw, 72px)", alignItems: "center", marginTop: "clamp(48px, 7vh, 96px)", paddingTop: "clamp(28px, 5vh, 56px)", borderTop: "1px solid var(--rule)" },
   arena: { position: "relative", width: "min(100%, 420px)", aspectRatio: "1", margin: "0 auto", border: "1px solid var(--rule)", borderRadius: "50%" },
   arenaCenter: { position: "absolute", top: "50%", left: "50%", display: "flex", alignItems: "center", justifyContent: "center", width: "42%", aspectRatio: "1", padding: 12, border: "1px solid var(--gold)", borderRadius: "50%", background: "var(--surface)", color: "var(--ink)", transform: "translate(-50%, -50%)", textAlign: "center", font: `600 13px/1.3 ${fontSans}` },
   arenaLabel: { position: "absolute", color: "var(--ink-soft)", font: `600 11px ${fontSans}`, letterSpacing: ".06em" },
   stagingCopy: { maxWidth: "56ch" },
-  stagingLead: { margin: 0, color: "var(--ink)", font: `500 clamp(21px, 2.3vw, 30px)/1.25 ${fontSerif}` },
+  stagingLead: { margin: 0, color: "var(--ink)", font: `600 clamp(21px, 2.3vw, 30px)/1.25 ${fontSerif}` },
   stagingText: { margin: "16px 0 0", color: "var(--ink-soft)", font: `400 15px/1.7 ${fontSans}` },
   archetypeGrid: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "clamp(16px, 2.5vw, 32px)", marginTop: "clamp(28px, 5vh, 56px)" },
   archetypeCard: { minWidth: 0, paddingTop: 18, borderTop: "2px solid var(--red)" },

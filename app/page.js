@@ -7,8 +7,8 @@ import entries from "../data/data_entries.js";
 import ThemeToggle from "./ThemeToggle.js";
 
 const contentWidth = "min(90vw, 1760px)";
-const fontSans = "var(--font-work-sans), sans-serif";
-const fontSerif = "var(--font-fraunces), serif";
+const fontSans = "var(--font-google-sans), sans-serif";
+const fontSerif = "var(--font-google-sans), sans-serif";
 const fontKhmer = "var(--font-noto-serif-khmer), serif";
 
 const styles = {
@@ -16,10 +16,10 @@ const styles = {
   headerScrolled: { borderBottomWidth: 1, borderBottomStyle: "solid", borderBottomColor: "var(--rule)", boxShadow: "0 8px 24px var(--shadow)" },
   headerInner: { width: contentWidth, margin: "0 auto", padding: "16px 0 13px" },
   headerTop: { display: "grid", gridTemplateColumns: "1fr minmax(280px, 520px) auto", alignItems: "start", gap: "clamp(20px, 5vw, 90px)" },
-  wordmark: { fontFamily: fontSerif, fontStyle: "italic", fontSize: 24, color: "var(--ink)", margin: 0, lineHeight: 1.1 },
+  wordmark: { fontFamily: fontSans, fontWeight: 600, fontSize: 24, color: "var(--ink)", margin: 0, lineHeight: 1.1 },
   searchWrap: { minWidth: 0 },
   searchField: { position: "relative", display: "flex", alignItems: "center", borderBottom: "1px solid var(--ink-soft)" },
-  searchInput: { width: "100%", padding: "5px 34px 8px 0", border: 0, background: "transparent", color: "var(--ink)", fontFamily: fontSans, fontSize: 15, outline: "none" },
+  searchInput: { width: "100%", padding: "5px 34px 8px 0", border: 0, background: "transparent", color: "var(--ink)", fontFamily: fontSans, fontWeight: 400, fontSize: 15, outline: "none" },
   searchHint: { position: "absolute", right: 3, color: "var(--ink-soft)", font: `500 12px monospace` },
   clearBtn: { position: "absolute", right: 0, width: 24, height: 24, border: 0, background: "transparent", color: "var(--ink-soft)", cursor: "pointer", fontSize: 14 },
   resultCount: { margin: "7px 0 0", color: "var(--ink-soft)", font: `400 12px ${fontSans}` },
@@ -34,7 +34,7 @@ const styles = {
   hero: { background: "var(--hero-bg)", color: "var(--hero-fg)" },
   heroInner: { width: contentWidth, margin: "0 auto", padding: "clamp(58px, 10vw, 138px) 0 clamp(50px, 8vw, 112px)" },
   kicker: { margin: "0 0 18px", color: "var(--gold)", font: `600 12px ${fontSans}`, letterSpacing: ".08em" },
-  heroTitle: { maxWidth: 900, margin: 0, font: `500 clamp(40px, 6vw, 72px)/.98 ${fontSerif}` },
+  heroTitle: { maxWidth: 900, margin: 0, font: `700 clamp(44px, 6.4vw, 78px)/.96 ${fontSerif}` },
   heroDescription: { maxWidth: 760, margin: "30px 0 0", color: "var(--hero-fg)", font: `400 clamp(17px, 1.5vw, 21px)/1.65 ${fontSans}` },
   metaRow: { display: "flex", flexWrap: "wrap", marginTop: "clamp(42px, 6vw, 76px)" },
   meta: { minWidth: 210, flex: "1 1 210px", padding: "0 28px", borderLeft: "1px solid var(--hero-rule)" },
@@ -43,11 +43,11 @@ const styles = {
   metaValue: { margin: "8px 0 0", color: "var(--hero-fg)", font: `400 15px/1.45 ${fontSans}` },
   main: { width: contentWidth, margin: "0 auto", padding: "clamp(56px, 8vw, 116px) 0 60px" },
   sectionHeader: { display: "flex", alignItems: "center", gap: 14, borderBottom: "1px solid var(--rule)", paddingBottom: 18 },
-  sectionTitle: { margin: 0, font: `italic 500 clamp(28px, 3vw, 42px)/1 ${fontSerif}`, color: "var(--ink)" },
+  sectionTitle: { margin: 0, font: `600 clamp(28px, 3vw, 42px)/1 ${fontSerif}`, color: "var(--ink)" },
   countPill: { display: "inline-flex", alignItems: "center", justifyContent: "center", minWidth: 28, height: 24, padding: "0 8px", background: "var(--ink)", color: "var(--page-bg)", font: `600 12px ${fontSans}` },
   entryList: { marginTop: 0 },
   empty: { padding: "clamp(60px, 10vw, 130px) 0", textAlign: "center" },
-  emptyTitle: { margin: 0, font: `italic 500 clamp(28px, 4vw, 46px) ${fontSerif}`, color: "var(--ink)" },
+  emptyTitle: { margin: 0, font: `600 clamp(28px, 4vw, 46px) ${fontSerif}`, color: "var(--ink)" },
   emptyKh: { margin: "14px 0 0", color: "var(--ink-soft)", font: `400 18px ${fontKhmer}` },
   emptyClear: { marginTop: 28, padding: "10px 16px", border: 0, background: "var(--ink)", color: "var(--page-bg)", font: `600 13px ${fontSans}`, cursor: "pointer" },
   footer: { paddingTop: 22, borderTop: "1px solid var(--rule)", color: "var(--ink-soft)", font: `400 13px/1.6 ${fontSans}` },

@@ -1,5 +1,5 @@
 ﻿import collection from "../collection.config.js";
-import { fraunces, notoSerifKhmer, workSans } from "./fonts.js";
+import { googleSansFlex, notoSerifKhmer } from "./fonts.js";
 import ThemeProvider from "./ThemeContext.js";
 
 export const metadata = {
@@ -9,6 +9,7 @@ export const metadata = {
 
 const themeCss = `
   :root {
+    --font-google-sans: "Google Sans Flex", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     --page-bg: #F3EEDE;
     --surface: #FBF8EE;
     --surface-border: #E4D8BC;
@@ -42,11 +43,11 @@ const themeCss = `
   }
   html { scroll-behavior: smooth; }
   *, *::before, *::after { box-sizing: border-box; }
-  body { margin: 0; background: var(--page-bg); color: var(--ink); }
+  body { margin: 0; background: var(--page-bg); color: var(--ink); font-family: var(--font-google-sans); }
   ::selection { background: var(--red); color: var(--hero-fg); }
   :focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
   .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
-  .yk-skip-link { position: fixed; left: 16px; top: 12px; z-index: 100; transform: translateY(-160%); background: var(--ink); color: var(--page-bg); padding: 10px 14px; font: 600 13px var(--font-work-sans), sans-serif; }
+  .yk-skip-link { position: fixed; left: 16px; top: 12px; z-index: 100; transform: translateY(-160%); background: var(--ink); color: var(--page-bg); padding: 10px 14px; font: 600 13px var(--font-google-sans), sans-serif; }
   .yk-skip-link:focus { transform: translateY(0); }
   input[type="search"]::-webkit-search-cancel-button, input[type="search"]::-webkit-search-decoration { display: none; }
   @media (prefers-reduced-motion: reduce) {
@@ -72,12 +73,12 @@ const themeBootstrap = `
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${fraunces.variable} ${workSans.variable} ${notoSerifKhmer.variable}`} suppressHydrationWarning>
+    <html lang="en" className={notoSerifKhmer.variable} suppressHydrationWarning>
       <head>
         <style dangerouslySetInnerHTML={{ __html: themeCss }} />
         <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
       </head>
-      <body className={workSans.className} suppressHydrationWarning>
+      <body className={googleSansFlex.className} suppressHydrationWarning>
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
