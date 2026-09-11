@@ -1,9 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import collection from "../collection.config.js";
 import EntryCard from "../components/EntryCard.js";
 import entries from "../data/data_entries.js";
+import { useTheme } from "./ThemeContext.js";
 import ThemeToggle from "./ThemeToggle.js";
 
 const contentWidth = "min(90vw, 1760px)";
@@ -19,8 +21,10 @@ const styles = {
   wordmark: { fontFamily: fontSans, fontWeight: 600, fontSize: 24, color: "var(--ink)", margin: 0, lineHeight: 1.1 },
   searchWrap: { minWidth: 0 },
   searchField: { position: "relative", display: "flex", alignItems: "center", borderBottom: "1px solid var(--ink-soft)" },
-  searchInput: { width: "100%", padding: "5px 34px 8px 0", border: 0, background: "transparent", color: "var(--ink)", fontFamily: fontSans, fontWeight: 400, fontSize: 15, outline: "none" },
+  searchInput: { width: "100%", padding: "5px 0 8px 36px", border: 0, background: "transparent", color: "var(--ink)", fontFamily: fontSans, fontWeight: 400, fontSize: 15, outline: "none" },
   searchHint: { position: "absolute", right: 3, color: "var(--ink-soft)", font: `500 12px monospace` },
+  searchButton: { position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", display: "flex", alignItems: "center", justifyContent: "center", width: 28, height: 28, padding: 0, border: 0, background: "transparent", cursor: "pointer", opacity: 1, transition: "opacity 220ms ease, transform 220ms ease" },
+  searchSpinner: { width: 14, height: 14, borderRadius: "50%", border: "2px solid var(--ink-soft)", borderTopColor: "var(--gold)", borderRightColor: "var(--gold)" },
   clearBtn: { position: "absolute", right: 0, width: 24, height: 24, border: 0, background: "transparent", color: "var(--ink-soft)", cursor: "pointer", fontSize: 14 },
   resultCount: { margin: "7px 0 0", color: "var(--ink-soft)", font: `400 12px ${fontSans}` },
   resultLabel: { margin: "14px 0 0", color: "var(--gold)", font: `600 10px ${fontSans}`, letterSpacing: ".08em", textTransform: "uppercase" },
@@ -58,11 +62,17 @@ const globalCss = `
   .yk-search-input::placeholder { color: var(--ink-soft); opacity: 1; }
   .yk-result-link:hover, .yk-result-link:focus-visible { background: var(--surface); color: var(--jade) !important; }
   .yk-clear-btn:hover, .yk-empty-clear:hover { background: var(--red) !important; color: var(--hero-fg) !important; }
+  .yk-search-spinner { display: inline-block; }
   .yk-back-top { opacity: 0; pointer-events: none; transform: translateY(8px); transition: opacity 220ms ease, transform 220ms ease; }
   .yk-back-top.is-visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
   @media (prefers-reduced-motion: no-preference) {
+    .yk-search-spinner { animation: yk-search-spin 0.9s linear infinite; }
+    @keyframes yk-search-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     .yk-reveal { opacity: 0; transform: translateY(28px); transition: opacity 700ms ease, transform 700ms ease; }
     .yk-reveal.is-visible { opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .yk-search-spinner { animation: none; }
   }
   @media (max-width: 720px) {
     .yk-header-top { grid-template-columns: 1fr auto !important; }
@@ -98,10 +108,48 @@ function getEntrySearchText(entry) {
 }
 
 export default function Home() {
+  const { theme } = useTheme();
   const [query, setQuery] = useState("");
+  const [committedQuery, setCommittedQuery] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [showTop, setShowTop] = useState(false);
   const inputRef = useRef(null);
+  const searchTimerRef = useRef(null);
+  const searchIconSrc = theme === "dark" ? "/entries/search-icon-sand.png" : "/entries/search-icon.png";
+
+  const filterEntries = (rawText) => {
+    const normalized = rawText.trim().toLocaleLowerCase();
+    const searchTerms = normalized.split(/\s+/).filter(Boolean);
+    if (searchTerms.length === 0) return entries;
+    return entries.filter((entry) => {
+      const searchableText = getEntrySearchText(entry);
+      return searchTerms.every((term) => searchableText.includes(term));
+    });
+  };
+
+  const commitSearch = (nextQuery = query) => {
+    if (searchTimerRef.current) {
+      clearTimeout(searchTimerRef.current);
+      searchTimerRef.current = null;
+    }
+    setShowSuggestions(false);
+    setIsSearching(true);
+    searchTimerRef.current = setTimeout(() => {
+      setCommittedQuery(nextQuery);
+      setIsSearching(false);
+      searchTimerRef.current = null;
+    }, 300);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (searchTimerRef.current) {
+        clearTimeout(searchTimerRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const onScroll = () => { setScrolled(window.scrollY > 2); setShowTop(window.scrollY > 640); };
@@ -115,7 +163,7 @@ export default function Home() {
       const target = event.target;
       const typing = target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable);
       if (event.key === "/" && !typing) { event.preventDefault(); inputRef.current?.focus(); }
-      if (event.key === "Escape" && document.activeElement === inputRef.current) { setQuery(""); inputRef.current?.blur(); }
+      if (event.key === "Escape" && document.activeElement === inputRef.current) { setQuery(""); setCommittedQuery(""); setShowSuggestions(false); inputRef.current?.blur(); }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
@@ -127,17 +175,26 @@ export default function Home() {
     }, { threshold: 0.12 });
     document.querySelectorAll(".yk-reveal").forEach((element) => revealObserver.observe(element));
     return () => revealObserver.disconnect();
-  }, [query]);
+  }, [committedQuery]);
 
   const normalizedQuery = query.trim().toLocaleLowerCase();
-  const searchTerms = normalizedQuery.split(/\s+/).filter(Boolean);
-  const filtered = searchTerms.length > 0
-    ? entries.filter((entry) => {
-        const searchableText = getEntrySearchText(entry);
-        return searchTerms.every((term) => searchableText.includes(term));
-      })
-    : entries;
-  const clearSearch = () => { setQuery(""); inputRef.current?.focus(); };
+  const suggestionResults = normalizedQuery ? entries.filter((entry) => {
+    const searchableText = getEntrySearchText(entry);
+    return searchableText.includes(normalizedQuery);
+  }) : [];
+  const isSearchActive = committedQuery.trim().length > 0;
+  const filtered = filterEntries(committedQuery);
+  const clearSearch = () => {
+    if (searchTimerRef.current) {
+      clearTimeout(searchTimerRef.current);
+      searchTimerRef.current = null;
+    }
+    setIsSearching(false);
+    setQuery("");
+    setCommittedQuery("");
+    setShowSuggestions(false);
+    inputRef.current?.focus();
+  };
 
   return (
     <>
@@ -147,17 +204,19 @@ export default function Home() {
         <div className="yk-header-inner" style={styles.headerInner}>
           <div className="yk-header-top" style={styles.headerTop}>
             <p className="yk-wordmark" style={styles.wordmark}>Khmer Living Archive</p>
-            <form className="yk-search-wrap" style={styles.searchWrap} role="search" onSubmit={(event) => event.preventDefault()}>
+            <form className="yk-search-wrap" style={styles.searchWrap} role="search" onSubmit={(event) => { event.preventDefault(); commitSearch(); }}>
               <label htmlFor="archive-search" style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0,0,0,0)" }}>Search entries</label>
               <div style={styles.searchField}>
-                <input id="archive-search" ref={inputRef} type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search the archive" className="yk-search-input" style={styles.searchInput} autoComplete="off" />
-                {query ? <button type="button" className="yk-clear-btn" style={styles.clearBtn} onClick={clearSearch} aria-label="Clear search">x</button> : <span style={styles.searchHint} aria-hidden="true">/</span>}
+                <input id="archive-search" ref={inputRef} type="search" value={query} onChange={(event) => { const nextValue = event.target.value; setQuery(nextValue); setShowSuggestions(nextValue.trim().length > 0); }} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); commitSearch(event.currentTarget.value); } }} placeholder="Search the archive" className="yk-search-input" style={styles.searchInput} autoComplete="off" />
+                <button type="button" aria-label="Search" onClick={() => commitSearch()} style={styles.searchButton}>
+                  {isSearching ? <span className="yk-search-spinner" style={styles.searchSpinner} aria-hidden="true" /> : <Image src={searchIconSrc} alt="" width={18} height={18} priority={false} style={{ display: "block", opacity: 1 }} />}
+                </button>
+                {query ? <button type="button" className="yk-clear-btn" style={styles.clearBtn} onClick={clearSearch} aria-label="Clear search">x</button> : null}
               </div>
-              <p style={styles.resultCount} aria-live="polite">{normalizedQuery ? `${filtered.length} of ${entries.length} entries match` : `${entries.length} entries in the archive`}</p>
-              {normalizedQuery && filtered.length > 0 && <>
+              {showSuggestions && normalizedQuery && suggestionResults.length > 0 && <>
                 <p style={styles.resultLabel}>Matching entries</p>
                 <ul style={styles.resultLinks} aria-label="Matching entries">
-                  {filtered.map((entry, index) => <li style={styles.resultItem} key={entry.title}><a className="yk-result-link" style={styles.resultLink} href={`#entry-${index + 1}`}><span style={styles.resultNumber}>{String(index + 1).padStart(2, "0")}</span><span style={styles.resultInfo}><span>{entry.title}</span>{entry.titleKh && <span className="yk-result-khmer" style={styles.resultKhmer}>{entry.titleKh}</span>}</span>{entry.category && <span style={styles.resultCategory}>{entry.category}</span>}</a></li>)}
+                  {suggestionResults.map((entry, index) => <li style={styles.resultItem} key={entry.title}><a className="yk-result-link" style={styles.resultLink} href="#" onClick={(event) => { event.preventDefault(); setQuery(entry.title); commitSearch(entry.title); }}><span style={styles.resultNumber}>{String(index + 1).padStart(2, "0")}</span><span style={styles.resultInfo}><span>{entry.title}</span>{entry.titleKh && <span className="yk-result-khmer" style={styles.resultKhmer}>{entry.titleKh}</span>}</span>{entry.category && <span style={styles.resultCategory}>{entry.category}</span>}</a></li>)}
                 </ul>
               </>}
             </form>
@@ -166,7 +225,7 @@ export default function Home() {
         </div>
       </header>
 
-      <section style={styles.hero}>
+      {!isSearchActive && <section style={styles.hero}>
         <div style={styles.heroInner}>
           <p style={styles.kicker}>A living record of Khmer performance</p>
           <h1 className="yk-hero-title" style={styles.heroTitle}>{collection.name}</h1>
@@ -177,12 +236,12 @@ export default function Home() {
             <div className="yk-meta" style={styles.meta}><p style={styles.metaLabel}>Source</p><p style={styles.metaValue}>{collection.source}</p></div>
           </div>
         </div>
-      </section>
+      </section>}
 
       <main id="main" style={styles.main}>
         <section aria-labelledby="latest-heading">
           <div style={styles.sectionHeader}><h2 id="latest-heading" style={styles.sectionTitle}>Latest entries</h2><span style={styles.countPill} aria-label={`${filtered.length} entries`}>{filtered.length}</span></div>
-          {filtered.length > 0 ? <div style={styles.entryList}>{filtered.map((entry, index) => <EntryCard key={entry.id || entry.title || index} entryId={`entry-${index + 1}`} entryNumber={String(index + 1)} {...entry} />)}</div> : <div style={styles.empty}><h2 style={styles.emptyTitle}>No entries match “{query}”</h2><p style={styles.emptyKh}>រកមិនឃើញលទ្ធផល</p><button type="button" className="yk-empty-clear" style={styles.emptyClear} onClick={clearSearch}>Clear search</button></div>}
+          {filtered.length > 0 ? <div style={styles.entryList}>{filtered.map((entry, index) => <EntryCard key={entry.id || entry.title || index} entryId={`entry-${index + 1}`} entryNumber={String(index + 1)} {...entry} />)}</div> : <div style={styles.empty}><h2 style={styles.emptyTitle}>No entries match “{committedQuery || query}”</h2><p style={styles.emptyKh}>រកមិនឃើញលទ្ធផល</p><button type="button" className="yk-empty-clear" style={styles.emptyClear} onClick={clearSearch}>Clear search</button></div>}
         </section>
         <footer style={styles.footer}>A growing record of Yike, built with care in ICT 340 at the American University of Phnom Penh, Fall 2026. <span>· {entries.length} entries</span></footer>
       </main>
