@@ -3,8 +3,11 @@
     title: "History & Cultural Context of Lakhon Yike",
     description:
       "A foundational historical narrative detailing the origins, development, and cultural evolution of Lakhon Yike in Cambodia. It explores historical connections with Cham/Malay musical traditions, its flourishing in rural communities (particularly in Takeo province), royal patronage during the 20th century, and resilience in the post-1979 cultural reconstruction era.",
+    descriptionKh: "អត្ថបទនិទានប្រវត្តិសាស្ត្រជាមូលដ្ឋានដែលរៀបរាប់ពីប្រភពដើម ការអភិវឌ្ឍ និងការវិវឌ្ឍផ្នែកវប្បធម៌នៃល្ខោនយីកេនៅកម្ពុជា។ វាស្វែងយល់ពីទំនាក់ទំនងប្រវត្តិសាស្ត្រជាមួយប្រពៃណីតន្ត្រីចាម/ម៉ាឡេ ភាពរុងរឿងរបស់វានៅតាមសហគមន៍ជនបទ (ជាពិសេសនៅខេត្តតាកែវ) ការឧបត្ថម្ភគាំទ្រពីព្រះបរមរាជវាំងកំឡុងសតវត្សទី២០ និងភាពធន់ក្នុងយុគសម័យស្តារវប្បធម៌ឡើងវិញក្រោយឆ្នាំ១៩៧៩។",
     contributor: "Royal University of Fine Arts (RUFA)",
+    contributorKh: "សាកលវិទ្យាល័យមុខនិច nghệសារដែលមានអធិបតី (RUFA)",
     place: "Cambodia, Takeo",
+    placeKh: "កម្ពុជា, ខេត្តតាកែវ",
     photo: "/entries/entry1.jpg",
     titleKh: "ប្រវត្តិសាស្ត្រ និងបរិបទវប្បធម៌នៃល្ខោនយីកេ",
     category: "History",
@@ -13,8 +16,11 @@
     title: "Performance Structure, Staging & Movement",
     description:
       "Documentation of traditional Yike performance structures and choreographic movement. This entry covers the ritualistic opening ceremony (Hom Rong), the invocation of ancestral teachers, stage geography, vocal call-and-response dynamics, and ensemble cast organization (typically ranging from 12 to 25 performers including actors, musicians, and chorus).",
+    descriptionKh: "ឯកសារចងក្រងអំពីរចនាសម្ព័ន្ធការសម្តែងល្ខោនយីកេបុរាណ និងចលនាក្បាច់រាំ។ ផ្នែកនេះគ្របដណ្តប់លើពិធីបើកឆាក (ហោមរោង) ការរំលឹកគុណគ្រូបាធ្យាយ ទីតាំងឆាក សំនៀងឆ្លើយឆ្លង និងការរៀបចំក្រុមសម្តែង (ជាទូទៅមានពី ១២ ទៅ ២៥ នាក់ រួមមានតួសម្តែង អ្នកភ្លេង និងអ្នកច្រៀងបន្ទរ)។",
     contributor: "Yike - Wikipedia",
+    contributorKh: "យីកេ - វិគីភីឌា",
     place: "Cambodia",
+    placeKh: "កម្ពុជា",
     photo: "/entries/entry2.png",
     titleKh: "រចនាសម្ព័ន្ធការសម្តែង ការរៀបចំ និងចលនា",
     category: "Performance",
@@ -25,6 +31,7 @@
         title: "Ceremonial Blessing",
         kh: "ហោមរោង (Hom Rong)",
         text: "Serves as a sacred ceremonial prelude performed by dancers to pay tribute to ancestral artistic masters (Kru), purify the performance ground, and invoke divine spiritual protection for the troupe.",
+        textKh: "បម្រើជាពិធីបើកឆាកដ៏ស័ក្តិសិទ្ធិដែលសម្តែងដោយអ្នករបាំ ដើម្បីគោរពវិញ្ញាណក្ខន្ធគ្រូសិល្បៈ (គ្រូ) បន្សុទ្ធទីតាំងសម្តែង និងសុំសេចក្តីសុខពីបារមីឱ្យជួយការពារក្រុមសម្តែង។",
         photo: "/entries/yike-hom-rong.jpg",
       },
       {
@@ -33,6 +40,7 @@
         title: "Percussive Overture",
         kh: "ក្បួនស្គរមេ (Skor Mei Call)",
         text: "Captures the community's attention through the commanding strokes of the master Skor Mei frame drum, establishing ensemble tempo while signaling upcoming character entrances and scene changes.",
+        textKh:  "ទាក់ទាញចំណាប់អារម្មណ៍សហគមន៍តាមរយៈការទូងស្គរមេយ៉ាងមានអំណាច ដើម្បីកំណត់ចង្វាក់ភ្លេង ព្រមទាំងផ្តល់សញ្ញាប្រាប់ពីការចេញមករបស់តួអង្គ និងការផ្លាស់ប្តូរឈុតឆាក។",
         photo: "/entries/skor-mei-call.jpg",
       },
       {
@@ -41,6 +49,7 @@
         title: "Arena Drama & Movement",
         kh: "ការសម្តែង និង ចលនា (Rom Kbach)",
         text: "Enacts the main story within an open in-the-round setting, blending fluid Rom Kbach folk dance gestures with melismatic vocal monologues, dynamic song modes, and lively improvisational dialogue.",
+        textKh: "សម្តែងសាច់រឿងគោលនៅទីធ្លាកណ្តាល ដោយផ្សំបញ្ចូលគ្នានូវកាយវិការរបាំប្រពៃណី ការច្រៀងរៀបរាប់ ការផ្លាស់ប្តូរបទចម្រៀង និងការសន្ទនាភ្លាមៗ (improvisation) យ៉ាងរស់រវើក។",
         photo: "/entries/arena-drama.jpg",
       },
       {
@@ -49,6 +58,7 @@
         title: "Percussive Resolution",
         kh: "ការបញ្ចប់ (Recessional)",
         text: "Brings the dramatic story to an orderly close as melodic string instruments and secondary drums gradually fade out, leaving the lead Skor Mei drum to sound final solo percussive rhythms.",
+        textKh: "បញ្ចប់សាច់រឿងដោយសណ្តាប់ធ្នាប់ ខណៈឧបករណ៍ភ្លេងខ្សែ និងស្គររងបន្ធូរសំឡេងបន្តិចម្តងៗ ទុកឱ្យស្គរមេវាយចង្វាក់បញ្ចប់តែឯង។",
         photo: "/entries/ending.jpg",
       },
     ],
@@ -59,18 +69,24 @@
     category: "Music",
     description:
       "A complete catalog of Yike musical accompaniment, showing how rhythmic patterns drive dramatic narrative. Centers on the Skor Yike (graduated frame drums), alongside the Tromuo (spiked fiddle), Krap (bamboo clappers), and Chhing (finger cymbals) — with tempo signaling tension, royal arrivals, comedy, or battle.",
+    descriptionKh: "កម្រងឯកសារពេញលេញនៃការប្រគុំតន្ត្រីយីកេ ដែលបង្ហាញពីរបៀបដែលចង្វាក់ភ្លេងជំរុញសាច់រឿង។ ផ្តោតសំខាន់លើស្គរយីកេ រួមជាមួយនឹងទ្រអ៊ូ កាប់ (Krap) និងឈិង — ដោយប្រើចង្វាក់ដើម្បីបញ្ជាក់ពីភាពតានតឹង ការយាងមករបស់ស្តេច ឈុតកំប្លែង ឬការប្រយុទ្ធ។",
     contributor:
       "Master Yike percussionists; acoustic field recordings and musical transcriptions",
+    contributorKh: "អ្នកចម្រៀងយីកេដ៏ល្បី និងការថតវាលសម្លេង",
     place: "Cambodia",
+    placeKh: "កម្ពុជា",
     photo: "/entries/khmer-traditional-music-instruments.jpg",
   },
   {
     title: "Costume Symbolism & Character Archetypes",
     titleKh: "និមិត្តសញ្ញាសំលៀកបំពាក់ និងគំរូតួអង្គ",
     category: "Costume",
-    description: "In Lakhon Yike, costumes and character designs bridge the gap between sacred court traditions and rural folk accessibility. Unlike classical court dance dramas that enforce rigid, ornate costuming, Yike balances traditional visual symbolism with practical, expressive mobility suited for village audiences.", 
+    description: "In Lakhon Yike, costumes and character designs bridge the gap between sacred court traditions and rural folk accessibility. Unlike classical court dance dramas that enforce rigid, ornate costuming, Yike balances traditional visual symbolism with practical, expressive mobility suited for village audiences.",
+    descriptionKh: "នៅក្នុងល្ខោនយីកេ សំលៀកបំពាក់ និងការរចនាតួអង្គបានផ្សារភ្ជាប់គម្លាតរវាងប្រពៃណីរាជវាំងដ៏ស័ក្តិសិទ្ធិ និងភាពសាមញ្ញរបស់ប្រជាជន។ មិនដូចរបាំព្រះរាជទ្រព្យដែលតម្រូវឱ្យស្លៀកពាក់ប្រណីតស្មុគស្មាញ យីកេធ្វើឱ្យមានតុល្យភាពរវាងនិមិត្តសញ្ញាប្រពៃណី និងភាពងាយស្រួលក្នុងការធ្វើចលនា ដែលស័ក្តិសមសម្រាប់ទស្សនិកជននៅតាមភូមិស្រុក។",
     contributor: "Dept. of Performing Arts costume designers; senior wardrobe masters",
+    contributorKh: "អ្នករចនាសំលៀកបំពាក់និងអ្នកធ្វើសម្លៀកបំពាក់ជំនាញ",
     place: "Cambodia",
+    placeKh: "កម្ពុជា",
     photo: "/entries/costume.png",
     characters: [
       {
@@ -78,6 +94,7 @@
         kh: "នាយរោង (Neay Rong)",
         tag: "Royal Crown & Kben",
         text: "Represents noble leadership, moral righteousness (Dharma), and courage. Dressed in an embroidered tunic paired with the Sampot Chang Kben and a golden Mokot crown.",
+        textKh: "តំណាងឱ្យភាពជាអ្នកដឹកនាំដ៏ខ្ពង់ខ្ពស់ ធម៌ និងភាពក្លាហាន។ ស្លៀកពាក់អាវប៉ាក់ ជាមួយសំពត់ចងក្បិន និងពាក់មកុដមាស។",
         photo: "/entries/prince.jpg",
       },
       {
@@ -85,6 +102,7 @@
         kh: "នាង (Neang)",
         tag: "Silk Hol & Sbai",
         text: "Embodies classical grace, modesty, and emotional depth. Adorned in an ikat-patterned Sampot Hol silk skirt and a flowing, pleated Sbai shoulder shawl.",
+        textKh: "បម្រើជានិមិត្តសញ្ញានៃមហិច្ឆតា និងការល្បងប្រាជ្ញា។ សម្គាល់ដោយអាវធំពណ៌ងងឹត ការគូសមុខ ឬពាក់មុខយក្សពាក់កណ្តាល និងកាន់ដំបងឈើជាអាវុធ។",
         photo: "/entries/princess.jpg",
       },
       {
@@ -92,6 +110,7 @@
         kh: "យក្ស (Yeak)",
         tag: "Mask & Dark Attire",
         text: "Serves as a dynamic symbol of raw ambition and spiritual trials. Identified by dark jackets, dramatic face paint or half-masks, and a wooden club prop.",
+        textKh: "បម្រើជានិមិត្តសញ្ញានៃមហិច្ឆតា និងការល្បងប្រាជ្ញា។ សម្គាល់ដោយអាវធំពណ៌ងងឹត ការគូសមុខ ឬពាក់មុខយក្សពាក់កណ្តាល និងកាន់ដំបងឈើជាអាវុធ។",
         photo: "/entries/yeak.jpg",
       },
       {
@@ -99,6 +118,7 @@
         kh: "ត្លុក (Tlak)",
         tag: "Peasant Attire & Krama",
         text: "Provides comedic relief and folk wisdom directly to rural audiences. Wears plain peasant attire paired with the iconic checkered Krama scarf.",
+        textKh: "ផ្តល់ភាពកំប្លុកកំប្លែង និងគតិបណ្ឌិតប្រជាប្រិយដោយផ្ទាល់ទៅកាន់ទស្សនិកជន។ ស្លៀកពាក់សាមញ្ញបែបអ្នកស្រុក ជាមួយក្រមាបង់ក។",
         photo: "/entries/tlok.jpg",
       },
     ],
@@ -107,24 +127,28 @@
         name: "Sampot Chang Kben",
         kh: "សំពត់ចងក្បិន",
         text: "Tucked cloth wrap for male nobility symbolizing readiness, dignity, and martial strength.",
+        textKh: "សំពត់ចងរុំសម្រាប់វណ្ណៈអភិជនបុរស ដែលតំណាងឱ្យការត្រៀមខ្លួន សេចក្តីថ្លៃថ្នូរ និងភាពខ្លាំងក្លា។",
         photo: "/entries/sampot-chong-kben.jpg",
       },
       {
         name: "Sampot Hol",
         kh: "សំពត់ហូល",
         text: "Handwoven ikat silk skirt whose complex patterns reflect female status and refinement.",
+        textKh: "សំពត់សូត្រត្បាញដោយដៃ ដែលមានក្បាច់រចនាស្មុគស្មាញឆ្លុះបញ្ចាំងពីឋានៈ និងភាពថ្លៃថ្នូររបស់ស្ត្រី។",
         photo: "/entries/sampot-hol.jpg",
       },
       {
         name: "Sbai",
         kh: "ស្បៃ",
         text: "Pleated silk shoulder shawl draped diagonally, embodying modesty and grace.",
+        textKh: "ស្បៃសូត្រមានផ្នត់សម្រាប់ឆៀងស្មា ដែលតំណាងឱ្យភាពសុភាពរាបសា និងភាពទន់ភ្លន់។",
         photo: "/entries/sbai.jpg",
       },
       {
         name: "Mokot",
         kh: "មកុដ",
         text: "Multi-tiered golden crown signifying royal authority and spiritual alignment.",
+        textKh: "មកុដមាសមានច្រើនថ្នាក់ ដែលបង្ហាញពីអំណាចរាជវង្ស និងការផ្សារភ្ជាប់នឹងស្មារតីស័ក្តិសិទ្ធិ។",
         photo: "/entries/mkot.jpg",
       },
     ],
@@ -135,9 +159,12 @@
     category: "Oral History",
     description:
       "Human-centered oral histories of veteran and contemporary Yike artists — knowledge transmission, passion for preserving Khmer heritage, post-war struggle, and reflections on performance art's future in the digital age.",
+    descriptionKh: "ប្រវត្តិប្រាប់តៗគ្នាដែលផ្តោតលើមនុស្ស ពីសិល្បករយីកេជើងចាស់ និងសហសម័យ — ការផ្ទេរចំណេះដឹង ចំណង់ចំណូលចិត្តក្នុងការអភិរក្សកេរដំណែលខ្មែរ ការតស៊ូក្រោយសង្គ្រាម និងការឆ្លុះបញ្ចាំងពីអនាគតសិល្បៈទស្សនីយភាពក្នុងយុគសម័យឌីជីថល។",
     contributor:
       "Master Sobpa Sith and other living Yike practitioners across generations, Khmer Times",
+    contributorKh: "លោក សុបប៉ា សិត និងអ្នកសម្តែងយីកេដ៏រស់រវើកក្នុងជំនាន់ផ្សេងៗ, Khmer Times",
     place: "Cambodia",
+    placeKh: "កម្ពុជា",
     photo: "/entries/oral-history.jpg",
   },
 ];

@@ -4,6 +4,43 @@ const fontSans = "var(--font-google-sans), sans-serif";
 const fontSerif = "var(--font-google-sans), sans-serif";
 const fontKhmer = "var(--font-noto-serif-khmer), serif";
 
+const cardTranslations = {
+  en: {
+    source: "Source",
+    place: "Place",
+    photographPending: "Photograph pending",
+    imageToBeAdded: "Image to be added",
+    performanceStudy: "Performance study",
+    dramaticPhases: "The Four Dramatic Phases",
+    costumeStudy: "Costume study",
+    characterArchetypes: "Character Archetypes",
+    materialLanguage: "Material language",
+    keyGarmentSymbolism: "Key Garment Symbolism",
+    arena: "In-The-Round Staging",
+    audience: "Audience",
+    musicians: "Musicians",
+    actionArea: "Action Area / Rom Kbach",
+    archiveEntry: "Archive entry",
+  },
+  kh: {
+    source: "ប្រភព",
+    place: "ទីតាំង",
+    photographPending: "រូបថតកំពុងរង់ចាំ",
+    imageToBeAdded: "រូបភាពត្រូវបន្ថែម",
+    performanceStudy: "ការសិក្សាเกี่ยวกับការសម្តែង",
+    dramaticPhases: "ជំហានសម្តែងទាំង ៤",
+    costumeStudy: "ការសិក្សាអំពីសម្លៀកបំពាក់",
+    characterArchetypes: "តួអង្គនិងនិមិត្តសញ្ញា",
+    materialLanguage: "ភាសា និងវត្ថុធាតុ",
+    keyGarmentSymbolism: "និមិត្តសញ្ញាសម្លៀកបំពាក់",
+    arena: "ទីលានសម្តែងជុំវិញ",
+    audience: "ទស្សនិកជន",
+    musicians: "អ្នកតន្ត្រី",
+    actionArea: "តំបន់សកម្មភាព / រាំក្បាច់",
+    archiveEntry: "ធាតុបណ្ណសារ",
+  },
+};
+
 const styles = {
   card: { display: "grid", gridTemplateColumns: "1.15fr 1fr", gap: "clamp(28px, 5vw, 72px)", padding: "clamp(48px, 7vh, 96px) 0", borderBottom: "1px solid var(--rule)" },
   media: { position: "relative", width: "100%", height: "clamp(360px, 60vh, 720px)", overflow: "hidden" },
@@ -105,82 +142,109 @@ const responsiveCss = `
   }
 `;
 
-function PendingPhoto({ className = "", photo, alt = "" }) {
-  return <div className={className} style={styles.featurePhoto}>{photo ? <Image src={photo} alt={alt} fill sizes="(max-width: 860px) 90vw, 25vw" style={{ objectFit: "cover" }} /> : <div><p style={styles.featurePhotoText}>Photograph pending</p><p style={styles.featurePhotoCaption}>Image to be added</p></div>}</div>;
+function PendingPhoto({ className = "", photo, alt = "", language = "en" }) {
+  const text = cardTranslations[language] || cardTranslations.en;
+  return (
+    <div className={className} style={styles.featurePhoto}>
+      {photo ? <Image src={photo} alt={alt} fill sizes="(max-width: 860px) 90vw, 25vw" style={{ objectFit: "cover" }} /> : <div><p style={styles.featurePhotoText}>{text.photographPending}</p><p style={styles.featurePhotoCaption}>{text.imageToBeAdded}</p></div>}
+    </div>
+  );
 }
 
-function PerformanceSection({ accent, phases }) {
+function PerformanceSection({ accent, phases, language = "en" }) {
   const alternateAccent = accent === "var(--red)" ? "var(--jade)" : "var(--red)";
-  return <section className="ec-feature-section yk-reveal" style={styles.featureSection} aria-labelledby="dramatic-phases-heading">
-    <p style={styles.featureKicker}>Performance study</p>
-    <h3 id="dramatic-phases-heading" style={{ ...styles.featureHeading, color: accent }}>The Four Dramatic Phases</h3>
-    <div className="ec-timeline" style={styles.timeline}>
-      <span className="ec-timeline-line" style={styles.timelineLine} aria-hidden="true" />
-      {phases.map((phase, index) => { const phaseAccent = index % 2 === 0 ? accent : alternateAccent; return <article className="ec-phase yk-reveal" style={styles.timelineItem} key={phase.title}>
-        <span className="ec-phase-marker" style={{ ...styles.timelineMarker, borderColor: phaseAccent }} aria-hidden="true" />
-        <PendingPhoto className="ec-phase-photo" photo={phase.photo} alt={phase.title} />
-        <div><span style={{ ...styles.archetypeTag, color: phaseAccent }}>{phase.num} / {phase.phase}</span><h5 style={{ ...styles.featureTitle, color: phaseAccent }}>{phase.title}</h5><p style={styles.featureKhmer}>{phase.kh}</p><p style={styles.featureDescription}>{phase.text}</p></div>
-      </article>; })}
-    </div>
-    <div className="ec-staging" style={styles.stagingBlock}>
-      <div className="ec-arena" style={styles.arena} aria-label="In-the-round staging diagram">
-        <span style={{ ...styles.arenaLabel, top: "8%", left: "50%", transform: "translateX(-50%)" }}>Audience</span>
-        <span style={{ ...styles.arenaLabel, top: "50%", left: "5%", transform: "translateY(-50%)" }}>Audience</span>
-        <span style={{ ...styles.arenaLabel, top: "50%", right: "5%", transform: "translateY(-50%)" }}>Audience</span>
-        <span style={{ ...styles.arenaLabel, bottom: "8%", left: "50%", transform: "translateX(-50%)" }}>Musicians</span>
-        <span className="ec-arena-center" style={styles.arenaCenter}>Action Area / Rom Kbach</span>
+  const text = cardTranslations[language] || cardTranslations.en;
+  const arenaDescription = language === "kh"
+    ? [
+        "ខុសពីឆាកល្ខោនបែបបស្ចិមប្រទេស ឬឆាកសម្តែងផ្លូវការក្នុងរាជវាំង ជាប្រពៃណី ល្ខោនយីកេតែងតែត្រូវបានសម្តែងនៅលើទីធ្លារាងជារង្វង់បើកចំហ។",
+        "ការរៀបចំជាទម្រង់ ៣៦០ ដឺក្រេនេះ បានលុបបំបាត់នូវរបាំងរវាងតួសម្តែង និងអ្នកភូមិទូទៅ។ ក្រុមតន្ត្រីករអង្គុយនៅជាប់នឹងទីតាំងសម្តែង ដែលអនុញ្ញាតឱ្យអ្នកវាយស្គរមេ អាចតម្រូវចង្វាក់នៃការសម្តែងបានភ្លាមៗយ៉ាងរស់រវើក ផ្អែកទៅតាមប្រតិកម្មផ្ទាល់របស់ទស្សនិកជន។",
+      ]
+    : [
+        "Unlike Western proscenium arches or formal court stages, Lakhon Yike is traditionally performed in an open arena circle.",
+        "This 360-degree layout removes boundaries between actors and common villagers. Musicians sit adjacent to the acting space, allowing the lead Skor Mei drummer to dynamically adjust performance tempo based on live audience reactions.",
+      ];
+
+  return (
+    <section className="ec-feature-section yk-reveal" style={styles.featureSection} aria-labelledby="dramatic-phases-heading">
+      <p style={styles.featureKicker}>{text.performanceStudy}</p>
+      <h3 id="dramatic-phases-heading" style={{ ...styles.featureHeading, color: accent }}>{text.dramaticPhases}</h3>
+      <div className="ec-timeline" style={styles.timeline}>
+        <span className="ec-timeline-line" style={styles.timelineLine} aria-hidden="true" />
+        {phases.map((phase, index) => { const phaseAccent = index % 2 === 0 ? accent : alternateAccent; const displayTitle = language === "kh" && phase.kh ? phase.kh : phase.title; const displayText = language === "kh" && phase.textKh ? phase.textKh : phase.text; return <article className="ec-phase yk-reveal" style={styles.timelineItem} key={phase.title}>
+          <span className="ec-phase-marker" style={{ ...styles.timelineMarker, borderColor: phaseAccent }} aria-hidden="true" />
+          <PendingPhoto className="ec-phase-photo" photo={phase.photo} alt={displayTitle} language={language} />
+          <div><span style={{ ...styles.archetypeTag, color: phaseAccent }}>{phase.num} / {language === "kh" && phase.kh ? phase.kh : phase.phase}</span><h5 style={{ ...styles.featureTitle, color: phaseAccent }}>{displayTitle}</h5>{language === "kh" && phase.kh ? <p style={styles.featureKhmer}>{phase.kh}</p> : null}<p style={styles.featureDescription}>{displayText}</p></div>
+        </article>; })}
       </div>
-      <div style={styles.stagingCopy}><h5 style={styles.stagingLead}>In-The-Round Staging</h5><p style={styles.stagingText}>Unlike Western proscenium arches or formal court stages, Lakhon Yike is traditionally performed in an open arena circle.</p><p style={styles.stagingText}>This 360-degree layout removes boundaries between actors and common villagers. Musicians sit adjacent to the acting space, allowing the lead Skor Mei drummer to dynamically adjust performance tempo based on live audience reactions.</p></div>
-    </div>
-  </section>;
+      <div className="ec-staging" style={styles.stagingBlock}>
+        <div className="ec-arena" style={styles.arena} aria-label={text.arena}>
+          <span style={{ ...styles.arenaLabel, top: "8%", left: "50%", transform: "translateX(-50%)" }}>{text.audience}</span>
+          <span style={{ ...styles.arenaLabel, top: "50%", left: "5%", transform: "translateY(-50%)" }}>{text.audience}</span>
+          <span style={{ ...styles.arenaLabel, top: "50%", right: "5%", transform: "translateY(-50%)" }}>{text.audience}</span>
+          <span style={{ ...styles.arenaLabel, bottom: "8%", left: "50%", transform: "translateX(-50%)" }}>{text.musicians}</span>
+          <span className="ec-arena-center" style={styles.arenaCenter}>{text.actionArea}</span>
+        </div>
+        <div style={styles.stagingCopy}><h5 style={styles.stagingLead}>{text.arena}</h5><p style={styles.stagingText}>{arenaDescription[0]}</p><p style={styles.stagingText}>{arenaDescription[1]}</p></div>
+      </div>
+    </section>
+  );
 }
 
-function CostumeSection({ accent, characters, garments }) {
+function CostumeSection({ accent, characters, garments, language = "en" }) {
   const alternateAccent = accent === "var(--red)" ? "var(--jade)" : "var(--red)";
-  return <section className="ec-feature-section yk-reveal" style={styles.featureSection} aria-labelledby="character-archetypes-heading">
-    <p style={styles.featureKicker}>Costume study</p>
-    <h3 id="character-archetypes-heading" style={{ ...styles.featureHeading, color: accent }}>Character Archetypes</h3>
-    <div className="ec-archetype-grid" style={styles.archetypeGrid}>{characters.map((character, index) => { const characterAccent = index % 2 === 0 ? accent : alternateAccent; return <article className="ec-archetype yk-reveal" style={{ ...styles.archetypeCard, borderTopColor: characterAccent }} key={character.role}>
-      <PendingPhoto photo={character.photo} alt={character.role} />
-      <h5 style={{ ...styles.featureTitle, marginTop: 20, color: characterAccent }}>{character.role}</h5><p style={styles.featureKhmer}>{character.kh}</p><span style={styles.archetypeTag}>{character.tag}</span><p style={styles.featureDescription}>{character.text}</p>
-    </article>; })}</div>
-    <div className="ec-garments" style={styles.featureSection}>
-      <p style={styles.featureKicker}>Material language</p>
-      <h3 style={{ ...styles.featureHeading, color: accent }}>Key Garment Symbolism</h3>
-      <div className="ec-garment-grid" style={styles.garmentGrid}>{garments.map((garment, index) => { const garmentAccent = index % 2 === 0 ? accent : alternateAccent; return <article className="ec-garment yk-reveal" style={{ ...styles.garmentCard, borderTopColor: garmentAccent }} key={garment.name}>
-        <PendingPhoto photo={garment.photo} alt={garment.name} />
-        <h5 style={{ ...styles.featureTitle, marginTop: 20, color: garmentAccent }}>{garment.name}</h5><p style={styles.featureKhmer}>{garment.kh}</p><p style={styles.featureDescription}>{garment.text}</p>
+  const text = cardTranslations[language] || cardTranslations.en;
+
+  return (
+    <section className="ec-feature-section yk-reveal" style={styles.featureSection} aria-labelledby="character-archetypes-heading">
+      <p style={styles.featureKicker}>{text.costumeStudy}</p>
+      <h3 id="character-archetypes-heading" style={{ ...styles.featureHeading, color: accent }}>{text.characterArchetypes}</h3>
+      <div className="ec-archetype-grid" style={styles.archetypeGrid}>{characters.map((character, index) => { const characterAccent = index % 2 === 0 ? accent : alternateAccent; const displayRole = language === "kh" && character.kh ? character.kh : character.role; const displayText = language === "kh" && character.textKh ? character.textKh : character.text; return <article className="ec-archetype yk-reveal" style={{ ...styles.archetypeCard, borderTopColor: characterAccent }} key={character.role}>
+        <PendingPhoto photo={character.photo} alt={displayRole} language={language} />
+        <h5 style={{ ...styles.featureTitle, marginTop: 20, color: characterAccent }}>{displayRole}</h5>{language === "kh" && character.kh ? <p style={styles.featureKhmer}>{character.kh}</p> : null}<span style={styles.archetypeTag}>{character.tag}</span><p style={styles.featureDescription}>{displayText}</p>
       </article>; })}</div>
-    </div>
-  </section>;
+      <div className="ec-garments" style={styles.featureSection}>
+        <p style={styles.featureKicker}>{text.materialLanguage}</p>
+        <h3 style={{ ...styles.featureHeading, color: accent }}>{text.keyGarmentSymbolism}</h3>
+        <div className="ec-garment-grid" style={styles.garmentGrid}>{garments.map((garment, index) => { const garmentAccent = index % 2 === 0 ? accent : alternateAccent; const displayName = language === "kh" && garment.kh ? garment.kh : garment.name; const displayText = language === "kh" && garment.textKh ? garment.textKh : garment.text; return <article className="ec-garment yk-reveal" style={{ ...styles.garmentCard, borderTopColor: garmentAccent }} key={garment.name}>
+          <PendingPhoto photo={garment.photo} alt={displayName} language={language} />
+          <h5 style={{ ...styles.featureTitle, marginTop: 20, color: garmentAccent }}>{displayName}</h5>{language === "kh" && garment.kh ? <p style={styles.featureKhmer}>{garment.kh}</p> : null}<p style={styles.featureDescription}>{displayText}</p>
+        </article>; })}</div>
+      </div>
+    </section>
+  );
 }
 
-export default function EntryCard({ title, titleKh = "", description, contributor, place, category = "", photo, entryNumber = "1", entryId, phases = [], characters = [], garments = [] }) {
+export default function EntryCard({ title, titleKh = "", description, descriptionKh = "", contributor, contributorKh = "", place, placeKh = "", category = "", photo, entryNumber = "1", entryId, phases = [], characters = [], garments = [], language = "en" }) {
   const number = String(parseInt(entryNumber, 10) || 1).padStart(2, "0");
   const isEven = Number(number) % 2 === 0;
   const accent = isEven ? "var(--jade)" : "var(--red)";
+  const displayTitle = language === "kh" && titleKh ? titleKh : title;
+  const displayDescription = language === "kh" && descriptionKh ? descriptionKh : description;
+  const displayContributor = language === "kh" && contributorKh ? contributorKh : contributor;
+  const displayPlace = language === "kh" && placeKh ? placeKh : place;
+  const translations = cardTranslations[language] || cardTranslations.en;
 
   return (
     <article id={entryId} className="ec-card yk-reveal" style={styles.card}>
       <style dangerouslySetInnerHTML={{ __html: responsiveCss }} />
       <div className="ec-media" style={{ ...styles.media, ...(photo ? {} : styles.placeholder), order: isEven ? 2 : 1 }}>
-        {photo ? <Image src={photo} alt={title} fill priority={number === "01"} sizes="(max-width: 860px) 90vw, 52vw" style={{ objectFit: "cover" }} /> : <><p style={styles.placeholderCategory}>{category || "Archive entry"}</p><p style={styles.placeholderCaption}>Photograph pending</p></>}
+        {photo ? <Image src={photo} alt={displayTitle} fill priority={number === "01"} sizes="(max-width: 860px) 90vw, 52vw" style={{ objectFit: "cover" }} /> : <><p style={styles.placeholderCategory}>{category || translations.archiveEntry}</p><p style={styles.placeholderCaption}>{translations.photographPending}</p></>}
       </div>
       <div className="ec-text" style={{ ...styles.text, order: isEven ? 1 : 2 }}>
         <span className="ec-folio" style={styles.folio} aria-hidden="true">{number}</span>
         <span className="ec-category" style={{ ...styles.category, color: accent }}>{category}</span>
         <span className="visually-hidden">Entry {number}</span>
-        <h3 className="ec-title" style={styles.title}>{title}</h3>
+        <h3 className="ec-title" style={styles.title}>{displayTitle}</h3>
         {titleKh && <p className="ec-title-kh" style={styles.titleKh}>{titleKh}</p>}
         <hr style={styles.rule} />
-        <p className="ec-description" style={styles.description}>{description}</p>
+        <p className="ec-description" style={styles.description}>{displayDescription}</p>
         <div className="ec-footer" style={styles.footer}>
-          <div><p style={styles.footerLabel}>Source</p><p style={styles.footerValue}>{contributor}</p></div>
-          <div><p style={styles.footerLabel}>Place</p><p style={styles.footerValue}>{place}</p></div>
+          <div><p style={styles.footerLabel}>{translations.source}</p><p style={styles.footerValue}>{displayContributor}</p></div>
+          <div><p style={styles.footerLabel}>{translations.place}</p><p style={styles.footerValue}>{displayPlace}</p></div>
         </div>
       </div>
-      {category === "Performance" && <PerformanceSection accent={accent} phases={phases} />}
-      {category === "Costume" && <CostumeSection accent={accent} characters={characters} garments={garments} />}
+      {category === "Performance" && <PerformanceSection accent={accent} phases={phases} language={language} />}
+      {category === "Costume" && <CostumeSection accent={accent} characters={characters} garments={garments} language={language} />}
     </article>
   );
 }
