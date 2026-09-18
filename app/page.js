@@ -1,10 +1,12 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import collection from "../collection.config.js";
 import EntryCard from "../components/EntryCard.js";
 import entries from "../data/data_entries.js";
+import { createClient } from "../utils/supabase/client.js";
 import { useTheme } from "./ThemeContext.js";
 import ThemeToggle from "./ThemeToggle.js";
 
@@ -92,6 +94,9 @@ const styles = {
   emptyClear: { marginTop: 28, padding: "10px 16px", border: 0, background: "var(--ink)", color: "var(--page-bg)", font: `600 13px ${fontSans}`, cursor: "pointer" },
   footer: { paddingTop: 22, borderTop: "1px solid var(--rule)", color: "var(--ink-soft)", font: `400 13px/1.6 ${fontSans}` },
   topButton: { position: "fixed", right: "clamp(18px, 3vw, 48px)", bottom: 24, zIndex: 30, width: 46, height: 46, border: "1px solid var(--surface-border)", borderRadius: "50%", background: "var(--surface)", color: "var(--ink)", cursor: "pointer", fontSize: 20 },
+  authLink: { color: "var(--red)", font: `600 12px ${fontSans}`, textDecoration: "none" },
+  authButton: { padding: "7px 10px", border: "1px solid var(--surface-border)", background: "var(--surface)", color: "var(--ink)", cursor: "pointer", font: `600 12px ${fontSans}` },
+  authEmail: { maxWidth: 150, overflow: "hidden", color: "var(--ink-soft)", font: `400 12px ${fontSans}`, textOverflow: "ellipsis", whiteSpace: "nowrap" },
 };
 
 const globalCss = `
@@ -157,8 +162,10 @@ export default function Home() {
   const [scrolled, setScrolled] = useState(false);
   const [showTop, setShowTop] = useState(false);
   const [language, setLanguage] = useState("en");
+  const [user, setUser] = useState(null);
   const inputRef = useRef(null);
   const searchTimerRef = useRef(null);
+  const supabaseRef = useRef(null);
   const searchIconSrc = theme === "dark" ? "/entries/search-icon-sand.png" : "/entries/search-icon.png";
 
   useEffect(() => {
@@ -177,6 +184,22 @@ export default function Home() {
     } catch (_) {}
     document.documentElement.lang = language;
   }, [language]);
+
+  useEffect(() => {
+    const supabase = createClient();
+    if (!supabase) {
+      supabaseRef.current = null;
+      return;
+    }
+
+    supabaseRef.current = supabase;
+    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user || null);
+    });
+
+    return () => authListener.subscription.unsubscribe();
+  }, []);
 
   const filterEntries = (rawText) => {
     const normalized = rawText.trim().toLocaleLowerCase();
@@ -268,6 +291,12 @@ export default function Home() {
     inputRef.current?.focus();
   };
 
+  const handleLogout = async () => {
+    if (!supabaseRef.current) return;
+    await supabaseRef.current.auth.signOut();
+    setUser(null);
+  };
+
   const getDisplayTitle = (entry) => {
     if (language === "kh" && entry.titleKh) return entry.titleKh;
     return entry.title;
@@ -309,6 +338,17 @@ export default function Home() {
               </>}
             </form>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              {user ? (
+                <>
+                  <span style={styles.authEmail}>{user.email}</span>
+                  <button type="button" onClick={handleLogout} style={styles.authButton}>Log out</button>
+                </>
+              ) : (
+                <>
+                  <Link href="/login" style={styles.authLink}>Log in</Link>
+                  <Link href="/signup" style={styles.authLink}>Sign up</Link>
+                </>
+              )}
               <button type="button" onClick={() => setLanguage((current) => (current === "en" ? "kh" : "en"))} aria-label="Language toggle" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minWidth: 54, height: 32, border: "1px solid var(--surface-border)", borderRadius: 999, background: "var(--surface)", color: "var(--ink)", cursor: "pointer", fontSize: 11, fontWeight: 700, letterSpacing: ".08em", fontFamily: fontSans, boxShadow: "0 0 0 1px var(--surface-border)" }}>
                 {getLanguageLabel(language)}
               </button>

@@ -33,6 +33,13 @@ export default function AuthForm({ mode }) {
 		setMessage("");
 		setIsSubmitting(true);
 		const supabase = createClient();
+
+		if (!supabase) {
+			setIsSubmitting(false);
+			setMessage(isLogin ? "Invalid email or password" : "Unable to create account");
+			return;
+		}
+
 		const result = isLogin
 			? await supabase.auth.signInWithPassword({ email, password })
 			: await supabase.auth.signUp({ email, password });
