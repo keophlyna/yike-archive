@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import collection from "../collection.config.js";
 import EntryCard from "../components/EntryCard.js";
-import entries from "../data/data_entries.js";
 import { createClient } from "../utils/supabase/client.js";
 import { useTheme } from "./ThemeContext.js";
 import ThemeToggle from "./ThemeToggle.js";
@@ -31,6 +30,10 @@ const translations = {
     heroTitle: collection.name,
     heroDescription: collection.description,
     emptySubtitle: "Search results are empty",
+    loadingEntries: "Loading entries…",
+    noEntries: "No entries yet",
+    noEntriesSubtitle: "Entries will appear here when they are available.",
+    entriesLoadFailed: "Entries could not be loaded. Please try again later.",
   },
   kh: {
     wordmark: "បណ្ណសាររស់ខ្មែរ",
@@ -47,6 +50,10 @@ const translations = {
     heroTitle: "បណ្ណសាររស់ខ្មែរ",
     heroDescription: "ល្ខោនយីកេ គឺជាទម្រង់សិល្បៈល្ខោនប្រពៃណីខ្មែរមួយ ដែលរួមបញ្ចូលគ្នានូវតន្ត្រី របាំ និងការនិទានរឿង។ ល្ខោនយីកេមានតម្លៃលើសពីការកម្សាន្តទៅទៀត ដោយវាបានពាំនាំនូវសាច់រឿង ភាសា តន្ត្រី ប្រពៃណី និងចំណេះដឹងផ្នែកវប្បធម៌ខ្មែរ ពីជំនាន់មួយទៅជំនាន់មួយ។ ការអភិរក្សសិល្បៈមួយនេះ គឺជួយទប់ស្កាត់មិនឱ្យចំណេះដឹងទាំងនេះត្រូវបាត់បង់ ជាពិសេសបន្ទាប់ពីសិល្បៈ និងប្រពៃណីវប្បធម៌កម្ពុជា ត្រូវបានរងការបំផ្លិចបំផ្លាញយ៉ាងធ្ងន់ធ្ងរ ក្នុងអំឡុងរបបខ្មែរក្រហម។",
     emptySubtitle: "រកមិនឃើញលទ្ធផល",
+    loadingEntries: "កំពុងផ្ទុកឯកសារ…",
+    noEntries: "មិនទាន់មានឯកសារនៅឡើយទេ",
+    noEntriesSubtitle: "ឯកសារនឹងបង្ហាញនៅទីនេះនៅពេលមានទិន្នន័យ។",
+    entriesLoadFailed: "មិនអាចផ្ទុកឯកសារបានទេ។ សូមព្យាយាមម្តងទៀតនៅពេលក្រោយ។",
     curatorValue: "កែវ ផ្លីនា",
     provinceValue: "ភ្នំពេញ, កម្ពុជា",
     sourceValue: "អ្នកចាស់ទុំ អ្នកសម្តែងយីកេ និងឯកសារបោះពុម្ពអំពីសិល្បៈសម្តែងខ្មែរ",
@@ -141,7 +148,9 @@ function getEntrySearchText(entry) {
     entry.descriptionKh,
     entry.category,
     entry.contributor,
+    entry.contributorKh,
     entry.place,
+    entry.placeKh,
     ...nestedText,
   ]
     .filter(Boolean)
@@ -155,6 +164,9 @@ function getLanguageLabel(language) {
 
 export default function Home() {
   const { theme } = useTheme();
+  const [entries, setEntries] = useState([]);
+  const [entriesLoading, setEntriesLoading] = useState(true);
+  const [entriesError, setEntriesError] = useState(false);
   const [query, setQuery] = useState("");
   const [committedQuery, setCommittedQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -189,16 +201,45 @@ export default function Home() {
     const supabase = createClient();
     if (!supabase) {
       supabaseRef.current = null;
+      setEntriesError(true);
+      setEntriesLoading(false);
       return;
     }
 
+    let active = true;
     supabaseRef.current = supabase;
     supabase.auth.getUser().then(({ data }) => setUser(data.user));
     const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user || null);
     });
 
-    return () => authListener.subscription.unsubscribe();
+    supabase
+      .from("entries")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .then(({ data, error }) => {
+        if (!active) return;
+        if (error) {
+          setEntriesError(true);
+          setEntriesLoading(false);
+          return;
+        }
+
+        setEntries((data || []).map((entry) => ({
+          ...entry,
+          titleKh: entry.title_kh,
+          descriptionKh: entry.description_kh,
+          contributorKh: entry.contributor_kh,
+          placeKh: entry.place_kh,
+          photo: entry.photo_url,
+        })));
+        setEntriesLoading(false);
+      });
+
+    return () => {
+      active = false;
+      authListener.subscription.unsubscribe();
+    };
   }, []);
 
   const filterEntries = (rawText) => {
@@ -257,7 +298,7 @@ export default function Home() {
     }, { threshold: 0.12 });
     document.querySelectorAll(".yk-reveal").forEach((element) => revealObserver.observe(element));
     return () => revealObserver.disconnect();
-  }, [committedQuery]);
+  }, [committedQuery, entriesLoading]);
 
   const t = translations[language] || translations.en;
   const heroMeta = language === "kh"
@@ -373,10 +414,14 @@ export default function Home() {
 
       <main id="main" style={styles.main}>
         <section aria-labelledby="latest-heading">
-          <div style={styles.sectionHeader}><h2 id="latest-heading" style={styles.sectionTitle}>{t.latestEntries}</h2><span style={styles.countPill} aria-label={`${filtered.length} entries`}>{filtered.length}</span></div>
-          {filtered.length > 0 ? <div style={styles.entryList}>{filtered.map((entry, index) => <EntryCard key={entry.id || entry.title || index} entryId={`entry-${index + 1}`} entryNumber={String(index + 1)} {...entry} language={language} />)}</div> : <div style={styles.empty}><h2 style={styles.emptyTitle}>{language === "kh" ? `គ្មានឯកសារណាមួយត្រូវនឹង “${committedQuery || query}”` : `No entries match “${committedQuery || query}”`}</h2><p style={styles.emptyKh}>{t.emptySubtitle}</p><button type="button" className="yk-empty-clear" style={styles.emptyClear} onClick={clearSearch}>{t.clearSearch}</button></div>}
+          <div style={styles.sectionHeader}><h2 id="latest-heading" style={styles.sectionTitle}>{t.latestEntries}</h2><span style={styles.countPill} aria-label={entriesLoading ? t.loadingEntries : `${filtered.length} entries`}>{entriesLoading ? "…" : filtered.length}</span></div>
+          {entriesLoading ? <div style={styles.empty} role="status"><h2 style={styles.emptyTitle}>{t.loadingEntries}</h2></div>
+            : entriesError ? <div style={styles.empty} role="alert"><h2 style={styles.emptyTitle}>{t.entriesLoadFailed}</h2></div>
+              : entries.length === 0 ? <div style={styles.empty}><h2 style={styles.emptyTitle}>{t.noEntries}</h2><p style={styles.emptyKh}>{t.noEntriesSubtitle}</p></div>
+                : filtered.length > 0 ? <div style={styles.entryList}>{filtered.map((entry, index) => <EntryCard key={entry.id || entry.title || index} entryId={`entry-${index + 1}`} entryNumber={String(index + 1)} {...entry} language={language} />)}</div>
+                  : <div style={styles.empty}><h2 style={styles.emptyTitle}>{language === "kh" ? `គ្មានឯកសារណាមួយត្រូវនឹង “${committedQuery || query}”` : `No entries match “${committedQuery || query}”`}</h2><p style={styles.emptyKh}>{t.emptySubtitle}</p><button type="button" className="yk-empty-clear" style={styles.emptyClear} onClick={clearSearch}>{t.clearSearch}</button></div>}
         </section>
-        <footer style={styles.footer}>{language === "kh" ? "កំណត់ត្រាដែលកំពុងរីកចម្រើនអំពីយីកេ ដែលត្រូវបានសាងសង់ដោយក្តីស្រមៃ និងការយកចិត្តទុកដាក់ក្នុង ICT 340 នៅมหาวิทยาลัยអាមេរិកខេត្តភ្នំពេញ ប្រចាំឆ្នាំ 2026." : "A growing record of Yike, built with care in ICT 340 at the American University of Phnom Penh, Fall 2026."} <span>· {entries.length} entries</span></footer>
+        <footer style={styles.footer}>{language === "kh" ? "កំណត់ត្រាដែលកំពុងរីកចម្រើនអំពីយីកេ ដែលត្រូវបានសាងសង់ដោយក្តីស្រមៃ និងការយកចិត្តទុកដាក់ក្នុង ICT 340 នៅมหาวิทยาลัยអាមេរិកខេត្តភ្នំពេញ ប្រចាំឆ្នាំ 2026." : "A growing record of Yike, built with care in ICT 340 at the American University of Phnom Penh, Fall 2026."} <span>· {entriesLoading ? "…" : entries.length} entries</span></footer>
       </main>
       <button type="button" className={`yk-back-top${showTop ? " is-visible" : ""}`} style={styles.topButton} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} aria-label="Back to top">↑</button>
     </>

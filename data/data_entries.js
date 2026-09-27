@@ -5,7 +5,7 @@
       "A foundational historical narrative detailing the origins, development, and cultural evolution of Lakhon Yike in Cambodia. It explores historical connections with Cham/Malay musical traditions, its flourishing in rural communities (particularly in Takeo province), royal patronage during the 20th century, and resilience in the post-1979 cultural reconstruction era.",
     descriptionKh: "អត្ថបទនិទានប្រវត្តិសាស្ត្រជាមូលដ្ឋានដែលរៀបរាប់ពីប្រភពដើម ការអភិវឌ្ឍ និងការវិវឌ្ឍផ្នែកវប្បធម៌នៃល្ខោនយីកេនៅកម្ពុជា។ វាស្វែងយល់ពីទំនាក់ទំនងប្រវត្តិសាស្ត្រជាមួយប្រពៃណីតន្ត្រីចាម/ម៉ាឡេ ភាពរុងរឿងរបស់វានៅតាមសហគមន៍ជនបទ (ជាពិសេសនៅខេត្តតាកែវ) ការឧបត្ថម្ភគាំទ្រពីព្រះបរមរាជវាំងកំឡុងសតវត្សទី២០ និងភាពធន់ក្នុងយុគសម័យស្តារវប្បធម៌ឡើងវិញក្រោយឆ្នាំ១៩៧៩។",
     contributor: "Royal University of Fine Arts (RUFA)",
-    contributorKh: "សាកលវិទ្យាល័យមុខនិច nghệសារដែលមានអធិបតី (RUFA)",
+    contributorKh: "សាកលវិទ្យាល័យភូមិន្ទវិចិត្រសិល្បៈ (RUFA)",
     place: "Cambodia, Takeo",
     placeKh: "កម្ពុជា, ខេត្តតាកែវ",
     photo: "/entries/entry1.jpg",
