@@ -83,6 +83,7 @@ const styles = {
   archetypeTag: { display: "inline-block", margin: "16px 0 0", color: "var(--ink-soft)", font: `600 11px ${fontSans}`, letterSpacing: ".05em" },
   garmentGrid: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "clamp(16px, 2.5vw, 32px)", marginTop: "clamp(28px, 5vh, 56px)" },
   garmentCard: { position: "relative", minWidth: 0, overflow: "hidden", paddingTop: 18, borderTop: "2px solid var(--gold)" },
+  aiBadge: { position: "absolute", left: 14, bottom: 14, zIndex: 2, padding: "6px 10px", background: "rgba(37,27,18,.86)", color: "#F5EAD6", font: `600 10px ${fontSans}`, letterSpacing: ".07em", textTransform: "uppercase" },
 };
 
 const responsiveCss = `
@@ -214,7 +215,7 @@ function CostumeSection({ accent, characters, garments, language = "en" }) {
   );
 }
 
-export default function EntryCard({ title, titleKh = "", description, descriptionKh = "", contributor, contributorKh = "", place, placeKh = "", category = "", photo, entryNumber = "1", entryId, phases = [], characters = [], garments = [], language = "en" }) {
+export default function EntryCard({ title, titleKh = "", description, descriptionKh = "", contributor, contributorKh = "", place, placeKh = "", category = "", photo, photoIsAi = false, entryNumber = "1", entryId, phases = [], characters = [], garments = [], language = "en" }) {
   const number = String(parseInt(entryNumber, 10) || 1).padStart(2, "0");
   const isEven = Number(number) % 2 === 0;
   const accent = isEven ? "var(--jade)" : "var(--red)";
@@ -228,6 +229,7 @@ export default function EntryCard({ title, titleKh = "", description, descriptio
     <article id={entryId} className="ec-card yk-reveal" style={styles.card}>
       <style dangerouslySetInnerHTML={{ __html: responsiveCss }} />
       <div className="ec-media" style={{ ...styles.media, ...(photo ? {} : styles.placeholder), order: isEven ? 2 : 1 }}>
+        {photo && photoIsAi ? <span style={styles.aiBadge}>AI-generated image</span> : null}
         {photo ? <Image src={photo} alt={displayTitle} fill priority={number === "01"} sizes="(max-width: 860px) 90vw, 52vw" style={{ objectFit: "cover" }} /> : <><p style={styles.placeholderCategory}>{category || translations.archiveEntry}</p><p style={styles.placeholderCaption}>{translations.photographPending}</p></>}
       </div>
       <div className="ec-text" style={{ ...styles.text, order: isEven ? 1 : 2 }}>
@@ -243,8 +245,10 @@ export default function EntryCard({ title, titleKh = "", description, descriptio
           <div><p style={styles.footerLabel}>{translations.place}</p><p style={styles.footerValue}>{displayPlace}</p></div>
         </div>
       </div>
-      {category === "Performance" && <PerformanceSection accent={accent} phases={phases} language={language} />}
-      {category === "Costume" && <CostumeSection accent={accent} characters={characters} garments={garments} language={language} />}
+      {/* These sections are nullable columns in the database, and a default
+          parameter only covers undefined, so null is coalesced before .map. */}
+      {category === "Performance" && <PerformanceSection accent={accent} phases={phases || []} language={language} />}
+      {category === "Costume" && <CostumeSection accent={accent} characters={characters || []} garments={garments || []} language={language} />}
     </article>
   );
 }

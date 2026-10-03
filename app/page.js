@@ -232,6 +232,7 @@ export default function Home() {
           contributorKh: entry.contributor_kh,
           placeKh: entry.place_kh,
           photo: entry.photo_url,
+          photoIsAi: entry.photo_is_ai,
         })));
         setEntriesLoading(false);
       });
@@ -381,6 +382,7 @@ export default function Home() {
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               {user ? (
                 <>
+                  <Link href="/contribute" style={styles.authLink}>Add entry</Link>
                   <span style={styles.authEmail}>{user.email}</span>
                   <button type="button" onClick={handleLogout} style={styles.authButton}>Log out</button>
                 </>
