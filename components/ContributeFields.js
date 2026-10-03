@@ -10,6 +10,11 @@ import { CATEGORIES } from "../utils/validateEntry.js";
 const placeOptions = PLACES.map((place) => ({ value: place.en, label: `${place.en} — ${place.kh}` }));
 const categoryOptions = CATEGORIES.map((category) => ({ value: category, label: category }));
 
+// Defaults for /contribute; the edit page overrides all three.
+const defaultIntro = "Fill in the fields below. Khmer text is stored exactly as you write it, and the photo is required.";
+const defaultPhotoHint = "JPG, PNG, or WebP, up to 5 MB";
+const defaultSubmitLabel = "Save entry";
+
 const styles = {
   intro: { margin: "0 0 30px", color: "var(--ink-soft)", font: "400 15px/1.6 var(--font-google-sans), sans-serif" },
   form: { display: "grid", gap: 22 },
@@ -19,10 +24,10 @@ const styles = {
   buttonBusy: { opacity: 0.65, cursor: "progress" },
 };
 
-export default function ContributeFields({ values, errors, message, isSaving, onChange, onPhotoChange, onSubmit }) {
+export default function ContributeFields({ values, errors, message, isSaving, onChange, onPhotoChange, onSubmit, intro = defaultIntro, photoHint = defaultPhotoHint, submitLabel = defaultSubmitLabel }) {
   return (
     <>
-      <p style={styles.intro}>Fill in the fields below. Khmer text is stored exactly as you write it, and the photo is required.</p>
+      <p style={styles.intro}>{intro}</p>
       <form style={styles.form} onSubmit={onSubmit} noValidate>
         <TextField id="title" label="Title" value={values.title} onChange={onChange("title")} error={errors.title} maxLength={120} />
         <TextField id="title_kh" label="Title in Khmer — optional" value={values.title_kh} onChange={onChange("title_kh")} error={errors.title_kh} maxLength={120} khmer />
@@ -36,10 +41,10 @@ export default function ContributeFields({ values, errors, message, isSaving, on
           <TextField id="contributor" label="Contributor" value={values.contributor} onChange={onChange("contributor")} error={errors.contributor} maxLength={100} hint="A person or organization, in English" />
           <TextField id="contributor_kh" label="Contributor in Khmer — optional" value={values.contributor_kh} onChange={onChange("contributor_kh")} error={errors.contributor_kh} maxLength={100} khmer />
         </div>
-        <FileField id="photo" label="Photo" hint="JPG, PNG, or WebP, up to 5 MB" error={errors.photo} onChange={onPhotoChange} />
+        <FileField id="photo" label="Photo" hint={photoHint} error={errors.photo} onChange={onPhotoChange} />
         <CheckboxField id="photo_is_ai" label="This image is AI-generated" checked={values.photo_is_ai} onChange={onChange("photo_is_ai")} />
         {message ? <p role="alert" style={styles.message}>{message}</p> : null}
-        <button style={{ ...styles.button, ...(isSaving ? styles.buttonBusy : {}) }} type="submit" disabled={isSaving}>{isSaving ? "Saving…" : "Save entry"}</button>
+        <button style={{ ...styles.button, ...(isSaving ? styles.buttonBusy : {}) }} type="submit" disabled={isSaving}>{isSaving ? "Saving…" : submitLabel}</button>
       </form>
     </>
   );

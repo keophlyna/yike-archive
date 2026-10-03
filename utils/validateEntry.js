@@ -32,8 +32,8 @@ const detectImage = (bytes) => {
   return null;
 };
 
-async function checkPhoto(file) {
-  if (!file) return { error: "Choose a photo", image: null };
+async function checkPhoto(file, required) {
+  if (!file) return { error: required ? "Choose a photo" : "", image: null };
   if (file.size === 0) return { error: "That file is empty", image: null };
   if (file.size > MAX_PHOTO_BYTES) return { error: "The photo must be 5 MB or smaller", image: null };
   const head = new Uint8Array(await file.slice(0, 16).arrayBuffer());
@@ -90,7 +90,11 @@ function checkContributor(value) {
 // Returns { ok: false, errors } with one short message per field that needs
 // fixing, or { ok: true, cleaned, image } with trimmed values and the numbers
 // the save step needs. place_kh is filled in from the chosen place.
-export async function validateEntry(values, photoFile) {
+//
+// options.photoRequired defaults to true (the /contribute flow). When editing,
+// pass { photoRequired: false }: no file means "keep the current photo", so
+// image comes back null and the caller leaves photo_url alone.
+export async function validateEntry(values, photoFile, options = {}) {
   const cleaned = {
     title: String(values.title || "").trim(),
     title_kh: String(values.title_kh || "").trim(),
@@ -104,7 +108,7 @@ export async function validateEntry(values, photoFile) {
   };
 
   const place = findPlace(cleaned.place);
-  const photo = await checkPhoto(photoFile);
+  const photo = await checkPhoto(photoFile, options.photoRequired !== false);
   const errors = {
     title: checkTitle(cleaned.title),
     title_kh: checkOptionalKhmer(cleaned.title_kh, 120, true),

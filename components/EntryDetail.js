@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import EntryCard from "./EntryCard.js";
+import EntryActions from "./EntryActions.js";
+import { useRevealOnScroll } from "./useRevealOnScroll.js";
 import { createClient } from "../utils/supabase/client.js";
 import { fetchEntry } from "../utils/fetchEntry.js";
 
@@ -18,6 +20,8 @@ const styles = {
 
 export default function EntryDetail({ id }) {
   const [entry, setEntry] = useState(undefined);
+  const [owner, setOwner] = useState("");
+  const [viewerId, setViewerId] = useState("");
   const [failed, setFailed] = useState("");
   const [language, setLanguage] = useState("en");
 
@@ -30,7 +34,8 @@ export default function EntryDetail({ id }) {
     let active = true;
     (async () => {
       try {
-        const result = await fetchEntry(createClient(), id);
+        const supabase = createClient();
+        const [result, session] = await Promise.all([fetchEntry(supabase, id), supabase.auth.getUser()]);
         if (!active) return;
         if (result.error) {
           console.error("Could not load the entry", result.error);
@@ -38,6 +43,8 @@ export default function EntryDetail({ id }) {
           return;
         }
         setEntry(result.entry);
+        setOwner(result.owner || "");
+        setViewerId(session.data.user ? session.data.user.id : "");
       } catch (err) {
         console.error("Could not load the entry", err);
         if (active) setFailed("error");
@@ -46,18 +53,7 @@ export default function EntryDetail({ id }) {
     return () => { active = false; };
   }, [id]);
 
-  // EntryCard reveals its garment cards and its timeline line by adding
-  // .is-visible, so this page needs the same observer the homepage runs.
-  useEffect(() => {
-    if (!entry) return undefined;
-    const observer = new IntersectionObserver((observed) => {
-      observed.forEach((item) => {
-        if (item.isIntersecting) { item.target.classList.add("is-visible"); observer.unobserve(item.target); }
-      });
-    }, { threshold: 0.12 });
-    document.querySelectorAll(".yk-reveal").forEach((element) => observer.observe(element));
-    return () => observer.disconnect();
-  }, [entry]);
+  useRevealOnScroll(Boolean(entry));
 
   const shell = (children) => (
     <main style={styles.page}>
@@ -82,5 +78,14 @@ export default function EntryDetail({ id }) {
 
   if (!entry) return shell(<p style={styles.status} role="status">Loading entry…</p>);
 
-  return shell(<EntryCard {...entry} language={language} />);
+  // Edit and Delete belong to the entry's owner only, so compare the signed-in
+  // user id against the owner column before offering either control.
+  const isOwner = Boolean(owner) && owner === viewerId;
+
+  return shell(
+    <>
+      {isOwner ? <EntryActions entryId={id} userId={viewerId} /> : null}
+      <EntryCard {...entry} language={language} />
+    </>
+  );
 }

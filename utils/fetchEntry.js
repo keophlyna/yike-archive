@@ -5,8 +5,9 @@
 // entryNumber matches the homepage numbering: entries are listed newest-first,
 // so the position is "how many entries were created after this one, plus one".
 //
-// Returns { entry } on success or { error } on failure. The real error object is
-// handed back untouched so the caller can log it; it is never shown to a user.
+// Returns { entry, owner } on success or { error } on failure. The owner is
+// kept beside the entry rather than inside it so components/EntryCard.js only
+// ever receives view props.
 export async function fetchEntry(supabase, id) {
   const { data, error } = await supabase
     .from("entries")
@@ -24,6 +25,7 @@ export async function fetchEntry(supabase, id) {
   const position = (count || 0) + 1;
 
   return {
+    owner: data.owner,
     entry: {
       title: data.title,
       titleKh: data.title_kh,
