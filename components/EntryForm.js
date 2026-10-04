@@ -58,5 +58,5 @@ export default function EntryForm({ initialValues, onSave, photoRequired = true,
     // On success the caller navigates, so the form stays disabled on purpose.
   };
 
-  return <ContributeFields values={values} errors={errors} message={message} isSaving={isSaving} onChange={handleChange} onPhotoChange={handlePhotoChange} onSubmit={handleSubmit} intro={intro} photoHint={photoHint} submitLabel={submitLabel} />;
+  return <ContributeFields values={values} errors={errors} message={message} isSaving={isSaving} onChange={handleChange} onPhotoChange={handlePhotoChange} onSubmit={handleSubmit} intro={intro} photoHint={photoHint} submitLabel={submitLabel} photoRequired={photoRequired} />;
 }

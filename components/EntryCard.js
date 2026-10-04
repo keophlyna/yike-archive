@@ -1,4 +1,22 @@
 import Image from "next/image";
+import "./entry-card.css";
+
+// next/image parses src with new URL() and throws during render if it cannot,
+// which takes the whole page down with it. A photo is only rendered when it is
+// a local path or an absolute URL shaped like the ones allowed in
+// next.config.mjs (https, *.supabase.co); anything else — for example a row
+// whose photo_url still contains the <YOUR-PROJECT-REF> placeholder — is
+// treated as absent so the card falls back to its placeholder.
+function resolveImageSrc(photo) {
+  if (typeof photo !== "string" || !photo) return null;
+  if (photo.startsWith("/")) return photo;
+  try {
+    const url = new URL(photo);
+    return url.protocol === "https:" && url.hostname.endsWith(".supabase.co") ? photo : null;
+  } catch {
+    return null;
+  }
+}
 
 const fontSans = "var(--font-google-sans), sans-serif";
 const fontSerif = "var(--font-google-sans), sans-serif";
@@ -86,68 +104,14 @@ const styles = {
   aiBadge: { position: "absolute", left: 14, bottom: 14, zIndex: 2, padding: "6px 10px", background: "rgba(37,27,18,.86)", color: "#F5EAD6", font: `600 10px ${fontSans}`, letterSpacing: ".07em", textTransform: "uppercase" },
 };
 
-const responsiveCss = `
-  .ec-card { box-sizing: border-box; }
-  @media (max-width: 860px) {
-    .ec-card { grid-template-columns: 1fr !important; gap: 34px !important; }
-    .ec-media { height: clamp(300px, 48vh, 480px) !important; }
-    .ec-text { max-width: 680px !important; }
-  }
-  @media (max-width: 520px) {
-    .ec-card { padding: 42px 0 !important; gap: 28px !important; }
-    .ec-media { height: clamp(300px, 48vh, 400px) !important; }
-    .ec-title { font-size: 28px !important; }
-    .ec-title-kh { font-size: 23px !important; }
-    .ec-description { font-size: 15px !important; }
-    .ec-footer { gap: 14px !important; }
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .ec-feature-section.is-visible .ec-timeline-line { transform: scaleY(1); transition: transform 700ms ease; }
-    .ec-timeline-line { transform: scaleY(0); }
-    .ec-phase.yk-reveal, .ec-archetype.yk-reveal { transition: opacity 700ms ease, transform 240ms ease, box-shadow 240ms ease; }
-    .ec-phase:nth-of-type(2), .ec-archetype:nth-child(2) { transition-delay: 100ms; }
-    .ec-phase:nth-of-type(3), .ec-archetype:nth-child(3) { transition-delay: 200ms; }
-    .ec-phase:nth-of-type(4), .ec-archetype:nth-child(4) { transition-delay: 300ms; }
-    .ec-phase:hover, .ec-archetype:hover { transform: translateY(-4px) rotate(.5deg); box-shadow: 0 8px 20px var(--shadow); }
-    .ec-garment.yk-reveal { opacity: 0; transform: translateY(28px) scale(.96); transition: opacity 800ms ease, transform 260ms ease, box-shadow 240ms ease; }
-    .ec-garment.yk-reveal.is-visible { opacity: 1; transform: translateY(0) scale(1); }
-    .ec-garment:nth-child(2) { transition-delay: 130ms; }
-    .ec-garment:nth-child(3) { transition-delay: 260ms; }
-    .ec-garment:nth-child(4) { transition-delay: 390ms; }
-    .ec-garment::after { position: absolute; top: 0; left: -120%; width: 70%; height: 100%; background: linear-gradient(115deg, transparent, color-mix(in srgb, var(--gold) 18%, transparent), transparent); content: ""; pointer-events: none; transform: skewX(-18deg); }
-    .ec-garment:hover { transform: translateY(-4px) scale(1) !important; box-shadow: 0 8px 20px var(--shadow); }
-    .ec-garment:hover::after { left: 150%; transition: left 700ms ease; }
-    .ec-arena { animation: ec-arena-pulse 5s ease-in-out infinite; }
-    @keyframes ec-arena-pulse {
-      0%, 100% { box-shadow: 0 0 0 transparent; }
-      50% { box-shadow: 0 0 18px var(--gold); }
-    }
-  }
-  @media (max-width: 860px) {
-    .ec-phase { grid-template-columns: minmax(150px, .7fr) 1.3fr !important; }
-    .ec-staging { grid-template-columns: 1fr !important; }
-    .ec-arena { max-width: 360px; }
-    .ec-archetype-grid { grid-template-columns: repeat(2, 1fr) !important; }
-    .ec-garment-grid { grid-template-columns: repeat(2, 1fr) !important; }
-    .ec-phase-photo, .ec-archetype .ec-feature-photo, .ec-garment .ec-feature-photo { height: clamp(180px, 28vw, 260px) !important; }
-  }
-  @media (max-width: 520px) {
-    .ec-phase { grid-template-columns: 1fr !important; padding-left: 34px !important; }
-    .ec-phase-photo, .ec-archetype .ec-feature-photo, .ec-garment .ec-feature-photo { height: clamp(180px, 58vw, 260px) !important; }
-    .ec-archetype-grid { grid-template-columns: 1fr !important; }
-    .ec-garment-grid { grid-template-columns: 1fr !important; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .ec-garment.yk-reveal { opacity: 1; transform: none; }
-    .ec-garment::after { display: none; }
-  }
-`;
+
 
 function PendingPhoto({ className = "", photo, alt = "", language = "en" }) {
   const text = cardTranslations[language] || cardTranslations.en;
+  const imageSrc = resolveImageSrc(photo);
   return (
     <div className={className} style={styles.featurePhoto}>
-      {photo ? <Image src={photo} alt={alt} fill sizes="(max-width: 860px) 90vw, 25vw" style={{ objectFit: "cover" }} /> : <div><p style={styles.featurePhotoText}>{text.photographPending}</p><p style={styles.featurePhotoCaption}>{text.imageToBeAdded}</p></div>}
+      {imageSrc ? <Image src={imageSrc} alt={alt} fill sizes="(max-width: 860px) 90vw, 25vw" style={{ objectFit: "cover" }} /> : <div><p style={styles.featurePhotoText}>{text.photographPending}</p><p style={styles.featurePhotoCaption}>{text.imageToBeAdded}</p></div>}
     </div>
   );
 }
@@ -224,13 +188,13 @@ export default function EntryCard({ title, titleKh = "", description, descriptio
   const displayContributor = language === "kh" && contributorKh ? contributorKh : contributor;
   const displayPlace = language === "kh" && placeKh ? placeKh : place;
   const translations = cardTranslations[language] || cardTranslations.en;
+  const imageSrc = resolveImageSrc(photo);
 
   return (
     <article id={entryId} className="ec-card yk-reveal" style={styles.card}>
-      <style dangerouslySetInnerHTML={{ __html: responsiveCss }} />
-      <div className="ec-media" style={{ ...styles.media, ...(photo ? {} : styles.placeholder), order: isEven ? 2 : 1 }}>
-        {photo && photoIsAi ? <span style={styles.aiBadge}>AI-generated image</span> : null}
-        {photo ? <Image src={photo} alt={displayTitle} fill priority={number === "01"} sizes="(max-width: 860px) 90vw, 52vw" style={{ objectFit: "cover" }} /> : <><p style={styles.placeholderCategory}>{category || translations.archiveEntry}</p><p style={styles.placeholderCaption}>{translations.photographPending}</p></>}
+      <div className="ec-media" style={{ ...styles.media, ...(imageSrc ? {} : styles.placeholder), order: isEven ? 2 : 1 }}>
+        {imageSrc && photoIsAi ? <span style={styles.aiBadge}>AI-generated image</span> : null}
+        {imageSrc ? <Image src={imageSrc} alt={displayTitle} fill priority={number === "01"} sizes="(max-width: 860px) 90vw, 52vw" style={{ objectFit: "cover" }} /> : <><p style={styles.placeholderCategory}>{category || translations.archiveEntry}</p><p style={styles.placeholderCaption}>{translations.photographPending}</p></>}
       </div>
       <div className="ec-text" style={{ ...styles.text, order: isEven ? 1 : 2 }}>
         <span className="ec-folio" style={styles.folio} aria-hidden="true">{number}</span>

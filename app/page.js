@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import collection from "../collection.config.js";
+import "./home.css";
 import EntryCard from "../components/EntryCard.js";
 import { createClient } from "../utils/supabase/client.js";
 import { useTheme } from "./ThemeContext.js";
@@ -105,34 +106,6 @@ const styles = {
   authButton: { padding: "7px 10px", border: "1px solid var(--surface-border)", background: "var(--surface)", color: "var(--ink)", cursor: "pointer", font: `600 12px ${fontSans}` },
   authEmail: { maxWidth: 150, overflow: "hidden", color: "var(--ink-soft)", font: `400 12px ${fontSans}`, textOverflow: "ellipsis", whiteSpace: "nowrap" },
 };
-
-const globalCss = `
-  .yk-search-input::placeholder { color: var(--ink-soft); opacity: 1; }
-  .yk-result-link:hover, .yk-result-link:focus-visible { background: var(--surface); color: var(--jade) !important; }
-  .yk-clear-btn:hover, .yk-empty-clear:hover { background: var(--red) !important; color: var(--hero-fg) !important; }
-  .yk-search-spinner { display: inline-block; }
-  .yk-back-top { opacity: 0; pointer-events: none; transform: translateY(8px); transition: opacity 220ms ease, transform 220ms ease; }
-  .yk-back-top.is-visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
-  @media (prefers-reduced-motion: no-preference) {
-    .yk-search-spinner { animation: yk-search-spin 0.9s linear infinite; }
-    @keyframes yk-search-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-    .yk-reveal { opacity: 0; transform: translateY(28px); transition: opacity 700ms ease, transform 700ms ease; }
-    .yk-reveal.is-visible { opacity: 1; transform: translateY(0); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .yk-search-spinner { animation: none; }
-  }
-  @media (max-width: 720px) {
-    .yk-header-top { grid-template-columns: 1fr auto !important; }
-    .yk-search-wrap { grid-column: 1 / -1; }
-    .yk-meta { min-width: 50%; padding: 20px 18px 0 0 !important; border-left: 0 !important; }
-  }
-  @media (max-width: 520px) {
-    .yk-wordmark { font-size: 20px !important; }
-    .yk-hero-title { font-size: 42px !important; }
-    .yk-meta { min-width: 100%; }
-  }
-`;
 
 function getEntrySearchText(entry) {
   const nestedText = [
@@ -346,7 +319,6 @@ export default function Home() {
 
   return (
     <>
-      <style dangerouslySetInnerHTML={{ __html: globalCss }} />
       <a className="yk-skip-link" href="#main">Skip to entries</a>
       <header style={{ ...styles.header, ...(scrolled ? styles.headerScrolled : {}) }}>
         <div className="yk-header-inner" style={styles.headerInner}>
