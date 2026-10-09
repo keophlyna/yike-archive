@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import ContributeFields from "./ContributeFields.js";
-import { validateEntry } from "../utils/validateEntry.js";
+import { TEXT_ENTRY_ERROR, validateEntry } from "../utils/validateEntry.js";
 
 const emptyValues = { title: "", title_kh: "", description: "", description_kh: "", category: "", place: "", contributor: "", contributor_kh: "", photo_is_ai: false };
 
@@ -12,7 +12,7 @@ const emptyValues = { title: "", title_kh: "", description: "", description_kh: 
 // { ok: true } (the caller navigates away) or
 // { ok: false, error, message, field } to show message above the form and
 // message again next to field.
-export default function EntryForm({ initialValues, onSave, photoRequired = true, photoHint, intro, submitLabel }) {
+export default function EntryForm({ initialValues, onSave, photoRequired = true, photoHint, intro, submitLabel, cancelHref }) {
   const [values, setValues] = useState(initialValues || emptyValues);
   const [photo, setPhoto] = useState(null);
   const [errors, setErrors] = useState({});
@@ -30,6 +30,10 @@ export default function EntryForm({ initialValues, onSave, photoRequired = true,
   const handlePhotoChange = (file) => {
     setPhoto(file);
     clearField("photo");
+  };
+
+  const handleInvalidInput = (name) => () => {
+    setErrors((current) => ({ ...current, [name]: TEXT_ENTRY_ERROR }));
   };
 
   const handleSubmit = async (event) => {
@@ -58,5 +62,5 @@ export default function EntryForm({ initialValues, onSave, photoRequired = true,
     // On success the caller navigates, so the form stays disabled on purpose.
   };
 
-  return <ContributeFields values={values} errors={errors} message={message} isSaving={isSaving} onChange={handleChange} onPhotoChange={handlePhotoChange} onSubmit={handleSubmit} intro={intro} photoHint={photoHint} submitLabel={submitLabel} photoRequired={photoRequired} />;
+  return <ContributeFields values={values} errors={errors} message={message} isSaving={isSaving} onChange={handleChange} onInvalidInput={handleInvalidInput} onPhotoChange={handlePhotoChange} onSubmit={handleSubmit} intro={intro} photoHint={photoHint} submitLabel={submitLabel} photoRequired={photoRequired} cancelHref={cancelHref} />;
 }

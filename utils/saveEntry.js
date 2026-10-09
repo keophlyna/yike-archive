@@ -8,6 +8,7 @@
 // short, safe line the caller shows to the user.
 
 import { removePhoto, uploadPhoto } from "./uploadPhoto.js";
+import { getTextEntryConstraintError } from "./validateEntry.js";
 
 export async function saveEntry({ supabase, userId, cleaned, image, photoFile }) {
   const upload = await uploadPhoto({ supabase, userId, file: photoFile, image });
@@ -35,7 +36,14 @@ export async function saveEntry({ supabase, userId, cleaned, image, photoFile })
 
   if (insertError) {
     await removePhoto(supabase, upload.path);
-    return { ok: false, step: "insert", error: insertError, message: "Your entry could not be saved. Please try again in a moment." };
+    const textError = getTextEntryConstraintError(insertError);
+    return {
+      ok: false,
+      step: "insert",
+      error: insertError,
+      message: textError?.message || "Your entry could not be saved. Please try again in a moment.",
+      field: textError?.field || null,
+    };
   }
 
   return { ok: true, id: data.id };

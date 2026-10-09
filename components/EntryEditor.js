@@ -72,7 +72,7 @@ export default function EntryEditor({ id }) {
     const result = await updateEntry({ supabase: supabaseRef.current, entryId: id, userId, cleaned, image, photoFile });
     if (!result.ok) {
       console.error("Could not update the entry:", result.step, result.error);
-      return { ok: false, error: result.error, message: result.message, field: result.step === "upload" ? "photo" : null };
+      return { ok: false, error: result.error, message: result.message, field: result.field || (result.step === "upload" ? "photo" : null) };
     }
     router.push(`/entries/${id}`);
     return { ok: true };
@@ -84,7 +84,7 @@ export default function EntryEditor({ id }) {
         : status === "missing" ? <p style={styles.intro}>That entry could not be found. <Link style={styles.link} href="/">Back to the archive</Link></p>
           : status === "error" ? <p style={styles.intro}>We could not load this entry. Please try again in a moment.</p>
             : status === "denied" ? <p style={styles.intro}>You can only edit entries you added yourself. <Link style={styles.link} href={`/entries/${id}`}>Back to the entry</Link></p>
-              : <EntryForm initialValues={values} onSave={handleSave} photoRequired={false} photoHint={editPhotoHint} intro={editIntro} submitLabel="Save changes" />}
+              : <EntryForm initialValues={values} onSave={handleSave} photoRequired={false} photoHint={editPhotoHint} intro={editIntro} submitLabel="Save changes" cancelHref={`/entries/${id}`} />}
     </FormPageShell>
   );
 }

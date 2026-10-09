@@ -1,4 +1,5 @@
 import Image from "next/image";
+import EntryActions from "./EntryActions.js";
 import "./entry-card.css";
 
 // next/image parses src with new URL() and throws during render if it cannot,
@@ -60,21 +61,21 @@ const cardTranslations = {
 };
 
 const styles = {
-  card: { display: "grid", gridTemplateColumns: "1.15fr 1fr", gap: "clamp(28px, 5vw, 72px)", padding: "clamp(48px, 7vh, 96px) 0", borderBottom: "1px solid var(--rule)" },
+  card: { display: "grid", gridTemplateColumns: "minmax(0, 1.15fr) minmax(0, 1fr)", gap: "clamp(28px, 5vw, 72px)", padding: "clamp(48px, 7vh, 96px) 0", borderBottom: "1px solid var(--rule)" },
   media: { position: "relative", width: "100%", height: "clamp(360px, 60vh, 720px)", overflow: "hidden" },
   placeholder: { display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "var(--surface)", border: "1px solid var(--surface-border)", color: "var(--ink-soft)" },
   placeholderCategory: { margin: 0, font: `600 clamp(28px, 4vw, 52px) ${fontSerif}`, color: "var(--ink)" },
   placeholderCaption: { margin: "12px 0 0", font: `400 12px ${fontSans}`, color: "var(--ink-soft)" },
-  text: { alignSelf: "center", maxWidth: 620 },
+  text: { alignSelf: "center", width: "100%", minWidth: 0, maxWidth: 620 },
   folio: { margin: 0, color: "var(--gold)", font: `700 clamp(52px, 8vw, 96px)/.8 ${fontSerif}` },
   category: { margin: "30px 0 12px", font: `600 12px ${fontSans}`, letterSpacing: ".08em" },
-  title: { margin: 0, color: "var(--ink)", font: `600 clamp(28px, 3.1vw, 40px)/1.1 ${fontSerif}` },
-  titleKh: { margin: "12px 0 0", color: "var(--ink)", font: `600 clamp(23px, 2.5vw, 34px)/1.35 ${fontKhmer}` },
+  title: { minWidth: 0, margin: 0, color: "var(--ink)", font: `600 clamp(28px, 3.1vw, 40px)/1.1 ${fontSerif}`, overflowWrap: "anywhere" },
+  titleKh: { minWidth: 0, margin: "12px 0 0", color: "var(--ink)", font: `600 clamp(23px, 2.5vw, 34px)/1.35 ${fontKhmer}`, overflowWrap: "anywhere" },
   rule: { width: 44, height: 2, margin: "28px 0", border: 0, background: "var(--gold)" },
-  description: { maxWidth: "56ch", margin: 0, color: "var(--ink-soft)", font: `400 16px/1.7 ${fontSans}` },
-  footer: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginTop: 32, paddingTop: 16, borderTop: "1px solid var(--rule)" },
+  description: { maxWidth: "56ch", minWidth: 0, margin: 0, color: "var(--ink-soft)", font: `400 16px/1.7 ${fontSans}`, overflowWrap: "anywhere" },
+  footer: { display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 24, marginTop: 32, paddingTop: 16, borderTop: "1px solid var(--rule)" },
   footerLabel: { margin: 0, color: "var(--ink-soft)", font: `600 11px ${fontSans}`, letterSpacing: ".06em" },
-  footerValue: { margin: "5px 0 0", color: "var(--ink)", font: `500 14px/1.4 ${fontSans}` },
+  footerValue: { minWidth: 0, margin: "5px 0 0", color: "var(--ink)", font: `500 14px/1.4 ${fontSans}`, overflowWrap: "anywhere" },
   featureSection: { gridColumn: "1 / -1", order: 3, paddingTop: "clamp(28px, 5vh, 72px)" },
   featureHeading: { margin: 0, color: "var(--ink)", font: `600 clamp(28px, 3vw, 42px)/1 ${fontSerif}` },
   featureKicker: { margin: "0 0 10px", color: "var(--gold)", font: `600 11px ${fontSans}`, letterSpacing: ".08em", textTransform: "uppercase" },
@@ -179,7 +180,7 @@ function CostumeSection({ accent, characters, garments, language = "en" }) {
   );
 }
 
-export default function EntryCard({ title, titleKh = "", description, descriptionKh = "", contributor, contributorKh = "", place, placeKh = "", category = "", photo, photoIsAi = false, entryNumber = "1", entryId, phases = [], characters = [], garments = [], language = "en" }) {
+export default function EntryCard({ id, canManage, userId, onDeleted, title, titleKh = "", description, descriptionKh = "", contributor, contributorKh = "", place, placeKh = "", category = "", photo, photoIsAi = false, entryNumber = "1", entryId, phases = [], characters = [], garments = [], language = "en" }) {
   const number = String(parseInt(entryNumber, 10) || 1).padStart(2, "0");
   const isEven = Number(number) % 2 === 0;
   const accent = isEven ? "var(--jade)" : "var(--red)";
@@ -192,6 +193,7 @@ export default function EntryCard({ title, titleKh = "", description, descriptio
 
   return (
     <article id={entryId} className="ec-card yk-reveal" style={styles.card}>
+      {canManage && <EntryActions entryId={id} userId={userId} title={displayTitle} language={language} onDeleted={onDeleted} />}
       <div className="ec-media" style={{ ...styles.media, ...(imageSrc ? {} : styles.placeholder), order: isEven ? 2 : 1 }}>
         {imageSrc && photoIsAi ? <span style={styles.aiBadge}>AI-generated image</span> : null}
         {imageSrc ? <Image src={imageSrc} alt={displayTitle} fill priority={number === "01"} sizes="(max-width: 860px) 90vw, 52vw" style={{ objectFit: "cover" }} /> : <><p style={styles.placeholderCategory}>{category || translations.archiveEntry}</p><p style={styles.placeholderCaption}>{translations.photographPending}</p></>}

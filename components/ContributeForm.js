@@ -35,7 +35,7 @@ export default function ContributeForm() {
     const saved = await saveEntry({ supabase: supabaseRef.current, userId: session.id, cleaned, image, photoFile });
     if (!saved.ok) {
       console.error("Could not save entry:", saved.step, saved.error);
-      return { ok: false, error: saved.error, message: saved.message, field: saved.step === "upload" ? "photo" : null };
+      return { ok: false, error: saved.error, message: saved.message, field: saved.field || (saved.step === "upload" ? "photo" : null) };
     }
     router.push(`/entries/${saved.id}`);
     return { ok: true };
@@ -47,7 +47,7 @@ export default function ContributeForm() {
         ? <p style={styles.intro}>Checking your session…</p>
         : session === null
           ? <p style={styles.intro}>Log in to add an entry. <Link style={styles.link} href="/login">Log in</Link></p>
-          : <EntryForm onSave={handleSave} />}
+          : <EntryForm onSave={handleSave} cancelHref="/" />}
     </FormPageShell>
   );
 }

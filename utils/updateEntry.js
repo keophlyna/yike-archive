@@ -1,4 +1,5 @@
 import { removePhoto, uploadPhoto } from "./uploadPhoto.js";
+import { getTextEntryConstraintError } from "./validateEntry.js";
 
 // Updates an entry in place. Changing the photo is optional: when no new file
 // was picked, photo_url is simply left out of the update so the old photo stays.
@@ -40,11 +41,13 @@ export async function updateEntry({ supabase, entryId, userId, cleaned, image, p
 
   if (error || !data || data.length === 0) {
     if (upload) await removePhoto(supabase, upload.path);
+    const textError = getTextEntryConstraintError(error);
     return {
       ok: false,
       step: "update",
       error: error || { message: "update returned no rows" },
-      message: "That change wasn't saved",
+      message: textError?.message || "That change wasn't saved",
+      field: textError?.field || null,
     };
   }
 

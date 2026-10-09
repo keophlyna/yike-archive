@@ -13,7 +13,20 @@ export const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
 const KHMER = /[\u1780-\u17ff]/;
 const LETTER = /\p{L}/u;
 const CONTROL = /\p{Cc}/u;
-const CONTRIBUTOR_ALLOWED = /^[\p{L}\p{M}\p{N} .,;'&-()]+$/u;
+const TEXT_ENTRY_ALLOWED = /^[\p{L}\p{M}\p{N} ]+$/u;
+export const TEXT_ENTRY_ERROR = "Only letters, numbers, and spaces are allowed.";
+export const isAllowedTextEntry = (value) => value === "" || TEXT_ENTRY_ALLOWED.test(value);
+const TEXT_ENTRY_CONSTRAINTS = {
+  entries_title_letters_numbers_spaces_check: "title",
+  entries_contributor_letters_numbers_spaces_check: "contributor",
+};
+
+export function getTextEntryConstraintError(error) {
+  if (error?.code !== "23514") return null;
+  const errorText = [error.constraint, error.message, error.details].filter(Boolean).join(" ");
+  const field = Object.entries(TEXT_ENTRY_CONSTRAINTS).find(([name]) => errorText.includes(name))?.[1];
+  return field ? { field, message: TEXT_ENTRY_ERROR } : null;
+}
 // Only real URL shapes are caught here (a scheme, www., or a domain ending);
 // every other character problem falls through to the allowlist message.
 const URL_LIKE = /www\.|https?:|\.(?:com|net|org|edu|gov|info|biz|io|co|kh|app|dev)(?=$|[^a-zA-Z0-9.])/i;
@@ -44,6 +57,7 @@ async function checkPhoto(file, required) {
 
 function checkTitle(value) {
   if (!value) return "Title is required";
+  if (!TEXT_ENTRY_ALLOWED.test(value)) return TEXT_ENTRY_ERROR;
   if (CONTROL.test(value)) return "Remove control characters";
   if (value.length < 3 || value.length > 120) return "Use 3 to 120 characters";
   if (!LETTER.test(value)) return "Add at least one letter";
@@ -79,10 +93,10 @@ function checkPlace(value, place) {
 
 function checkContributor(value) {
   if (!value) return "Contributor is required";
+  if (!TEXT_ENTRY_ALLOWED.test(value)) return TEXT_ENTRY_ERROR;
   if (CONTROL.test(value)) return "Remove control characters";
   if (value.length > 100) return "Use 100 characters or fewer";
   if (URL_LIKE.test(value)) return "Enter a name, not a link or URL";
-  if (!CONTRIBUTOR_ALLOWED.test(value)) return "Use letters, numbers, spaces, and . , ; ' - & ( )";
   if (/\bunknown\b/i.test(value)) return "Name the person or organization, not \u201cunknown\u201d";
   return "";
 }
