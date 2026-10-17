@@ -2,9 +2,9 @@
 
 import { useRef, useState } from "react";
 import ContributeFields from "./ContributeFields.js";
-import { TEXT_ENTRY_ERROR, validateEntry } from "../utils/validateEntry.js";
+import { TEXT_ENTRY_ERROR, TITLE_TEXT_ENTRY_ERROR, validateEntry } from "../utils/validateEntry.js";
 
-const emptyValues = { title: "", title_kh: "", description: "", description_kh: "", category: "", place: "", contributor: "", contributor_kh: "", photo_is_ai: false };
+const emptyValues = { title: "", title_kh: "", description: "", description_kh: "", category: "", place: "", contributor: "", contributor_kh: "", sources: "", sources_kh: "", photo_is_ai: false };
 
 // Shared by /contribute and /entries/<id>/edit so both run exactly the same
 // validation and render the same fields. The caller only supplies the starting
@@ -33,7 +33,7 @@ export default function EntryForm({ initialValues, onSave, photoRequired = true,
   };
 
   const handleInvalidInput = (name) => () => {
-    setErrors((current) => ({ ...current, [name]: TEXT_ENTRY_ERROR }));
+    setErrors((current) => ({ ...current, [name]: name === "title" ? TITLE_TEXT_ENTRY_ERROR : TEXT_ENTRY_ERROR }));
   };
 
   const handleSubmit = async (event) => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { isAllowedTextEntry } from "../utils/validateEntry.js";
+import { isAllowedTextEntry, isAllowedTitleTextEntry } from "../utils/validateEntry.js";
 
 const styles = {
   field: { display: "grid", gap: 6 },
@@ -13,35 +13,37 @@ const styles = {
   message: { margin: 0, color: "var(--red)", font: "400 13px/1.4 var(--font-google-sans), sans-serif" },
 };
 
-export default function TextField({ id, label, hint, value, onChange, onInvalidInput, error, maxLength, required = false, multiline = false, khmer = false, textEntryOnly = false, trimOnBlur = false, rows = 6 }) {
+export default function TextField({ id, label, hint, value, onChange, onInvalidInput, error, maxLength, required = false, multiline = false, khmer = false, textEntryOnly = false, titleTextEntryOnly = false, trimOnBlur = false, rows = 6 }) {
   const fieldStyle = { ...styles.input, ...(multiline ? styles.multiline : {}), ...(khmer ? styles.khmer : {}) };
+  const isValidText = titleTextEntryOnly ? isAllowedTitleTextEntry : isAllowedTextEntry;
+  const restrictText = textEntryOnly || titleTextEntryOnly;
   const shared = {
     id,
     value,
     onChange: (event) => {
       const next = event.target.value;
-      if (textEntryOnly && event.nativeEvent.isComposing) {
+      if (restrictText && event.nativeEvent.isComposing) {
         onChange(next);
         return;
       }
-      if (textEntryOnly && !isAllowedTextEntry(next)) {
+      if (restrictText && !isValidText(next)) {
         onInvalidInput?.();
         return;
       }
       onChange(next);
     },
-    onCompositionEnd: textEntryOnly ? (event) => {
+    onCompositionEnd: restrictText ? (event) => {
       const next = event.currentTarget.value;
-      if (!isAllowedTextEntry(next)) {
+      if (!isValidText(next)) {
         onChange(value);
         onInvalidInput?.();
       } else onChange(next);
     } : undefined,
-    onPaste: textEntryOnly ? (event) => {
+    onPaste: restrictText ? (event) => {
       const input = event.currentTarget;
       const pasted = event.clipboardData.getData("text");
       const next = `${value.slice(0, input.selectionStart)}${pasted}${value.slice(input.selectionEnd)}`;
-      if (!isAllowedTextEntry(next)) {
+      if (!isValidText(next)) {
         event.preventDefault();
         onInvalidInput?.();
       }

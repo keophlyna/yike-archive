@@ -25,6 +25,7 @@ const toFormValues = (entry) => ({
   description: entry.description || "", description_kh: entry.descriptionKh || "",
   category: entry.category || "", place: entry.place || "",
   contributor: entry.contributor || "", contributor_kh: entry.contributorKh || "",
+  sources: entry.sourceText || "", sources_kh: entry.sourceTextKh || "",
   photo_is_ai: entry.photoIsAi === true,
 });
 

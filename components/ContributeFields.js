@@ -35,7 +35,7 @@ export default function ContributeFields({ values, errors, message, isSaving, on
       <p style={styles.intro}>{intro}</p>
       <p style={styles.legend}>Fields marked <span style={styles.marker}>*</span> are required. Fields labelled “optional” can be left blank.</p>
       <form style={styles.form} onSubmit={onSubmit} noValidate>
-        <TextField id="title" label="Title" value={values.title} onChange={onChange("title")} onInvalidInput={onInvalidInput("title")} error={errors.title} maxLength={120} required textEntryOnly trimOnBlur />
+        <TextField id="title" label="Title" value={values.title} onChange={onChange("title")} onInvalidInput={onInvalidInput("title")} error={errors.title} maxLength={120} required titleTextEntryOnly trimOnBlur />
         <TextField id="title_kh" label="Title in Khmer — optional" value={values.title_kh} onChange={onChange("title_kh")} error={errors.title_kh} maxLength={120} khmer />
         <TextField id="description" label="Description" value={values.description} onChange={onChange("description")} error={errors.description} maxLength={2500} multiline required />
         <TextField id="description_kh" label="Description in Khmer — optional" value={values.description_kh} onChange={onChange("description_kh")} error={errors.description_kh} maxLength={2500} multiline khmer />
@@ -47,6 +47,8 @@ export default function ContributeFields({ values, errors, message, isSaving, on
           <TextField id="contributor" label="Contributor" value={values.contributor} onChange={onChange("contributor")} onInvalidInput={onInvalidInput("contributor")} error={errors.contributor} maxLength={100} hint="A person or organization, in English" required textEntryOnly trimOnBlur />
           <TextField id="contributor_kh" label="Contributor in Khmer — optional" value={values.contributor_kh} onChange={onChange("contributor_kh")} error={errors.contributor_kh} maxLength={100} khmer />
         </div>
+        <TextField id="sources" label="Sources — optional" value={values.sources} onChange={onChange("sources")} error={errors.sources} maxLength={2500} multiline />
+        <TextField id="sources_kh" label="Sources in Khmer — optional" value={values.sources_kh} onChange={onChange("sources_kh")} error={errors.sources_kh} maxLength={2500} multiline khmer />
         <FileField id="photo" label="Photo" hint={photoHint} error={errors.photo} onChange={onPhotoChange} required={photoRequired} />
         <CheckboxField id="photo_is_ai" label="This image is AI-generated" checked={values.photo_is_ai} onChange={onChange("photo_is_ai")} />
         {message ? <p role="alert" style={styles.message}>{message}</p> : null}

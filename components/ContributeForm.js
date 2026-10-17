@@ -34,7 +34,7 @@ export default function ContributeForm() {
   const handleSave = async ({ cleaned, image, photoFile }) => {
     const saved = await saveEntry({ supabase: supabaseRef.current, userId: session.id, cleaned, image, photoFile });
     if (!saved.ok) {
-      console.error("Could not save entry:", saved.step, saved.error);
+      console.error("Could not save entry:", saved.step, saved.error?.code || "", saved.error?.message || saved.error);
       return { ok: false, error: saved.error, message: saved.message, field: saved.field || (saved.step === "upload" ? "photo" : null) };
     }
     router.push(`/entries/${saved.id}`);

@@ -1,5 +1,5 @@
 import { removePhoto, uploadPhoto } from "./uploadPhoto.js";
-import { getTextEntryConstraintError } from "./validateEntry.js";
+import { getTextEntryConstraintError, isMissingSourcesSchema, SOURCES_SCHEMA_MESSAGE } from "./validateEntry.js";
 
 // Updates an entry in place. Changing the photo is optional: when no new file
 // was picked, photo_url is simply left out of the update so the old photo stays.
@@ -27,17 +27,20 @@ export async function updateEntry({ supabase, entryId, userId, cleaned, image, p
     place_kh: cleaned.place_kh,
     contributor: cleaned.contributor,
     contributor_kh: cleaned.contributor_kh,
+    sources: cleaned.sources,
+    sources_kh: cleaned.sources_kh,
     photo_is_ai: cleaned.photo_is_ai,
   };
 
   if (upload) changes.photo_url = upload.publicUrl;
 
-  const { data, error } = await supabase
-    .from("entries")
-    .update(changes)
-    .eq("id", entryId)
-    .eq("owner", userId)
-    .select();
+  let { data, error } = await supabase.from("entries").update(changes).eq("id", entryId).eq("owner", userId).select();
+
+  // Match create behavior for edits where the optional source fields are empty.
+  if (error && isMissingSourcesSchema(error) && !cleaned.sources && !cleaned.sources_kh) {
+    const { sources, sources_kh, ...legacyChanges } = changes;
+    ({ data, error } = await supabase.from("entries").update(legacyChanges).eq("id", entryId).eq("owner", userId).select());
+  }
 
   if (error || !data || data.length === 0) {
     if (upload) await removePhoto(supabase, upload.path);
@@ -46,7 +49,7 @@ export async function updateEntry({ supabase, entryId, userId, cleaned, image, p
       ok: false,
       step: "update",
       error: error || { message: "update returned no rows" },
-      message: textError?.message || "That change wasn't saved",
+      message: isMissingSourcesSchema(error) ? SOURCES_SCHEMA_MESSAGE : textError?.message || "That change wasn't saved",
       field: textError?.field || null,
     };
   }

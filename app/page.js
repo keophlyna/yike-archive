@@ -43,7 +43,7 @@ const translations = {
     noResults: (query) => `No entries match “${query}”`,
     clearSearch: "Clear search",
     kicker: "A living record of Khmer performance",
-    curatedBy: "Curated by",
+    curatedBy: "Created by",
     province: "Province",
     source: "Source",
     heroTitle: collection.name,
@@ -79,10 +79,10 @@ const translations = {
     noResults: () => "គ្មានឯកសារណាត្រូវនឹង",
     clearSearch: "សម្អាតការស្វែងរក",
     kicker: "កំណត់ត្រាដ៏រស់រវើកនៃសិល្បៈទស្សនីយភាពខ្មែរ",
-    curatedBy: "រៀបចំចងក្រងដោយ",
+    curatedBy: "បង្កើតដោយ",
     province: "ខេត្ត",
     source: "ប្រភព",
-    heroTitle: "បណ្ណសាររស់ខ្មែរ",
+    heroTitle: "ល្ខោនយីកេ",
     heroDescription: "ល្ខោនយីកេ គឺជាទម្រង់សិល្បៈល្ខោនប្រពៃណីខ្មែរមួយ ដែលរួមបញ្ចូលគ្នានូវតន្ត្រី របាំ និងការនិទានរឿង។ ល្ខោនយីកេមានតម្លៃលើសពីការកម្សាន្តទៅទៀត ដោយវាបានពាំនាំនូវសាច់រឿង ភាសា តន្ត្រី ប្រពៃណី និងចំណេះដឹងផ្នែកវប្បធម៌ខ្មែរ ពីជំនាន់មួយទៅជំនាន់មួយ។ ការអភិរក្សសិល្បៈមួយនេះ គឺជួយទប់ស្កាត់មិនឱ្យចំណេះដឹងទាំងនេះត្រូវបាត់បង់ ជាពិសេសបន្ទាប់ពីសិល្បៈ និងប្រពៃណីវប្បធម៌កម្ពុជា ត្រូវបានរងការបំផ្លិចបំផ្លាញយ៉ាងធ្ងន់ធ្ងរ ក្នុងអំឡុងរបបខ្មែរក្រហម។",
     emptySubtitle: "រកមិនឃើញលទ្ធផល",
     loadingEntries: "កំពុងផ្ទុកឯកសារ…",
@@ -124,7 +124,7 @@ const styles = {
   metaRow: { display: "flex", flexWrap: "wrap", marginTop: "clamp(42px, 6vw, 76px)" },
   meta: { minWidth: 210, flex: "1 1 210px", padding: "0 28px", borderLeft: "1px solid var(--hero-rule)" },
   metaFirst: { paddingLeft: 0, borderLeft: 0 },
-  metaLabel: { margin: 0, color: "var(--gold)", font: `600 11px ${fontSans}`, letterSpacing: ".05em" },
+  metaLabel: { margin: 0, color: "var(--gold)", font: `700 16px/1.4 ${fontSans}`, letterSpacing: ".03em" },
   metaValue: { margin: "8px 0 0", color: "var(--hero-fg)", font: `400 15px/1.45 ${fontSans}` },
   main: { width: contentWidth, margin: "0 auto", padding: "clamp(56px, 8vw, 116px) 0 60px" },
   sectionHeader: { display: "flex", alignItems: "center", gap: 14, borderBottom: "1px solid var(--rule)", paddingBottom: 18 },
@@ -197,6 +197,7 @@ export default function Home() {
   const [scrolled, setScrolled] = useState(false);
   const [showTop, setShowTop] = useState(false);
   const [language, setLanguage] = useState("en");
+  const [languageReady, setLanguageReady] = useState(false);
   const [user, setUser] = useState(null);
   const [authReady, setAuthReady] = useState(false);
   const [showMine, setShowMine] = useState(false);
@@ -213,21 +214,27 @@ export default function Home() {
   const searchIconSrc = theme === "dark" ? "/entries/search-icon-sand.png" : "/entries/search-icon.png";
 
   useEffect(() => {
-    const stored = window.localStorage.getItem("yike-language");
-    if (stored === "en" || stored === "kh") {
-      setLanguage(stored);
-      document.documentElement.lang = stored;
-    } else {
+    try {
+      const stored = window.localStorage.getItem("yike-language");
+      if (stored === "en" || stored === "kh") {
+        setLanguage(stored);
+        document.documentElement.lang = stored;
+      } else {
+        document.documentElement.lang = "en";
+      }
+    } catch (_) {
       document.documentElement.lang = "en";
     }
+    setLanguageReady(true);
   }, []);
 
   useEffect(() => {
+    if (!languageReady) return;
     try {
       window.localStorage.setItem("yike-language", language);
     } catch (_) {}
     document.documentElement.lang = language;
-  }, [language]);
+  }, [language, languageReady]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -398,6 +405,7 @@ export default function Home() {
         province: collection.province,
         source: collection.source,
       };
+  const heroMetaLabelStyle = language === "kh" ? { ...styles.metaLabel, fontFamily: fontKhmer } : styles.metaLabel;
   const normalizedQuery = query.trim().toLocaleLowerCase();
   const suggestionResults = normalizedQuery ? entries.filter((entry) => {
     const searchableText = getEntrySearchText(entry);
@@ -514,9 +522,9 @@ export default function Home() {
           <h1 className="yk-hero-title" style={styles.heroTitle}>{t.heroTitle}</h1>
           <p style={styles.heroDescription}>{t.heroDescription}</p>
           <div style={styles.metaRow}>
-            <div className="yk-meta" style={{ ...styles.meta, ...styles.metaFirst }}><p style={styles.metaLabel}>{t.curatedBy}</p><p style={styles.metaValue}>{heroMeta.curator}</p></div>
-            <div className="yk-meta" style={styles.meta}><p style={styles.metaLabel}>{t.province}</p><p style={styles.metaValue}>{heroMeta.province}</p></div>
-            <div className="yk-meta" style={styles.meta}><p style={styles.metaLabel}>{t.source}</p><p style={styles.metaValue}>{heroMeta.source}</p></div>
+            <div className="yk-meta" style={{ ...styles.meta, ...styles.metaFirst }}><p style={heroMetaLabelStyle}>{t.curatedBy}</p><p style={styles.metaValue}>{heroMeta.curator}</p></div>
+            <div className="yk-meta" style={styles.meta}><p style={heroMetaLabelStyle}>{t.province}</p><p style={styles.metaValue}>{heroMeta.province}</p></div>
+            <div className="yk-meta" style={styles.meta}><p style={heroMetaLabelStyle}>{t.source}</p><p style={styles.metaValue}>{heroMeta.source}</p></div>
           </div>
         </div>
       </section>}
@@ -531,7 +539,7 @@ export default function Home() {
                 : filtered.length > 0 ? <div style={styles.entryList}>{filtered.map(({ entry, index }) => <EntryCard key={entry.id || entry.title || index} id={entry.id} canManage={Boolean(user) && entry.owner === user.id} userId={user?.id} onDeleted={(deletedId) => setEntries((current) => current.filter((item) => item.id !== deletedId))} entryId={`entry-${index + 1}`} entryNumber={String(index + 1)} {...entry} language={language} />)}</div>
                   : <div style={styles.empty}><h2 style={styles.emptyTitle}>{language === "kh" ? `គ្មានឯកសារណាមួយត្រូវនឹង “${committedQuery || query}”` : `No entries match “${committedQuery || query}”`}</h2><p style={styles.emptyKh}>{t.emptySubtitle}</p><button type="button" className="yk-empty-clear" style={styles.emptyClear} onClick={clearSearch}>{t.clearSearch}</button></div>}
         </section>
-        <footer style={styles.footer}>{language === "kh" ? "កំណត់ត្រាដែលកំពុងរីកចម្រើនអំពីយីកេ ដែលត្រូវបានសាងសង់ដោយក្តីស្រមៃ និងការយកចិត្តទុកដាក់ក្នុង ICT 340 នៅมหาวิทยาลัยអាមេរិកខេត្តភ្នំពេញ ប្រចាំឆ្នាំ 2026." : "A growing record of Yike, built with care in ICT 340 at the American University of Phnom Penh, Fall 2026."} <span>· {entriesLoading ? "…" : entries.length} entries</span></footer>
+        <footer style={styles.footer}>{language === "kh" ? "កំណត់ត្រាដែលកំពុងរីកចម្រើនអំពីយីកេ ដែលត្រូវបានសាងសង់ដោយក្តីស្រមៃ និងការយកចិត្តទុកដាក់ក្នុង ICT 340 នៅសាកលវិទ្យាល័យអាមេរិកភ្នំពេញ ប្រចាំឆ្នាំ 2026." : "A growing record of Yike, built with care in ICT 340 at the American University of Phnom Penh, Fall 2026."} <span>· {entriesLoading ? "…" : entries.length} entries</span></footer>
       </main>
       <button type="button" className={`yk-back-top${showTop ? " is-visible" : ""}`} style={styles.topButton} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} aria-label="Back to top">↑</button>
     </>

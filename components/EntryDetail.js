@@ -85,7 +85,7 @@ export default function EntryDetail({ id }) {
   return shell(
     <>
       {isOwner ? <EntryActions entryId={id} userId={viewerId} /> : null}
-      <EntryCard {...entry} language={language} />
+      <EntryCard {...entry} detail language={language} />
     </>
   );
 }

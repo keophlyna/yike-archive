@@ -1,6 +1,15 @@
 /* EntryCard layout, motion and small-screen rules. Was an inline <style> built
    from a string in components/EntryCard.js; moved here as a plain stylesheet. */
 .ec-card { box-sizing: border-box; }
+.ec-description-excerpt { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
+.ec-read-more:hover { background: var(--red) !important; border-color: var(--red) !important; box-shadow: 0 5px 14px var(--shadow); }
+.ec-read-more:active { transform: translateY(1px); }
+.ec-detail-card .ec-title { font-size: clamp(34px, 4vw, 48px) !important; }
+.ec-detail-card .ec-title-kh { font-size: clamp(27px, 3.2vw, 38px) !important; }
+@media (prefers-reduced-motion: no-preference) {
+  .ec-read-more:hover .ec-read-more-arrow { transform: translateX(3px); }
+  .ec-read-more-arrow { transition: transform 180ms ease; }
+}
 @media (max-width: 860px) {
   .ec-card { grid-template-columns: 1fr !important; gap: 34px !important; }
   .ec-media { height: clamp(300px, 48vh, 480px) !important; }
@@ -13,6 +22,11 @@
   .ec-title-kh { font-size: 23px !important; }
   .ec-description { font-size: 15px !important; }
   .ec-footer { gap: 14px !important; }
+}
+@media (max-width: 640px) {
+  .ec-detail-header { grid-template-columns: 1fr !important; gap: 20px !important; }
+  .ec-detail-info { padding-top: 0 !important; }
+  .ec-detail-footer { grid-template-columns: 1fr !important; }
 }
 @media (prefers-reduced-motion: no-preference) {
   .ec-feature-section.is-visible .ec-timeline-line { transform: scaleY(1); transition: transform 700ms ease; }

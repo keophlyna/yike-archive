@@ -14,8 +14,11 @@ const KHMER = /[\u1780-\u17ff]/;
 const LETTER = /\p{L}/u;
 const CONTROL = /\p{Cc}/u;
 const TEXT_ENTRY_ALLOWED = /^[\p{L}\p{M}\p{N} ]+$/u;
+const TITLE_ENTRY_ALLOWED = /^[\p{L}\p{M}\p{N} &,():]+$/u;
 export const TEXT_ENTRY_ERROR = "Only letters, numbers, and spaces are allowed.";
+export const TITLE_TEXT_ENTRY_ERROR = "Use letters, numbers, spaces, &, commas, parentheses, and colons only.";
 export const isAllowedTextEntry = (value) => value === "" || TEXT_ENTRY_ALLOWED.test(value);
+export const isAllowedTitleTextEntry = (value) => value === "" || TITLE_ENTRY_ALLOWED.test(value);
 const TEXT_ENTRY_CONSTRAINTS = {
   entries_title_letters_numbers_spaces_check: "title",
   entries_contributor_letters_numbers_spaces_check: "contributor",
@@ -25,8 +28,16 @@ export function getTextEntryConstraintError(error) {
   if (error?.code !== "23514") return null;
   const errorText = [error.constraint, error.message, error.details].filter(Boolean).join(" ");
   const field = Object.entries(TEXT_ENTRY_CONSTRAINTS).find(([name]) => errorText.includes(name))?.[1];
-  return field ? { field, message: TEXT_ENTRY_ERROR } : null;
+  return field ? { field, message: field === "title" ? TITLE_TEXT_ENTRY_ERROR : TEXT_ENTRY_ERROR } : null;
 }
+
+export function isMissingSourcesSchema(error) {
+  const message = [error?.message, error?.details, error?.hint].filter(Boolean).join(" ").toLowerCase();
+  const missingSourceColumn = /sources(?:_kh)?/.test(message);
+  return missingSourceColumn && (error?.code === "PGRST204" || error?.code === "42703" || /schema cache|column .* does not exist|could not find the .* column/.test(message));
+}
+
+export const SOURCES_SCHEMA_MESSAGE = "The database is missing the Sources fields. Apply supabase/migrations/20261016000100_entries_sources.sql, then try again.";
 // Only real URL shapes are caught here (a scheme, www., or a domain ending);
 // every other character problem falls through to the allowlist message.
 const URL_LIKE = /www\.|https?:|\.(?:com|net|org|edu|gov|info|biz|io|co|kh|app|dev)(?=$|[^a-zA-Z0-9.])/i;
@@ -57,7 +68,7 @@ async function checkPhoto(file, required) {
 
 function checkTitle(value) {
   if (!value) return "Title is required";
-  if (!TEXT_ENTRY_ALLOWED.test(value)) return TEXT_ENTRY_ERROR;
+  if (!TITLE_ENTRY_ALLOWED.test(value)) return TITLE_TEXT_ENTRY_ERROR;
   if (CONTROL.test(value)) return "Remove control characters";
   if (value.length < 3 || value.length > 120) return "Use 3 to 120 characters";
   if (!LETTER.test(value)) return "Add at least one letter";
@@ -118,6 +129,8 @@ export async function validateEntry(values, photoFile, options = {}) {
     place: String(values.place || "").trim(),
     contributor: String(values.contributor || "").trim(),
     contributor_kh: String(values.contributor_kh || "").trim(),
+    sources: String(values.sources || "").trim(),
+    sources_kh: String(values.sources_kh || "").trim(),
     photo_is_ai: values.photo_is_ai === true,
   };
 
@@ -132,6 +145,8 @@ export async function validateEntry(values, photoFile, options = {}) {
     place: checkPlace(cleaned.place, place),
     contributor: checkContributor(cleaned.contributor),
     contributor_kh: checkOptionalKhmer(cleaned.contributor_kh, 100, true),
+    sources: cleaned.sources.length > 2500 ? "Use 2,500 characters or fewer" : "",
+    sources_kh: checkOptionalKhmer(cleaned.sources_kh, 2500, false),
     photo: photo.error,
   };
 
@@ -150,6 +165,8 @@ export async function validateEntry(values, photoFile, options = {}) {
       place_kh: place.kh,
       contributor: cleaned.contributor,
       contributor_kh: cleaned.contributor_kh,
+      sources: cleaned.sources,
+      sources_kh: cleaned.sources_kh,
       photo_is_ai: cleaned.photo_is_ai,
     },
     image: photo.image,

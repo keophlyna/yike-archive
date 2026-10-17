@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import EntryActions from "./EntryActions.js";
 import "./entry-card.css";
 
@@ -25,7 +26,10 @@ const fontKhmer = "var(--font-noto-serif-khmer), serif";
 
 const cardTranslations = {
   en: {
-    source: "Source",
+    source: "Contributor",
+    sources: "Sources",
+    published: "Published",
+    readMore: "Read more",
     place: "Place",
     photographPending: "Photograph pending",
     imageToBeAdded: "Image to be added",
@@ -42,7 +46,10 @@ const cardTranslations = {
     archiveEntry: "Archive entry",
   },
   kh: {
-    source: "ប្រភព",
+    source: "អ្នករួមចំណែក",
+    sources: "ប្រភព",
+    published: "កាលបរិច្ឆេទបោះពុម្ពផ្សាយ",
+    readMore: "អានបន្ថែម",
     place: "ទីតាំង",
     photographPending: "រូបថតកំពុងរង់ចាំ",
     imageToBeAdded: "រូបភាពត្រូវបន្ថែម",
@@ -62,18 +69,35 @@ const cardTranslations = {
 
 const styles = {
   card: { display: "grid", gridTemplateColumns: "minmax(0, 1.15fr) minmax(0, 1fr)", gap: "clamp(28px, 5vw, 72px)", padding: "clamp(48px, 7vh, 96px) 0", borderBottom: "1px solid var(--rule)" },
+  detailCard: { display: "flex", flexDirection: "column", alignItems: "center", gap: "clamp(28px, 4vw, 48px)", padding: "clamp(36px, 6vh, 72px) 0" },
   media: { position: "relative", width: "100%", height: "clamp(360px, 60vh, 720px)", overflow: "hidden" },
+  detailMedia: { width: "min(100%, 960px)", height: "clamp(320px, 55vw, 620px)", order: 0 },
   placeholder: { display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "var(--surface)", border: "1px solid var(--surface-border)", color: "var(--ink-soft)" },
   placeholderCategory: { margin: 0, font: `600 clamp(28px, 4vw, 52px) ${fontSerif}`, color: "var(--ink)" },
   placeholderCaption: { margin: "12px 0 0", font: `400 12px ${fontSans}`, color: "var(--ink-soft)" },
   text: { alignSelf: "center", width: "100%", minWidth: 0, maxWidth: 620 },
+  detailText: { alignSelf: "center", width: "min(100%, 960px)", maxWidth: 960, order: 0 },
+  detailHeader: { display: "grid", gridTemplateColumns: "minmax(0, 1.25fr) minmax(220px, .75fr)", alignItems: "start", gap: "clamp(24px, 5vw, 64px)", width: "100%" },
+  detailIdentity: { display: "grid", gridTemplateColumns: "auto minmax(0, 1fr)", columnGap: 20, alignItems: "start", minWidth: 0, textAlign: "left" },
+  detailFolio: { gridColumn: 1, gridRow: "1 / span 3", alignSelf: "start" },
+  detailInfo: { display: "grid", gap: 12, justifyItems: "end", paddingTop: 8, textAlign: "right" },
   folio: { margin: 0, color: "var(--gold)", font: `700 clamp(52px, 8vw, 96px)/.8 ${fontSerif}` },
   category: { margin: "30px 0 12px", font: `600 12px ${fontSans}`, letterSpacing: ".08em" },
   title: { minWidth: 0, margin: 0, color: "var(--ink)", font: `600 clamp(28px, 3.1vw, 40px)/1.1 ${fontSerif}`, overflowWrap: "anywhere" },
   titleKh: { minWidth: 0, margin: "12px 0 0", color: "var(--ink)", font: `600 clamp(23px, 2.5vw, 34px)/1.35 ${fontKhmer}`, overflowWrap: "anywhere" },
+  detailCategory: { display: "block", gridColumn: 2, margin: "4px 0 12px" },
+  detailTitle: { gridColumn: 2, fontSize: "clamp(34px, 4vw, 48px)" },
+  detailTitleKh: { gridColumn: 2, fontSize: "clamp(27px, 3.2vw, 38px)" },
   rule: { width: 44, height: 2, margin: "28px 0", border: 0, background: "var(--gold)" },
+  detailRule: { width: "100%", height: 2, margin: "clamp(24px, 4vw, 40px) 0 28px", border: 0, background: "var(--gold)" },
   description: { maxWidth: "56ch", minWidth: 0, margin: 0, color: "var(--ink-soft)", font: `400 16px/1.7 ${fontSans}`, overflowWrap: "anywhere" },
+  detailDescription: { maxWidth: "none", width: "100%", textAlign: "left" },
+  readMore: { display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 10, minHeight: 44, marginTop: 18, padding: "0 18px", border: "1px solid var(--jade)", borderRadius: 999, background: "var(--jade)", color: "var(--page-bg)", font: `600 13px ${fontSans}`, textDecoration: "none", transition: "background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease" },
+  published: { margin: "12px 0 0", color: "var(--ink-soft)", font: `400 13px/1.5 ${fontSans}` },
+  detailContributor: { margin: "10px 0 0", color: "var(--ink)", font: `500 14px/1.5 ${fontSans}` },
   footer: { display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 24, marginTop: 32, paddingTop: 16, borderTop: "1px solid var(--rule)" },
+  detailFooter: { gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", width: "100%", gap: 24, textAlign: "left" },
+  detailPlace: { justifySelf: "end", textAlign: "right" },
   footerLabel: { margin: 0, color: "var(--ink-soft)", font: `600 11px ${fontSans}`, letterSpacing: ".06em" },
   footerValue: { minWidth: 0, margin: "5px 0 0", color: "var(--ink)", font: `500 14px/1.4 ${fontSans}`, overflowWrap: "anywhere" },
   featureSection: { gridColumn: "1 / -1", order: 3, paddingTop: "clamp(28px, 5vh, 72px)" },
@@ -180,7 +204,7 @@ function CostumeSection({ accent, characters, garments, language = "en" }) {
   );
 }
 
-export default function EntryCard({ id, canManage, userId, onDeleted, title, titleKh = "", description, descriptionKh = "", contributor, contributorKh = "", place, placeKh = "", category = "", photo, photoIsAi = false, entryNumber = "1", entryId, phases = [], characters = [], garments = [], language = "en" }) {
+export default function EntryCard({ id, canManage, userId, onDeleted, title, titleKh = "", description, descriptionKh = "", contributor, contributorKh = "", sourceText = "", sourceTextKh = "", publishedAt, detail = false, place, placeKh = "", category = "", photo, photoIsAi = false, entryNumber = "1", entryId, phases = [], characters = [], garments = [], language = "en" }) {
   const number = String(parseInt(entryNumber, 10) || 1).padStart(2, "0");
   const isEven = Number(number) % 2 === 0;
   const accent = isEven ? "var(--jade)" : "var(--red)";
@@ -190,26 +214,51 @@ export default function EntryCard({ id, canManage, userId, onDeleted, title, tit
   const displayPlace = language === "kh" && placeKh ? placeKh : place;
   const translations = cardTranslations[language] || cardTranslations.en;
   const imageSrc = resolveImageSrc(photo);
+  const displaySources = language === "kh" && sourceTextKh ? sourceTextKh : sourceText;
+  const publishedDate = publishedAt ? new Intl.DateTimeFormat(language === "kh" ? "km-KH" : "en-US", { year: "numeric", month: "long", day: "numeric" }).format(new Date(publishedAt)) : "";
 
   return (
-    <article id={entryId} className="ec-card yk-reveal" style={styles.card}>
+    <article id={entryId} className={`ec-card${detail ? " ec-detail-card" : ""} yk-reveal`} style={{ ...styles.card, ...(detail ? styles.detailCard : {}) }}>
       {canManage && <EntryActions entryId={id} userId={userId} title={displayTitle} language={language} onDeleted={onDeleted} />}
-      <div className="ec-media" style={{ ...styles.media, ...(imageSrc ? {} : styles.placeholder), order: isEven ? 2 : 1 }}>
+      <div className="ec-media" style={{ ...styles.media, ...(imageSrc ? {} : styles.placeholder), ...(detail ? styles.detailMedia : { order: isEven ? 2 : 1 }) }}>
         {imageSrc && photoIsAi ? <span style={styles.aiBadge}>AI-generated image</span> : null}
         {imageSrc ? <Image src={imageSrc} alt={displayTitle} fill priority={number === "01"} sizes="(max-width: 860px) 90vw, 52vw" style={{ objectFit: "cover" }} /> : <><p style={styles.placeholderCategory}>{category || translations.archiveEntry}</p><p style={styles.placeholderCaption}>{translations.photographPending}</p></>}
       </div>
-      <div className="ec-text" style={{ ...styles.text, order: isEven ? 1 : 2 }}>
-        <span className="ec-folio" style={styles.folio} aria-hidden="true">{number}</span>
-        <span className="ec-category" style={{ ...styles.category, color: accent }}>{category}</span>
-        <span className="visually-hidden">Entry {number}</span>
-        <h3 className="ec-title" style={styles.title}>{displayTitle}</h3>
-        {titleKh && <p className="ec-title-kh" style={styles.titleKh}>{titleKh}</p>}
-        <hr style={styles.rule} />
-        <p className="ec-description" style={styles.description}>{displayDescription}</p>
-        <div className="ec-footer" style={styles.footer}>
-          <div><p style={styles.footerLabel}>{translations.source}</p><p style={styles.footerValue}>{displayContributor}</p></div>
-          <div><p style={styles.footerLabel}>{translations.place}</p><p style={styles.footerValue}>{displayPlace}</p></div>
-        </div>
+      <div className="ec-text" style={{ ...styles.text, ...(detail ? styles.detailText : { order: isEven ? 1 : 2 }) }}>
+        {detail ? <>
+          <div className="ec-detail-header" style={styles.detailHeader}>
+            <div className="ec-detail-identity" style={styles.detailIdentity}>
+              <span className="ec-folio" style={{ ...styles.folio, ...styles.detailFolio }} aria-hidden="true">{number}</span>
+              <span className="visually-hidden">Entry {number}</span>
+              <span className="ec-category" style={{ ...styles.category, ...styles.detailCategory, color: accent }}>{category}</span>
+              <h3 className="ec-title" style={{ ...styles.title, ...styles.detailTitle }}>{displayTitle}</h3>
+              {titleKh && <p className="ec-title-kh" style={{ ...styles.titleKh, ...styles.detailTitleKh }}>{titleKh}</p>}
+            </div>
+            <div className="ec-detail-info" style={styles.detailInfo}>
+              {publishedDate ? <p style={styles.published}>{translations.published}: {publishedDate}</p> : null}
+              <p style={styles.detailContributor}>{translations.source}: {displayContributor}</p>
+            </div>
+          </div>
+          <hr style={styles.detailRule} />
+          <p className="ec-description ec-detail-description" style={{ ...styles.description, ...styles.detailDescription }}>{displayDescription}</p>
+          <div className="ec-footer ec-detail-footer" style={{ ...styles.footer, ...styles.detailFooter }}>
+            {displaySources ? <div className="ec-detail-sources"><p style={styles.footerLabel}>{translations.sources}</p><p style={{ ...styles.footerValue, whiteSpace: "pre-wrap" }}>{displaySources}</p></div> : null}
+            <div className="ec-detail-place" style={styles.detailPlace}><p style={styles.footerLabel}>{translations.place}</p><p style={styles.footerValue}>{displayPlace}</p></div>
+          </div>
+        </> : <>
+          <span className="ec-folio" style={styles.folio} aria-hidden="true">{number}</span>
+          <span className="ec-category" style={{ ...styles.category, color: accent }}>{category}</span>
+          <span className="visually-hidden">Entry {number}</span>
+          <h3 className="ec-title" style={styles.title}>{displayTitle}</h3>
+          {titleKh && <p className="ec-title-kh" style={styles.titleKh}>{titleKh}</p>}
+          <hr style={styles.rule} />
+          <p className="ec-description ec-description-excerpt" style={styles.description}>{displayDescription}</p>
+          {id ? <Link className="ec-read-more" href={`/entries/${id}`} style={styles.readMore}>{translations.readMore}<span className="ec-read-more-arrow" aria-hidden="true">→</span></Link> : null}
+          <div className="ec-footer" style={styles.footer}>
+            <div><p style={styles.footerLabel}>{translations.source}</p><p style={styles.footerValue}>{displayContributor}</p></div>
+            <div><p style={styles.footerLabel}>{translations.place}</p><p style={styles.footerValue}>{displayPlace}</p></div>
+          </div>
+        </>}
       </div>
       {/* These sections are nullable columns in the database, and a default
           parameter only covers undefined, so null is coalesced before .map. */}
