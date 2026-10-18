@@ -2,7 +2,9 @@
 
 import { useRef, useState } from "react";
 import ContributeFields from "./ContributeFields.js";
-import { TEXT_ENTRY_ERROR, TITLE_TEXT_ENTRY_ERROR, validateEntry } from "../utils/validateEntry.js";
+import useLanguage from "./useLanguage.js";
+import formText from "../utils/formText.js";
+import { validateEntry } from "../utils/validateEntry.js";
 
 const emptyValues = { title: "", title_kh: "", description: "", description_kh: "", category: "", place: "", contributor: "", contributor_kh: "", sources: "", sources_kh: "", photo_is_ai: false };
 
@@ -13,6 +15,8 @@ const emptyValues = { title: "", title_kh: "", description: "", description_kh: 
 // { ok: false, error, message, field } to show message above the form and
 // message again next to field.
 export default function EntryForm({ initialValues, onSave, photoRequired = true, photoHint, intro, submitLabel, cancelHref }) {
+  const language = useLanguage();
+  const t = formText[language];
   const [values, setValues] = useState(initialValues || emptyValues);
   const [photo, setPhoto] = useState(null);
   const [errors, setErrors] = useState({});
@@ -33,7 +37,7 @@ export default function EntryForm({ initialValues, onSave, photoRequired = true,
   };
 
   const handleInvalidInput = (name) => () => {
-    setErrors((current) => ({ ...current, [name]: name === "title" ? TITLE_TEXT_ENTRY_ERROR : TEXT_ENTRY_ERROR }));
+    setErrors((current) => ({ ...current, [name]: name === "title" ? t.titleAllowed : t.textAllowed }));
   };
 
   const handleSubmit = async (event) => {
@@ -43,10 +47,10 @@ export default function EntryForm({ initialValues, onSave, photoRequired = true,
     setIsSaving(true);
     setMessage("");
 
-    const checked = await validateEntry(values, photo, { photoRequired });
+    const checked = await validateEntry(values, photo, { photoRequired, language });
     if (!checked.ok) {
       setErrors(checked.errors);
-      setMessage("Please fix the fields marked below.");
+      setMessage(t.fixFields);
       savingRef.current = false;
       setIsSaving(false);
       return;

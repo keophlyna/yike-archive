@@ -1,5 +1,6 @@
 import { removePhoto, uploadPhoto } from "./uploadPhoto.js";
-import { getTextEntryConstraintError, isMissingSourcesSchema, SOURCES_SCHEMA_MESSAGE } from "./validateEntry.js";
+import formText from "./formText.js";
+import { getTextEntryConstraintError, isMissingSourcesSchema } from "./validateEntry.js";
 
 // Updates an entry in place. Changing the photo is optional: when no new file
 // was picked, photo_url is simply left out of the update so the old photo stays.
@@ -9,12 +10,13 @@ import { getTextEntryConstraintError, isMissingSourcesSchema, SOURCES_SCHEMA_MES
 // (a blocked update returns zero rows with no error, which the length check catches).
 //
 // Returns { ok: true, id } or { ok: false, step, error, message }.
-export async function updateEntry({ supabase, entryId, userId, cleaned, image, photoFile }) {
+export async function updateEntry({ supabase, entryId, userId, cleaned, image, photoFile, language = "en" }) {
+  const t = formText[language] || formText.en;
   let upload = null;
 
   if (image && photoFile) {
     upload = await uploadPhoto({ supabase, userId, file: photoFile, image });
-    if (upload.error) return { ok: false, step: "upload", error: upload.error, message: "The photo could not be uploaded. Please try again." };
+    if (upload.error) return { ok: false, step: "upload", error: upload.error, message: t.photoUploadFailed };
   }
 
   const changes = {
@@ -44,12 +46,12 @@ export async function updateEntry({ supabase, entryId, userId, cleaned, image, p
 
   if (error || !data || data.length === 0) {
     if (upload) await removePhoto(supabase, upload.path);
-    const textError = getTextEntryConstraintError(error);
+    const textError = getTextEntryConstraintError(error, language);
     return {
       ok: false,
       step: "update",
       error: error || { message: "update returned no rows" },
-      message: isMissingSourcesSchema(error) ? SOURCES_SCHEMA_MESSAGE : textError?.message || "That change wasn't saved",
+      message: isMissingSourcesSchema(error) ? t.sourcesSchema : textError?.message || t.notSaved,
       field: textError?.field || null,
     };
   }

@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import useLanguage from "./useLanguage.js";
+import formText from "../utils/formText.js";
 import { createClient } from "../utils/supabase/client.js";
 
 const styles = {
@@ -21,6 +23,8 @@ const styles = {
 };
 
 export default function AuthForm({ mode }) {
+	const language = useLanguage();
+	const t = formText[language];
 	const router = useRouter();
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -36,7 +40,7 @@ export default function AuthForm({ mode }) {
 
 		if (!supabase) {
 			setIsSubmitting(false);
-			setMessage(isLogin ? "Invalid email or password" : "Unable to create account");
+			setMessage(isLogin ? t.invalidLogin : t.createFailed);
 			return;
 		}
 
@@ -46,29 +50,29 @@ export default function AuthForm({ mode }) {
 
 		setIsSubmitting(false);
 		if (result.error) {
-			setMessage(isLogin ? "Invalid email or password" : "Unable to create account");
+			setMessage(isLogin ? t.invalidLogin : t.createFailed);
 			return;
 		}
 		if (isLogin || result.data.session) {
 			router.replace("/");
 			return;
 		}
-		setMessage("Check your email to confirm your account");
+		setMessage(t.confirmEmail);
 	};
 
 	return (
 		<main style={styles.page}>
 			<section style={styles.panel}>
-				<p style={styles.eyebrow}>Khmer Living Archive</p>
-				<h1 style={styles.title}>{isLogin ? "Welcome back" : "Create an account"}</h1>
-				<p style={styles.intro}>{isLogin ? "Sign in to continue to the archive." : "Join the archive and keep your contributions connected."}</p>
+				<p style={styles.eyebrow}>{t.archive}</p>
+				<h1 style={styles.title}>{isLogin ? t.welcome : t.createAccount}</h1>
+				<p style={styles.intro}>{isLogin ? t.signInIntro : t.joinIntro}</p>
 				<form style={styles.form} onSubmit={handleSubmit}>
-					<label style={styles.label}>Email<input style={styles.input} type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" required /></label>
-					<label style={styles.label}>Password<input style={styles.input} type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete={isLogin ? "current-password" : "new-password"} minLength={6} required /></label>
+					<label style={styles.label}>{t.email}<input style={styles.input} type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" required /></label>
+					<label style={styles.label}>{t.password}<input style={styles.input} type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete={isLogin ? "current-password" : "new-password"} minLength={6} required /></label>
 					{message && <p role="alert" style={styles.message}>{message}</p>}
-					<button style={styles.button} type="submit" disabled={isSubmitting}>{isSubmitting ? "Please wait" : isLogin ? "Log in" : "Sign up"}</button>
+					<button style={styles.button} type="submit" disabled={isSubmitting}>{isSubmitting ? t.pleaseWait : isLogin ? t.logIn : t.signUp}</button>
 				</form>
-				<p style={styles.footer}>{isLogin ? "New to the archive? " : "Already have an account? "}<Link style={styles.link} href={isLogin ? "/signup" : "/login"}>{isLogin ? "Sign up" : "Log in"}</Link></p>
+				<p style={styles.footer}>{isLogin ? t.newToArchive : t.alreadyAccount} <Link style={styles.link} href={isLogin ? "/signup" : "/login"}>{isLogin ? t.signUp : t.logIn}</Link></p>
 			</section>
 		</main>
 	);

@@ -1,9 +1,11 @@
+import formText from "./formText.js";
+
 // Deletes an entry the signed-in user owns. Filtered by id AND owner, and it
 // always ends in .select() so we can prove a row really came back before
 // claiming the delete happened (a blocked delete returns zero rows, not an error).
 //
 // Returns { ok: true, id } or { ok: false, error, message }.
-export async function deleteEntry({ supabase, entryId, userId }) {
+export async function deleteEntry({ supabase, entryId, userId, language = "en" }) {
   const { data, error } = await supabase
     .from("entries")
     .delete()
@@ -15,7 +17,7 @@ export async function deleteEntry({ supabase, entryId, userId }) {
     return {
       ok: false,
       error: error || { message: "delete returned no rows" },
-      message: "That change wasn't saved",
+      message: (formText[language] || formText.en).notSaved,
     };
   }
 

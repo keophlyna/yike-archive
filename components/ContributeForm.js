@@ -7,6 +7,8 @@ import EntryForm from "./EntryForm.js";
 import FormPageShell from "./FormPageShell.js";
 import { createClient } from "../utils/supabase/client.js";
 import { saveEntry } from "../utils/saveEntry.js";
+import useLanguage from "./useLanguage.js";
+import formText from "../utils/formText.js";
 
 // The frame around the form is FormPageShell; these style the session lines
 // that take its place before we know who the visitor is.
@@ -16,6 +18,8 @@ const styles = {
 };
 
 export default function ContributeForm() {
+  const language = useLanguage();
+  const t = formText[language];
   const router = useRouter();
   const supabaseRef = useRef(null);
   const [session, setSession] = useState(undefined);
@@ -32,9 +36,9 @@ export default function ContributeForm() {
   // EntryForm owns the fields, the photo picker and the validation; this page
   // only decides what saving means, and reports any failure back to the form.
   const handleSave = async ({ cleaned, image, photoFile }) => {
-    const saved = await saveEntry({ supabase: supabaseRef.current, userId: session.id, cleaned, image, photoFile });
+    const saved = await saveEntry({ supabase: supabaseRef.current, userId: session.id, cleaned, image, photoFile, language });
     if (!saved.ok) {
-      console.error("Could not save entry:", saved.step, saved.error?.code || "", saved.error?.message || saved.error);
+      console.error("Could not save entry:", saved.step, saved.error?.code || "unknown");
       return { ok: false, error: saved.error, message: saved.message, field: saved.field || (saved.step === "upload" ? "photo" : null) };
     }
     router.push(`/entries/${saved.id}`);
@@ -42,11 +46,11 @@ export default function ContributeForm() {
   };
 
   return (
-    <FormPageShell title="Add an entry">
+    <FormPageShell title={t.addEntry}>
       {session === undefined
-        ? <p style={styles.intro}>Checking your session…</p>
+        ? <p style={styles.intro}>{t.checkingSession}</p>
         : session === null
-          ? <p style={styles.intro}>Log in to add an entry. <Link style={styles.link} href="/login">Log in</Link></p>
+          ? <p style={styles.intro}>{t.loginToAdd} <Link style={styles.link} href="/login">{t.logIn}</Link></p>
           : <EntryForm onSave={handleSave} cancelHref="/" />}
     </FormPageShell>
   );

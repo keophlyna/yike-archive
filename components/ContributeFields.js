@@ -7,15 +7,12 @@ import SelectField from "./SelectField.js";
 import TextField from "./TextField.js";
 import PLACES from "../utils/places.js";
 import { CATEGORIES } from "../utils/validateEntry.js";
+import useLanguage from "./useLanguage.js";
+import formText from "../utils/formText.js";
 
-const placeOptions = PLACES.map((place) => ({ value: place.en, label: `${place.en} — ${place.kh}` }));
-const categoryOptions = CATEGORIES.map((category) => ({ value: category, label: category }));
+const categoryTextKey = { History: "categoryHistory", Performance: "categoryPerformance", Music: "categoryMusic", Costume: "categoryCostume", "Oral History": "categoryOralHistory" };
 
 // Defaults for /contribute; the edit page overrides all three.
-const defaultIntro = "Fill in the fields below. Khmer text is stored exactly as you write it, and the photo is required.";
-const defaultPhotoHint = "JPG, PNG, or WebP, up to 5 MB";
-const defaultSubmitLabel = "Save entry";
-
 const styles = {
   intro: { margin: "0 0 8px", color: "var(--ink-soft)", font: "400 15px/1.6 var(--font-google-sans), sans-serif" },
   legend: { margin: "0 0 26px", color: "var(--ink-soft)", font: "400 13px/1.5 var(--font-google-sans), sans-serif" },
@@ -29,32 +26,36 @@ const styles = {
   buttonBusy: { opacity: 0.65, cursor: "progress" },
 };
 
-export default function ContributeFields({ values, errors, message, isSaving, onChange, onInvalidInput, onPhotoChange, onSubmit, intro = defaultIntro, photoHint = defaultPhotoHint, submitLabel = defaultSubmitLabel, photoRequired = true, cancelHref }) {
+export default function ContributeFields({ values, errors, message, isSaving, onChange, onInvalidInput, onPhotoChange, onSubmit, intro, photoHint, submitLabel, photoRequired = true, cancelHref }) {
+  const language = useLanguage();
+  const t = formText[language];
+  const categoryOptions = CATEGORIES.map((category) => ({ value: category, label: language === "kh" ? t[categoryTextKey[category]] : category }));
+  const placeOptions = PLACES.map((place) => ({ value: place.en, label: language === "kh" ? place.kh : place.en }));
   return (
     <>
-      <p style={styles.intro}>{intro}</p>
-      <p style={styles.legend}>Fields marked <span style={styles.marker}>*</span> are required. Fields labelled “optional” can be left blank.</p>
+      <p style={styles.intro}>{intro || t.fillFields}</p>
+      <p style={styles.legend}>{t.requiredLegend}</p>
       <form style={styles.form} onSubmit={onSubmit} noValidate>
-        <TextField id="title" label="Title" value={values.title} onChange={onChange("title")} onInvalidInput={onInvalidInput("title")} error={errors.title} maxLength={120} required titleTextEntryOnly trimOnBlur />
-        <TextField id="title_kh" label="Title in Khmer — optional" value={values.title_kh} onChange={onChange("title_kh")} error={errors.title_kh} maxLength={120} khmer />
-        <TextField id="description" label="Description" value={values.description} onChange={onChange("description")} error={errors.description} maxLength={2500} multiline required />
-        <TextField id="description_kh" label="Description in Khmer — optional" value={values.description_kh} onChange={onChange("description_kh")} error={errors.description_kh} maxLength={2500} multiline khmer />
+        <TextField id="title" label={t.title} value={values.title} onChange={onChange("title")} onInvalidInput={onInvalidInput("title")} error={errors.title} maxLength={120} required titleTextEntryOnly trimOnBlur />
+        <TextField id="title_kh" label={t.titleKh} value={values.title_kh} onChange={onChange("title_kh")} error={errors.title_kh} maxLength={120} khmer />
+        <TextField id="description" label={t.description} value={values.description} onChange={onChange("description")} error={errors.description} maxLength={2500} multiline required />
+        <TextField id="description_kh" label={t.descriptionKh} value={values.description_kh} onChange={onChange("description_kh")} error={errors.description_kh} maxLength={2500} multiline khmer />
         <div style={styles.row}>
-          <SelectField id="category" label="Category" value={values.category} onChange={onChange("category")} options={categoryOptions} placeholder="Choose a category" error={errors.category} required />
-          <SelectField id="place" label="Place" value={values.place} onChange={onChange("place")} options={placeOptions} placeholder="Choose a place" error={errors.place} required />
+          <SelectField id="category" label={t.category} value={values.category} onChange={onChange("category")} options={categoryOptions} placeholder={t.chooseCategory} error={errors.category} required />
+          <SelectField id="place" label={t.place} value={values.place} onChange={onChange("place")} options={placeOptions} placeholder={t.choosePlace} error={errors.place} required />
         </div>
         <div style={styles.row}>
-          <TextField id="contributor" label="Contributor" value={values.contributor} onChange={onChange("contributor")} onInvalidInput={onInvalidInput("contributor")} error={errors.contributor} maxLength={100} hint="A person or organization, in English" required textEntryOnly trimOnBlur />
-          <TextField id="contributor_kh" label="Contributor in Khmer — optional" value={values.contributor_kh} onChange={onChange("contributor_kh")} error={errors.contributor_kh} maxLength={100} khmer />
+          <TextField id="contributor" label={t.contributor} value={values.contributor} onChange={onChange("contributor")} onInvalidInput={onInvalidInput("contributor")} error={errors.contributor} maxLength={100} hint={t.contributorHint} required textEntryOnly trimOnBlur />
+          <TextField id="contributor_kh" label={t.contributorKh} value={values.contributor_kh} onChange={onChange("contributor_kh")} error={errors.contributor_kh} maxLength={100} khmer />
         </div>
-        <TextField id="sources" label="Sources — optional" value={values.sources} onChange={onChange("sources")} error={errors.sources} maxLength={2500} multiline />
-        <TextField id="sources_kh" label="Sources in Khmer — optional" value={values.sources_kh} onChange={onChange("sources_kh")} error={errors.sources_kh} maxLength={2500} multiline khmer />
-        <FileField id="photo" label="Photo" hint={photoHint} error={errors.photo} onChange={onPhotoChange} required={photoRequired} />
-        <CheckboxField id="photo_is_ai" label="This image is AI-generated" checked={values.photo_is_ai} onChange={onChange("photo_is_ai")} />
+        <TextField id="sources" label={t.sources} value={values.sources} onChange={onChange("sources")} error={errors.sources} maxLength={2500} multiline />
+        <TextField id="sources_kh" label={t.sourcesKh} value={values.sources_kh} onChange={onChange("sources_kh")} error={errors.sources_kh} maxLength={2500} multiline khmer />
+        <FileField id="photo" label={t.photo} hint={photoHint || t.photoHint} error={errors.photo} onChange={onPhotoChange} required={photoRequired} />
+        <CheckboxField id="photo_is_ai" label={t.aiPhoto} checked={values.photo_is_ai} onChange={onChange("photo_is_ai")} />
         {message ? <p role="alert" style={styles.message}>{message}</p> : null}
         <div style={styles.actions}>
-          <button style={{ ...styles.button, ...(isSaving ? styles.buttonBusy : {}) }} type="submit" disabled={isSaving}>{isSaving ? "Saving…" : submitLabel}</button>
-          {cancelHref && <Link href={cancelHref} style={styles.cancel}>Cancel</Link>}
+          <button style={{ ...styles.button, ...(isSaving ? styles.buttonBusy : {}) }} type="submit" disabled={isSaving}>{isSaving ? t.saving : submitLabel || t.saveEntry}</button>
+          {cancelHref && <Link href={cancelHref} style={styles.cancel}>{t.cancel}</Link>}
         </div>
       </form>
     </>

@@ -8,12 +8,14 @@
 // short, safe line the caller shows to the user.
 
 import { removePhoto, uploadPhoto } from "./uploadPhoto.js";
-import { getTextEntryConstraintError, isMissingSourcesSchema, SOURCES_SCHEMA_MESSAGE } from "./validateEntry.js";
+import formText from "./formText.js";
+import { getTextEntryConstraintError, isMissingSourcesSchema } from "./validateEntry.js";
 
-export async function saveEntry({ supabase, userId, cleaned, image, photoFile }) {
+export async function saveEntry({ supabase, userId, cleaned, image, photoFile, language = "en" }) {
+  const t = formText[language] || formText.en;
   const upload = await uploadPhoto({ supabase, userId, file: photoFile, image });
 
-  if (upload.error) return { ok: false, step: "upload", error: upload.error, message: "The photo could not be uploaded. Please try again." };
+  if (upload.error) return { ok: false, step: "upload", error: upload.error, message: t.photoUploadFailed };
 
   const values = {
     title: cleaned.title,
@@ -43,12 +45,12 @@ export async function saveEntry({ supabase, userId, cleaned, image, photoFile })
 
   if (insertError) {
     await removePhoto(supabase, upload.path);
-    const textError = getTextEntryConstraintError(insertError);
+    const textError = getTextEntryConstraintError(insertError, language);
     return {
       ok: false,
       step: "insert",
       error: insertError,
-      message: isMissingSourcesSchema(insertError) ? SOURCES_SCHEMA_MESSAGE : textError?.message || "Your entry could not be saved. Please try again in a moment.",
+      message: isMissingSourcesSchema(insertError) ? t.sourcesSchema : textError?.message || t.saveFailed,
       field: textError?.field || null,
     };
   }

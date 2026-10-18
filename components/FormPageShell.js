@@ -1,4 +1,9 @@
-  const styles = {
+"use client";
+
+import useLanguage from "./useLanguage.js";
+import formText from "../utils/formText.js";
+
+const styles = {
   page: { minHeight: "100vh", padding: "clamp(32px, 6vh, 72px) 20px", background: "var(--page-bg)" },
   panel: { width: "min(100%, 880px)", margin: "0 auto", padding: "clamp(28px, 5vw, 52px)", background: "var(--surface)", border: "1px solid var(--surface-border)" },
   eyebrow: { margin: "0 0 14px", color: "var(--gold)", font: "600 11px var(--font-google-sans), sans-serif", letterSpacing: ".08em", textTransform: "uppercase" },
@@ -8,10 +13,12 @@
 // The frame shared by /contribute and /entries/<id>/edit: both are the same
 // archive form on the same panel, so the panel and its eyebrow live here.
 export default function FormPageShell({ eyebrow = "Khmer Living Archive", title, children }) {
+  const language = useLanguage();
+  const t = formText[language];
   return (
     <main style={styles.page}>
       <section style={styles.panel}>
-        <p style={styles.eyebrow}>{eyebrow}</p>
+        <p style={styles.eyebrow}>{eyebrow === "Khmer Living Archive" ? t.archive : eyebrow}</p>
         <h1 style={styles.title}>{title}</h1>
         {children}
       </section>

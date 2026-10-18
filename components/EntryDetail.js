@@ -7,6 +7,8 @@ import EntryActions from "./EntryActions.js";
 import { useRevealOnScroll } from "./useRevealOnScroll.js";
 import { createClient } from "../utils/supabase/client.js";
 import { fetchEntry } from "../utils/fetchEntry.js";
+import useLanguage from "./useLanguage.js";
+import formText from "../utils/formText.js";
 
 const styles = {
   page: { minHeight: "100vh", padding: "clamp(24px, 5vh, 56px) clamp(16px, 4vw, 40px)", background: "var(--page-bg)" },
@@ -23,12 +25,8 @@ export default function EntryDetail({ id }) {
   const [owner, setOwner] = useState("");
   const [viewerId, setViewerId] = useState("");
   const [failed, setFailed] = useState("");
-  const [language, setLanguage] = useState("en");
-
-  useEffect(() => {
-    const stored = window.localStorage.getItem("yike-language");
-    if (stored === "en" || stored === "kh") setLanguage(stored);
-  }, []);
+  const language = useLanguage();
+  const t = formText[language];
 
   useEffect(() => {
     let active = true;
@@ -38,7 +36,7 @@ export default function EntryDetail({ id }) {
         const [result, session] = await Promise.all([fetchEntry(supabase, id), supabase.auth.getUser()]);
         if (!active) return;
         if (result.error) {
-          console.error("Could not load the entry", result.error);
+          console.error("Could not load the entry", result.error.code || "unknown");
           setFailed(result.error.code === "PGRST116" ? "missing" : "error");
           return;
         }
@@ -46,7 +44,7 @@ export default function EntryDetail({ id }) {
         setOwner(result.owner || "");
         setViewerId(session.data.user ? session.data.user.id : "");
       } catch (err) {
-        console.error("Could not load the entry", err);
+        console.error("Could not load the entry");
         if (active) setFailed("error");
       }
     })();
@@ -59,8 +57,8 @@ export default function EntryDetail({ id }) {
     <main style={styles.page}>
       <div style={styles.inner}>
         <nav style={styles.bar}>
-          <Link href="/" style={styles.back}>← Back to archive</Link>
-          <Link href="/contribute" style={styles.back}>Add an entry</Link>
+          <Link href="/" style={styles.back}>{t.backToArchive}</Link>
+          <Link href="/contribute" style={styles.back}>{t.addEntryLink}</Link>
         </nav>
         {children}
       </div>
@@ -70,13 +68,13 @@ export default function EntryDetail({ id }) {
   if (failed) {
     return shell(
       <>
-        <h1 style={styles.heading}>{failed === "missing" ? "That entry could not be found." : "We could not load this entry."}</h1>
-        <p style={styles.status} role="alert">{failed === "missing" ? "It may have been removed, or the link is wrong." : "Please try again in a moment."} <Link href="/" style={styles.link}>Back to the archive</Link></p>
+        <h1 style={styles.heading}>{failed === "missing" ? t.missingEntry : t.loadFailedTitle}</h1>
+        <p style={styles.status} role="alert">{failed === "missing" ? t.notFoundDetail : t.retry} <Link href="/" style={styles.link}>{t.backArchive}</Link></p>
       </>
     );
   }
 
-  if (!entry) return shell(<p style={styles.status} role="status">Loading entry…</p>);
+  if (!entry) return shell(<p style={styles.status} role="status">{t.loadingEntry}</p>);
 
   // Edit and Delete belong to the entry's owner only, so compare the signed-in
   // user id against the owner column before offering either control.
@@ -84,7 +82,7 @@ export default function EntryDetail({ id }) {
 
   return shell(
     <>
-      {isOwner ? <EntryActions entryId={id} userId={viewerId} /> : null}
+      {isOwner ? <EntryActions entryId={id} userId={viewerId} language={language} /> : null}
       <EntryCard {...entry} detail language={language} />
     </>
   );

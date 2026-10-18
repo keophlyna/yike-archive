@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "../utils/supabase/client.js";
 import { deleteEntry } from "../utils/deleteEntry.js";
+import formText from "../utils/formText.js";
 
 const styles = {
   bar: { display: "flex", gridColumn: "1 / -1", order: 0, alignItems: "center", justifyContent: "flex-end", gap: 10, flexWrap: "wrap", marginBottom: -22 },
@@ -18,19 +19,20 @@ const styles = {
 // boundary: utils/deleteEntry.js filters on owner as well, and the entries table
 // should carry a matching row level security policy.
 export default function EntryActions({ entryId, userId, title = "", language = "en", onDeleted }) {
+  const t = formText[language] || formText.en;
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
   const [failed, setFailed] = useState(false);
 
   const handleDelete = async () => {
     if (isDeleting) return;
-    if (!window.confirm(`Delete "${title}"? This cannot be undone.`)) return;
+    if (!window.confirm(t.confirmDelete.replace("{title}", title))) return;
     setIsDeleting(true);
     setFailed(false);
 
-    const result = await deleteEntry({ supabase: createClient(), entryId, userId });
+    const result = await deleteEntry({ supabase: createClient(), entryId, userId, language });
     if (!result.ok) {
-      console.error("Could not delete the entry:", result.error);
+      console.error("Could not delete the entry:", result.error?.code || "unknown");
       setFailed(true);
       setIsDeleting(false);
       return;
@@ -41,9 +43,9 @@ export default function EntryActions({ entryId, userId, title = "", language = "
 
   return (
     <div style={styles.bar}>
-      <Link href={`/entries/${entryId}/edit`} style={styles.action} aria-label={`${language === "kh" ? "កែប្រែ" : "Edit"} ${title}…`}>{language === "kh" ? "កែប្រែ" : "Edit"}</Link>
-      <button type="button" onClick={handleDelete} disabled={isDeleting} style={{ ...styles.action, ...styles.danger }} aria-label={`${language === "kh" ? "\u179b\u17bb\u1794" : "Delete"} ${title}\u2026`}>{isDeleting ? (language === "kh" ? "\u1780\u17c6\u1796\u17bb\u1784\u179b\u17bb\u1794\u2026" : "Deleting\u2026") : language === "kh" ? "\u179b\u17bb\u1794" : "Delete"}</button>
-      {failed ? <p role="alert" style={styles.message}>That change wasn't saved</p> : null}
+      <Link href={`/entries/${entryId}/edit`} style={styles.action} aria-label={`${t.edit} ${title}…`}>{t.edit}</Link>
+      <button type="button" onClick={handleDelete} disabled={isDeleting} style={{ ...styles.action, ...styles.danger }} aria-label={`${t.delete} ${title}…`}>{isDeleting ? t.deleting : t.delete}</button>
+      {failed ? <p role="alert" style={styles.message}>{t.notSaved}</p> : null}
     </div>
   );
 }

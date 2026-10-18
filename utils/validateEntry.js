@@ -6,6 +6,7 @@
 // (U+200B) pass through untouched.
 
 import PLACES from "./places.js";
+import formText from "./formText.js";
 
 export const CATEGORIES = ["History", "Performance", "Music", "Costume", "Oral History"];
 export const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
@@ -24,11 +25,11 @@ const TEXT_ENTRY_CONSTRAINTS = {
   entries_contributor_letters_numbers_spaces_check: "contributor",
 };
 
-export function getTextEntryConstraintError(error) {
+export function getTextEntryConstraintError(error, language = "en") {
   if (error?.code !== "23514") return null;
   const errorText = [error.constraint, error.message, error.details].filter(Boolean).join(" ");
   const field = Object.entries(TEXT_ENTRY_CONSTRAINTS).find(([name]) => errorText.includes(name))?.[1];
-  return field ? { field, message: field === "title" ? TITLE_TEXT_ENTRY_ERROR : TEXT_ENTRY_ERROR } : null;
+  return field ? { field, message: formText[language]?.[field === "title" ? "titleAllowed" : "textAllowed"] || (field === "title" ? TITLE_TEXT_ENTRY_ERROR : TEXT_ENTRY_ERROR) } : null;
 }
 
 export function isMissingSourcesSchema(error) {
@@ -120,6 +121,7 @@ function checkContributor(value) {
 // pass { photoRequired: false }: no file means "keep the current photo", so
 // image comes back null and the caller leaves photo_url alone.
 export async function validateEntry(values, photoFile, options = {}) {
+  const t = formText[options.language] || formText.en;
   const cleaned = {
     title: String(values.title || "").trim(),
     title_kh: String(values.title_kh || "").trim(),
@@ -150,7 +152,19 @@ export async function validateEntry(values, photoFile, options = {}) {
     photo: photo.error,
   };
 
-  const found = Object.fromEntries(Object.entries(errors).filter(([, message]) => message));
+  const translations = {
+    "Choose a photo": t.photoRequired, "That file is empty": t.emptyPhoto, "The photo must be 5 MB or smaller": t.photoTooLarge,
+    "Use a JPG, PNG, or WebP photo": t.photoType, "Title is required": t.titleRequired, [TITLE_TEXT_ENTRY_ERROR]: t.titleAllowed,
+    "Remove control characters": t.control, "Use 3 to 120 characters": t.chars120, "Use 30 to 2,500 characters": t.chars30,
+    "Add at least one letter": t.letterRequired, "Add Khmer text, or leave this field empty": t.khmerRequired,
+    "Use 100 characters or fewer": t.chars100, "Use 120 characters or fewer": t.chars120max, "Use 2,500 characters or fewer": t.chars2500,
+    "Description is required": t.descriptionRequired, "Choose a category": t.chooseCategory, "Choose a category from the list": t.categoryList,
+    "Choose a place": t.choosePlace, "Choose a place from the list": t.placeList, "Contributor is required": t.contributorRequired,
+    [TEXT_ENTRY_ERROR]: t.textAllowed, "Enter a name, not a link or URL": t.nameNotUrl,
+    "Name the person or organization, not “unknown”": t.unknownName,
+  };
+  const localizedErrors = Object.fromEntries(Object.entries(errors).map(([field, message]) => [field, translations[message] || message]));
+  const found = Object.fromEntries(Object.entries(localizedErrors).filter(([, message]) => message));
   if (Object.keys(found).length > 0) return { ok: false, errors: found };
 
   return {
