@@ -124,7 +124,7 @@ const styles = {
   metaRow: { display: "flex", flexWrap: "wrap", marginTop: "clamp(42px, 6vw, 76px)" },
   meta: { minWidth: 210, flex: "1 1 210px", padding: "0 28px", borderLeft: "1px solid var(--hero-rule)" },
   metaFirst: { paddingLeft: 0, borderLeft: 0 },
-  metaLabel: { margin: 0, color: "var(--gold)", font: `700 16px/1.4 ${fontSans}`, letterSpacing: ".03em" },
+  metaLabel: { margin: 0, color: "var(--gold)", fontFamily: fontSans, fontWeight: 700, fontSize: 16, lineHeight: 1.4, letterSpacing: ".03em" },
   metaValue: { margin: "8px 0 0", color: "var(--hero-fg)", font: `400 15px/1.45 ${fontSans}` },
   main: { width: contentWidth, margin: "0 auto", padding: "clamp(56px, 8vw, 116px) 0 60px" },
   sectionHeader: { display: "flex", alignItems: "center", gap: 14, borderBottom: "1px solid var(--rule)", paddingBottom: 18 },
@@ -445,7 +445,10 @@ export default function Home() {
       <header style={{ ...styles.header, ...(scrolled ? styles.headerScrolled : {}) }}>
         <div className="yk-header-inner" style={styles.headerInner}>
           <div className="yk-header-top" style={styles.headerTop}>
-            <p className="yk-wordmark" style={styles.wordmark}><Image src="/entries/lakhon-yike-logo.png" alt="" width={2000} height={1414} priority style={{ display: "block", width: 64, height: "auto", objectFit: "contain" }} />{t.wordmark}</p>
+            <Link href="/" className="yk-wordmark" style={{ ...styles.wordmark, textDecoration: "none" }} aria-label={t.wordmark}>
+              <Image src="/entries/lakhon-yike-logo.png" alt="" width={2000} height={1414} priority style={{ display: "block", width: 64, height: "auto", objectFit: "contain" }} />
+              {t.wordmark}
+            </Link>
             <div className="yk-search-wrap" style={styles.searchAndAdd}>
             <form style={styles.searchWrap} role="search" onSubmit={(event) => { event.preventDefault(); commitSearch(); }}>
               <label htmlFor="archive-search" style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0,0,0,0)" }}>{t.searchLabel}</label>
