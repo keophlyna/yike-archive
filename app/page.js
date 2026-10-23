@@ -256,6 +256,7 @@ export default function Home() {
     supabase
       .from("entries")
       .select("*")
+      .eq("status", "published")
       .order("created_at", { ascending: false })
       .then(({ data, error }) => {
         if (!active) return;
@@ -477,7 +478,7 @@ export default function Home() {
                 </ul>
               </>}
             </form>
-            {user && <Link href="/contribute" style={styles.addEntryLink}><span aria-hidden="true" style={{ fontSize: 18, lineHeight: 1 }}>+</span>{t.addEntry}</Link>}
+            {user && <><Link href="/my-entries" style={styles.authLink}>{language === "kh" ? "ឯកសាររបស់ខ្ញុំ" : "My entries"}</Link><Link href="/contribute" style={styles.addEntryLink}><span aria-hidden="true" style={{ fontSize: 18, lineHeight: 1 }}>+</span>{t.addEntry}</Link></>}
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <div ref={profileRef} style={styles.profileWrap}>

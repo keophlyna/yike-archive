@@ -12,6 +12,11 @@ import { getTextEntryConstraintError, isMissingSourcesSchema } from "./validateE
 // Returns { ok: true, id } or { ok: false, step, error, message }.
 export async function updateEntry({ supabase, entryId, userId, cleaned, image, photoFile, language = "en" }) {
   const t = formText[language] || formText.en;
+  let isReviewer = false;
+  try {
+    const result = await supabase.rpc("is_reviewer");
+    isReviewer = result.data === true;
+  } catch (_) {}
   let upload = null;
 
   if (image && photoFile) {
@@ -33,6 +38,8 @@ export async function updateEntry({ supabase, entryId, userId, cleaned, image, p
     sources_kh: cleaned.sources_kh,
     photo_is_ai: cleaned.photo_is_ai,
   };
+
+  if (!isReviewer) changes.status = "pending";
 
   if (upload) changes.photo_url = upload.publicUrl;
 

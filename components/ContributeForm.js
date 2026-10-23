@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import EntryForm from "./EntryForm.js";
 import FormPageShell from "./FormPageShell.js";
@@ -20,9 +19,9 @@ const styles = {
 export default function ContributeForm() {
   const language = useLanguage();
   const t = formText[language];
-  const router = useRouter();
   const supabaseRef = useRef(null);
   const [session, setSession] = useState(undefined);
+  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -41,7 +40,7 @@ export default function ContributeForm() {
       console.error("Could not save entry:", saved.step, saved.error?.code || "unknown");
       return { ok: false, error: saved.error, message: saved.message, field: saved.field || (saved.step === "upload" ? "photo" : null) };
     }
-    router.push(`/entries/${saved.id}`);
+    setSubmitted(true);
     return { ok: true };
   };
 
@@ -51,7 +50,11 @@ export default function ContributeForm() {
         ? <p style={styles.intro}>{t.checkingSession}</p>
         : session === null
           ? <p style={styles.intro}>{t.loginToAdd} <Link style={styles.link} href="/login">{t.logIn}</Link></p>
-          : <EntryForm onSave={handleSave} cancelHref="/" />}
+          : submitted
+            ? <p style={styles.intro} role="status">{language === "kh"
+              ? "សូមអរគុណ! ឯកសាររបស់អ្នកត្រូវបានទទួល ហើយកំពុងរង់ចាំការពិនិត្យ។ អ្នកអាចឃើញវានៅក្នុង «ឯកសាររបស់ខ្ញុំ»។ វានឹងបង្ហាញក្នុងបណ្ណសារនៅពេលអ្នកពិនិត្យយល់ព្រម។"
+              : "Thank you. Your entry has been received and is waiting for review. You can find it under My entries. It will appear in the archive once a reviewer approves it."}</p>
+            : <EntryForm onSave={handleSave} cancelHref="/" />}
     </FormPageShell>
   );
 }
