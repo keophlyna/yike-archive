@@ -34,9 +34,9 @@ export default function EntryCard({ id, canManage, userId, onDeleted, title, tit
             <div className="ec-detail-identity" style={styles.detailIdentity}>
               <span className="ec-folio" style={{ ...styles.folio, ...styles.detailFolio }} aria-hidden="true">{number}</span>
               <span className="visually-hidden">Entry {number}</span>
-              <span className="ec-category" style={{ ...styles.category, ...styles.detailCategory, color: accent }}>{category}</span>
               <h3 className="ec-title" style={{ ...styles.title, ...styles.detailTitle }}>{displayTitle}</h3>
               {titleKh && <p className="ec-title-kh" style={{ ...styles.titleKh, ...styles.detailTitleKh }}>{titleKh}</p>}
+              <span className="ec-category" style={{ ...styles.category, ...styles.detailCategory, color: accent }}>{category}</span>
             </div>
             <div className="ec-detail-info" style={styles.detailInfo}>
               {publishedDate ? <p style={styles.published}>{translations.published}: {publishedDate}</p> : null}

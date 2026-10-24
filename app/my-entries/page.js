@@ -43,16 +43,16 @@ export default function MyEntriesPage() {
     return () => { active = false; };
   }, []);
 
-  return <main style={styles.page}>
+  return <main className="yk-my-entries" style={styles.page}>
     <Link href="/" style={styles.back}>{t.back}</Link>
     <h1 style={styles.title}>{t.title}</h1>
     {state === "loading" ? <p style={styles.message} role="status">{t.loading}</p>
       : state === "signed-out" ? <p style={styles.message}>{t.login} <Link href="/login">{t.loginLink}</Link></p>
         : state === "error" ? <p style={styles.message} role="alert">{t.failed}</p>
           : entries.length === 0 ? <p style={styles.message}>{t.empty}</p>
-            : <ul style={styles.list}>{entries.map((entry) => <li key={entry.id} style={styles.row}>
-              <Link href={`/entries/${entry.id}`} style={styles.entry}>{language === "kh" && entry.title_kh ? entry.title_kh : entry.title}</Link>
-              <span style={styles.status}>{t[entry.status] || entry.status}</span>
+            : <ul className="yk-my-entries-list" style={styles.list}>{entries.map((entry) => <li key={entry.id} style={styles.row}>
+              <Link className="yk-my-entry-title" href={`/entries/${entry.id}`} style={styles.entry}>{language === "kh" && entry.title_kh ? entry.title_kh : entry.title}</Link>
+              <span className="yk-my-entry-status" style={styles.status}>{t[entry.status] || entry.status}</span>
             </li>)}</ul>}
   </main>;
 }

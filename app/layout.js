@@ -2,6 +2,7 @@
 import { googleSansFlex, notoSerifKhmer } from "./fonts.js";
 import ThemeProvider from "./ThemeContext.js";
 import "./theme.css";
+import "./responsive.css";
 
 export const metadata = {
   title: `${collection.name} — Khmer Living Archive`,

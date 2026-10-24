@@ -35,7 +35,7 @@ export default function ContributeFields({ values, errors, message, isSaving, on
     <>
       <p style={styles.intro}>{intro || t.fillFields}</p>
       <p style={styles.legend}>{t.requiredLegend}</p>
-      <form style={styles.form} onSubmit={onSubmit} noValidate>
+      <form className="yk-entry-form" style={styles.form} onSubmit={onSubmit} noValidate>
         <TextField id="title" label={t.title} value={values.title} onChange={onChange("title")} onInvalidInput={onInvalidInput("title")} error={errors.title} maxLength={120} required titleTextEntryOnly trimOnBlur />
         <TextField id="title_kh" label={t.titleKh} value={values.title_kh} onChange={onChange("title_kh")} error={errors.title_kh} maxLength={120} khmer />
         <TextField id="description" label={t.description} value={values.description} onChange={onChange("description")} error={errors.description} maxLength={2500} multiline required />

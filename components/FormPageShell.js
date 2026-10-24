@@ -16,8 +16,8 @@ export default function FormPageShell({ eyebrow = "Khmer Living Archive", title,
   const language = useLanguage();
   const t = formText[language];
   return (
-    <main style={styles.page}>
-      <section style={styles.panel}>
+    <main className="yk-form-page" style={styles.page}>
+      <section className="yk-form-panel" style={styles.panel}>
         <p style={styles.eyebrow}>{eyebrow === "Khmer Living Archive" ? t.archive : eyebrow}</p>
         <h1 style={styles.title}>{title}</h1>
         {children}

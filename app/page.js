@@ -485,7 +485,7 @@ export default function Home() {
                 <button ref={profileTriggerRef} type="button" aria-label={t.accountMenu} aria-expanded={profileOpen} aria-haspopup="dialog" onClick={() => setProfileOpen((open) => !open)} style={styles.profileTrigger}>
                   <span aria-hidden="true" style={styles.profileAvatar}>{profileInitial}</span><span aria-hidden="true" style={styles.profileChevron}>⌄</span>
                 </button>
-                {profileOpen && <div role="dialog" aria-label={t.accountMenu} style={styles.profileMenu}>
+                {profileOpen && <div className="yk-profile-menu" role="dialog" aria-label={t.accountMenu} style={styles.profileMenu}>
                   <p style={styles.profileEyebrow}>{t.currentAccount}</p>
                   <div style={styles.profileSummary}>
                     <span aria-hidden="true" style={{ ...styles.profileAvatar, ...styles.profileSummaryAvatar }}>{profileInitial}</span>

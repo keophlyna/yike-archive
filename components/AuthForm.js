@@ -61,12 +61,12 @@ export default function AuthForm({ mode }) {
 	};
 
 	return (
-		<main style={styles.page}>
-			<section style={styles.panel}>
+		<main className="yk-auth-page" style={styles.page}>
+			<section className="yk-auth-panel" style={styles.panel}>
 				<p style={styles.eyebrow}>{t.archive}</p>
 				<h1 style={styles.title}>{isLogin ? t.welcome : t.createAccount}</h1>
 				<p style={styles.intro}>{isLogin ? t.signInIntro : t.joinIntro}</p>
-				<form style={styles.form} onSubmit={handleSubmit}>
+				<form className="yk-auth-form" style={styles.form} onSubmit={handleSubmit}>
 					<label style={styles.label}>{t.email}<input style={styles.input} type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" required /></label>
 					<label style={styles.label}>{t.password}<input style={styles.input} type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete={isLogin ? "current-password" : "new-password"} minLength={6} required /></label>
 					{message && <p role="alert" style={styles.message}>{message}</p>}
