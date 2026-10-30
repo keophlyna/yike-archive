@@ -200,6 +200,7 @@ export default function Home() {
   const [languageReady, setLanguageReady] = useState(false);
   const [user, setUser] = useState(null);
   const [authReady, setAuthReady] = useState(false);
+  const [isReviewer, setIsReviewer] = useState(false);
   const [showMine, setShowMine] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -283,6 +284,16 @@ export default function Home() {
       authListener.subscription.unsubscribe();
     };
   }, []);
+
+  // Ask the database, not the client, whether this user reviews entries. The
+  // link is only shown when is_reviewer returns exactly true.
+  useEffect(() => {
+    const supabase = supabaseRef.current;
+    if (!user || !supabase) { setIsReviewer(false); return; }
+    let active = true;
+    supabase.rpc("is_reviewer").then(({ data }) => { if (active) setIsReviewer(data === true); }).catch(() => { if (active) setIsReviewer(false); });
+    return () => { active = false; };
+  }, [user?.id]);
 
   useEffect(() => {
     if (!authReady) return;
@@ -478,7 +489,7 @@ export default function Home() {
                 </ul>
               </>}
             </form>
-            {user && <><Link href="/my-entries" style={styles.authLink}>{language === "kh" ? "ឯកសាររបស់ខ្ញុំ" : "My entries"}</Link><Link href="/contribute" style={styles.addEntryLink}><span aria-hidden="true" style={{ fontSize: 18, lineHeight: 1 }}>+</span>{t.addEntry}</Link></>}
+            {user && <><Link href="/my-entries" style={styles.authLink}>{language === "kh" ? "ឯកសាររបស់ខ្ញុំ" : "My entries"}</Link>{isReviewer && <Link href="/review" style={styles.authLink}>{language === "kh" ? "ពិនិត្យ" : "Review"}</Link>}<Link href="/contribute" style={styles.addEntryLink}><span aria-hidden="true" style={{ fontSize: 18, lineHeight: 1 }}>+</span>{t.addEntry}</Link></>}
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <div ref={profileRef} style={styles.profileWrap}>

@@ -14,6 +14,7 @@ import formText from "../utils/formText.js";
 const styles = {
   intro: { margin: "16px 0 0", color: "var(--ink-soft)", font: "400 15px/1.6 var(--font-google-sans), sans-serif" },
   link: { color: "var(--jade)", fontWeight: 600 },
+  homeButton: { display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: 44, marginTop: 20, padding: "10px 17px", border: "1px solid var(--surface-border)", borderRadius: 999, background: "var(--ink)", color: "var(--page-bg)", font: "600 13px var(--font-google-sans), sans-serif", textDecoration: "none" },
 };
 
 export default function ContributeForm() {
@@ -51,9 +52,10 @@ export default function ContributeForm() {
         : session === null
           ? <p style={styles.intro}>{t.loginToAdd} <Link style={styles.link} href="/login">{t.logIn}</Link></p>
           : submitted
-            ? <p style={styles.intro} role="status">{language === "kh"
+            ? <><p style={styles.intro} role="status">{language === "kh"
               ? "សូមអរគុណ! ឯកសាររបស់អ្នកត្រូវបានទទួល ហើយកំពុងរង់ចាំការពិនិត្យ។ អ្នកអាចឃើញវានៅក្នុង «ឯកសាររបស់ខ្ញុំ»។ វានឹងបង្ហាញក្នុងបណ្ណសារនៅពេលអ្នកពិនិត្យយល់ព្រម។"
               : "Thank you. Your entry has been received and is waiting for review. You can find it under My entries. It will appear in the archive once a reviewer approves it."}</p>
+              <Link href="/" style={styles.homeButton}>{t.backArchive}</Link></>
             : <EntryForm onSave={handleSave} cancelHref="/" />}
     </FormPageShell>
   );
