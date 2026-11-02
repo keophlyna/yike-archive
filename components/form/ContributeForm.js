@@ -4,10 +4,10 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import EntryForm from "./EntryForm.js";
 import FormPageShell from "./FormPageShell.js";
-import { createClient } from "../utils/supabase/client.js";
-import { saveEntry } from "../utils/saveEntry.js";
-import useLanguage from "./useLanguage.js";
-import formText from "../utils/formText.js";
+import { createClient } from "../../utils/supabase/client.js";
+import { saveEntry } from "../../utils/entries/saveEntry.js";
+import useLanguage from "../hooks/useLanguage.js";
+import formText from "../../utils/form/formText.js";
 
 // The frame around the form is FormPageShell; these style the session lines
 // that take its place before we know who the visitor is.

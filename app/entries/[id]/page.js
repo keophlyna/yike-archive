@@ -1,4 +1,4 @@
-import EntryDetail from "../../../components/EntryDetail.js";
+import EntryDetail from "../../../components/entry/EntryDetail.js";
 
 // A generic title: the entry's own title can only be known after a client-side
 // fetch, because utils/supabase/server.js is not configured in this project.

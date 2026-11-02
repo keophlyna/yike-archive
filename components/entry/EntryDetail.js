@@ -4,11 +4,11 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import EntryCard from "./EntryCard.js";
 import EntryActions from "./EntryActions.js";
-import { useRevealOnScroll } from "./useRevealOnScroll.js";
-import { createClient } from "../utils/supabase/client.js";
-import { fetchEntry } from "../utils/fetchEntry.js";
-import useLanguage from "./useLanguage.js";
-import formText from "../utils/formText.js";
+import { useRevealOnScroll } from "../hooks/useRevealOnScroll.js";
+import { createClient } from "../../utils/supabase/client.js";
+import { fetchEntry } from "../../utils/entries/fetchEntry.js";
+import useLanguage from "../hooks/useLanguage.js";
+import formText from "../../utils/form/formText.js";
 
 const styles = {
   page: { minHeight: "100vh", padding: "clamp(24px, 5vh, 56px) clamp(16px, 4vw, 40px)", background: "var(--page-bg)" },

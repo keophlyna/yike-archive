@@ -1,4 +1,4 @@
-import ContributeForm from "../../components/ContributeForm.js";
+import ContributeForm from "../../components/form/ContributeForm.js";
 
 export const metadata = {
   title: "Add an entry — Khmer Living Archive",

@@ -1,7 +1,7 @@
 "use client";
 
-import useLanguage from "./useLanguage.js";
-import formText from "../utils/formText.js";
+import useLanguage from "../hooks/useLanguage.js";
+import formText from "../../utils/form/formText.js";
 
 const styles = {
   page: { minHeight: "100vh", padding: "clamp(32px, 6vh, 72px) 20px", background: "var(--page-bg)" },

@@ -5,10 +5,10 @@ import Link from "next/link";
 import FileField from "./FileField.js";
 import SelectField from "./SelectField.js";
 import TextField from "./TextField.js";
-import PLACES from "../utils/places.js";
-import { CATEGORIES } from "../utils/validateEntry.js";
-import useLanguage from "./useLanguage.js";
-import formText from "../utils/formText.js";
+import PLACES from "../../utils/form/places.js";
+import { CATEGORIES } from "../../utils/form/validateEntry.js";
+import useLanguage from "../hooks/useLanguage.js";
+import formText from "../../utils/form/formText.js";
 
 const categoryTextKey = { History: "categoryHistory", Performance: "categoryPerformance", Music: "categoryMusic", Costume: "categoryCostume", "Oral History": "categoryOralHistory" };
 

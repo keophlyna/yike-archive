@@ -8,8 +8,8 @@
 // short, safe line the caller shows to the user.
 
 import { removePhoto, uploadPhoto } from "./uploadPhoto.js";
-import formText from "./formText.js";
-import { getTextEntryConstraintError, isMissingSourcesSchema } from "./validateEntry.js";
+import formText from "../form/formText.js";
+import { getTextEntryConstraintError, isMissingSourcesSchema } from "../form/validateEntry.js";
 
 export async function saveEntry({ supabase, userId, cleaned, image, photoFile, language = "en" }) {
   const t = formText[language] || formText.en;

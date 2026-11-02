@@ -1,4 +1,4 @@
-import AuthForm from "../../components/AuthForm.js";
+import AuthForm from "../../components/auth/AuthForm.js";
 
 export const metadata = {
   title: "Sign up — Khmer Living Archive",

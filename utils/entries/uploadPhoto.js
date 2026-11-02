@@ -1,6 +1,6 @@
 // The single place that knows how a photo reaches Supabase Storage: bucket
 // "photos", path <user id>/<uuid>.<extension>. The extension always comes from
-// the validated file type in utils/validateEntry.js, never from the filename.
+// the validated file type in utils/form/validateEntry.js, never from the filename.
 
 const BUCKET = "photos";
 

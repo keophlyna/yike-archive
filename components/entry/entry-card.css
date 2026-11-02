@@ -1,5 +1,5 @@
 /* EntryCard layout, motion and small-screen rules. Was an inline <style> built
-   from a string in components/EntryCard.js; moved here as a plain stylesheet. */
+   from a string in components/entry/EntryCard.js; moved here as a plain stylesheet. */
 .ec-card { box-sizing: border-box; }
 .ec-description-excerpt { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
 .ec-read-more:hover { background: var(--red) !important; border-color: var(--red) !important; box-shadow: 0 5px 14px var(--shadow); }

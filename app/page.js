@@ -5,12 +5,12 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import collection from "../collection.config.js";
 import "./home.css";
-import EntryCard from "../components/EntryCard.js";
+import EntryCard from "../components/entry/EntryCard.js";
 import { createClient } from "../utils/supabase/client.js";
-import { useTheme } from "./ThemeContext.js";
-import ThemeToggle from "./ThemeToggle.js";
-import MyEntriesToggle from "../components/MyEntriesToggle.js";
-import LoginPrompt from "../components/LoginPrompt.js";
+import { useTheme } from "../components/theme/ThemeContext.js";
+import ThemeToggle from "../components/theme/ThemeToggle.js";
+import MyEntriesToggle from "../components/auth/MyEntriesToggle.js";
+import LoginPrompt from "../components/auth/LoginPrompt.js";
 
 const contentWidth = "min(90vw, 1760px)";
 const fontSans = "var(--font-google-sans), sans-serif";

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createClient } from "../../utils/supabase/client.js";
-import useLanguage from "../../components/useLanguage.js";
+import useLanguage from "../../components/hooks/useLanguage.js";
 
 const text = {
   en: { title: "My entries", loading: "Loading your entries…", login: "Log in to see your entries.", loginLink: "Log in", empty: "You haven't submitted any entries yet.", failed: "Your entries could not be loaded. Please try again.", back: "Back to the archive", pending: "Waiting for review", published: "Published", returned: "Returned for changes" },

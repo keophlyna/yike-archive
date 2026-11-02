@@ -1,6 +1,6 @@
 import { removePhoto, uploadPhoto } from "./uploadPhoto.js";
-import formText from "./formText.js";
-import { getTextEntryConstraintError, isMissingSourcesSchema } from "./validateEntry.js";
+import formText from "../form/formText.js";
+import { getTextEntryConstraintError, isMissingSourcesSchema } from "../form/validateEntry.js";
 
 // Updates an entry in place. Changing the photo is optional: when no new file
 // was picked, photo_url is simply left out of the update so the old photo stays.

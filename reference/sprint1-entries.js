@@ -1,4 +1,6 @@
-﻿const entries = [
+﻿// Original Sprint 1 entries, kept for reference only.
+// Nothing imports this file: the live archive reads entries from Supabase.
+const entries = [
   {
     title: "History & Cultural Context of Lakhon Yike",
     description:

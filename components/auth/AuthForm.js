@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import useLanguage from "./useLanguage.js";
-import formText from "../utils/formText.js";
-import { createClient } from "../utils/supabase/client.js";
+import useLanguage from "../hooks/useLanguage.js";
+import formText from "../../utils/form/formText.js";
+import { createClient } from "../../utils/supabase/client.js";
 
 const styles = {
 	page: { minHeight: "100vh", display: "grid", placeItems: "center", padding: "32px 20px", background: "var(--hero-bg)", color: "var(--hero-fg)" },

@@ -4,7 +4,7 @@
 //     node scripts/check-khmer.mjs
 //
 // Why the copy step: this project is CommonJS (no "type": "module" in
-// package.json), so Node cannot import utils/*.js directly. Those two modules
+// package.json), so Node cannot import utils/form/*.js directly. Those two modules
 // are plain ESM with no JSX, so they are copied into a temporary directory as
 // .mjs and imported from there. Nothing is added to package.json.
 
@@ -26,8 +26,8 @@ const copy = (rel) => {
   return target;
 };
 
-copy("utils/places.js");
-const validatePath = copy("utils/validateEntry.js");
+copy("utils/form/places.js");
+const validatePath = copy("utils/form/validateEntry.js");
 const { validateEntry, CATEGORIES } = await import(pathToFileURL(validatePath).href);
 const { default: PLACES } = await import(pathToFileURL(path.join(temp, "places.mjs")).href);
 

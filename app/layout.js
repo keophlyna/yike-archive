@@ -1,6 +1,6 @@
 ﻿import collection from "../collection.config.js";
 import { googleSansFlex, notoSerifKhmer } from "./fonts.js";
-import ThemeProvider from "./ThemeContext.js";
+import ThemeProvider from "../components/theme/ThemeContext.js";
 import "./theme.css";
 import "./responsive.css";
 

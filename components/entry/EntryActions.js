@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { createClient } from "../utils/supabase/client.js";
-import { deleteEntry } from "../utils/deleteEntry.js";
-import formText from "../utils/formText.js";
+import { createClient } from "../../utils/supabase/client.js";
+import { deleteEntry } from "../../utils/entries/deleteEntry.js";
+import formText from "../../utils/form/formText.js";
 
 const styles = {
   bar: { display: "flex", gridColumn: "1 / -1", order: 0, alignItems: "center", justifyContent: "flex-end", gap: 10, flexWrap: "wrap", marginBottom: -22 },
@@ -16,7 +16,7 @@ const styles = {
 
 // Rendered only when the signed-in user owns the entry, so this hides the
 // controls from everyone else. That is a usability gate, not the security
-// boundary: utils/deleteEntry.js filters on owner as well, and the entries table
+// boundary: utils/entries/deleteEntry.js filters on owner as well, and the entries table
 // should carry a matching row level security policy.
 export default function EntryActions({ entryId, userId, title = "", language = "en", onDeleted }) {
   const t = formText[language] || formText.en;

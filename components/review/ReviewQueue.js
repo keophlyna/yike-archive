@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { createClient } from "../utils/supabase/client.js";
-import useLanguage from "./useLanguage.js";
+import { createClient } from "../../utils/supabase/client.js";
+import useLanguage from "../hooks/useLanguage.js";
 import ReviewItem from "./ReviewItem.js";
 import reviewText from "./reviewText.js";
 

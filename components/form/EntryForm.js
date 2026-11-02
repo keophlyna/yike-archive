@@ -2,9 +2,9 @@
 
 import { useRef, useState } from "react";
 import ContributeFields from "./ContributeFields.js";
-import useLanguage from "./useLanguage.js";
-import formText from "../utils/formText.js";
-import { validateEntry } from "../utils/validateEntry.js";
+import useLanguage from "../hooks/useLanguage.js";
+import formText from "../../utils/form/formText.js";
+import { validateEntry } from "../../utils/form/validateEntry.js";
 
 const emptyValues = { title: "", title_kh: "", description: "", description_kh: "", category: "", place: "", contributor: "", contributor_kh: "", sources: "", sources_kh: "", photo_is_ai: false };
 

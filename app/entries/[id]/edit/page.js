@@ -1,4 +1,4 @@
-import EntryEditor from "../../../../components/EntryEditor.js";
+import EntryEditor from "../../../../components/form/EntryEditor.js";
 
 export const metadata = {
   title: "Edit an entry — Khmer Living Archive",

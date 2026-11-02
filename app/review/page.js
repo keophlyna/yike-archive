@@ -1,4 +1,4 @@
-import ReviewQueue from "../../components/ReviewQueue.js";
+import ReviewQueue from "../../components/review/ReviewQueue.js";
 import { createClient } from "../../utils/supabase/server.js";
 
 export const metadata = {

@@ -1,6 +1,6 @@
 "use client";
 
-import { isAllowedTextEntry, isAllowedTitleTextEntry } from "../utils/validateEntry.js";
+import { isAllowedTextEntry, isAllowedTitleTextEntry } from "../../utils/form/validateEntry.js";
 
 const styles = {
   field: { display: "grid", gap: 6 },

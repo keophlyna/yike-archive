@@ -1,7 +1,7 @@
 "use client";
 
 // The accept list is a convenience for the file picker only. The real type
-// check happens in utils/validateEntry.js against the file's first bytes.
+// check happens in utils/form/validateEntry.js against the file's first bytes.
 const ACCEPT = ".jpg,.jpeg,.png,.webp";
 
 const styles = {

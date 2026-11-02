@@ -1,7 +1,7 @@
 "use client";
 
-import PendingPhoto from "./PendingPhoto.js";
-import { fontKhmer } from "./entryCardStyles.js";
+import PendingPhoto from "../entry/PendingPhoto.js";
+import { fontKhmer } from "../entry/entryCardStyles.js";
 
 const styles = {
   item: { display: "flex", flexWrap: "wrap", gap: 24, padding: "28px 0", borderBottom: "1px solid var(--rule)" },

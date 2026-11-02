@@ -5,11 +5,11 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import EntryForm from "./EntryForm.js";
 import FormPageShell from "./FormPageShell.js";
-import { createClient } from "../utils/supabase/client.js";
-import { fetchEntry } from "../utils/fetchEntry.js";
-import { updateEntry } from "../utils/updateEntry.js";
-import useLanguage from "./useLanguage.js";
-import formText from "../utils/formText.js";
+import { createClient } from "../../utils/supabase/client.js";
+import { fetchEntry } from "../../utils/entries/fetchEntry.js";
+import { updateEntry } from "../../utils/entries/updateEntry.js";
+import useLanguage from "../hooks/useLanguage.js";
+import formText from "../../utils/form/formText.js";
 
 // The frame around the form is FormPageShell; these style the status lines that
 // take its place while loading, or when access is refused.

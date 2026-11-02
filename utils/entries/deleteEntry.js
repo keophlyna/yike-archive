@@ -1,4 +1,4 @@
-import formText from "./formText.js";
+import formText from "../form/formText.js";
 
 // Deletes an entry the signed-in user owns. Filtered by id AND owner, and it
 // always ends in .select() so we can prove a row really came back before

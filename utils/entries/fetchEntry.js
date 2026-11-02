@@ -1,12 +1,12 @@
 // Loads one entry by id and converts the database row into the camelCase shape
-// components/EntryCard.js expects. Every column is mapped one at a time so no
+// components/entry/EntryCard.js expects. Every column is mapped one at a time so no
 // unexpected column can leak into the view.
 //
 // entryNumber matches the homepage numbering: entries are listed newest-first,
 // so the position is "how many entries were created after this one, plus one".
 //
 // Returns { entry, owner } on success or { error } on failure. The owner is
-// kept beside the entry rather than inside it so components/EntryCard.js only
+// kept beside the entry rather than inside it so components/entry/EntryCard.js only
 // ever receives view props.
 export async function fetchEntry(supabase, id) {
   const { data, error } = await supabase
