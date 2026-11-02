@@ -8,7 +8,7 @@
 .ec-detail-card .ec-title-kh { font-size: clamp(27px, 3.2vw, 38px) !important; }
 @media (prefers-reduced-motion: no-preference) {
   .ec-read-more:hover .ec-read-more-arrow { transform: translateX(3px); }
-  .ec-read-more-arrow { transition: transform 180ms ease; }
+  .ec-read-more-arrow { transition: transform var(--dur-fast) var(--ease-out); }
 }
 @media (max-width: 860px) {
   .ec-card { grid-template-columns: 1fr !important; gap: 34px !important; }
@@ -37,21 +37,21 @@
   .ec-detail-place { justify-self: start !important; text-align: left !important; }
 }
 @media (prefers-reduced-motion: no-preference) {
-  .ec-feature-section.is-visible .ec-timeline-line { transform: scaleY(1); transition: transform 700ms ease; }
+  .ec-feature-section.is-visible .ec-timeline-line { transform: scaleY(1); transition: transform var(--dur-slow) var(--ease-out); }
   .ec-timeline-line { transform: scaleY(0); }
-  .ec-phase.yk-reveal, .ec-archetype.yk-reveal { transition: opacity 700ms ease, transform 240ms ease, box-shadow 240ms ease; }
+  .ec-phase.yk-reveal, .ec-archetype.yk-reveal { transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-base) var(--ease-out), box-shadow var(--dur-base) var(--ease-out); }
   .ec-phase:nth-of-type(2), .ec-archetype:nth-child(2) { transition-delay: 100ms; }
   .ec-phase:nth-of-type(3), .ec-archetype:nth-child(3) { transition-delay: 200ms; }
   .ec-phase:nth-of-type(4), .ec-archetype:nth-child(4) { transition-delay: 300ms; }
   .ec-phase:hover, .ec-archetype:hover { transform: translateY(-4px) rotate(.5deg); box-shadow: 0 8px 20px var(--shadow); }
-  .ec-garment.yk-reveal { opacity: 0; transform: translateY(28px) scale(.96); transition: opacity 800ms ease, transform 260ms ease, box-shadow 240ms ease; }
+  .ec-garment.yk-reveal { opacity: 0; transform: translateY(28px) scale(.96); transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-base) var(--ease-out), box-shadow var(--dur-base) var(--ease-out); }
   .ec-garment.yk-reveal.is-visible { opacity: 1; transform: translateY(0) scale(1); }
   .ec-garment:nth-child(2) { transition-delay: 130ms; }
   .ec-garment:nth-child(3) { transition-delay: 260ms; }
   .ec-garment:nth-child(4) { transition-delay: 390ms; }
   .ec-garment::after { position: absolute; top: 0; left: -120%; width: 70%; height: 100%; background: linear-gradient(115deg, transparent, color-mix(in srgb, var(--gold) 18%, transparent), transparent); content: ""; pointer-events: none; transform: skewX(-18deg); }
   .ec-garment:hover { transform: translateY(-4px) scale(1) !important; box-shadow: 0 8px 20px var(--shadow); }
-  .ec-garment:hover::after { left: 150%; transition: left 700ms ease; }
+  .ec-garment:hover::after { left: 150%; transition: left var(--dur-slow) var(--ease-in-out); }
   .ec-arena { animation: ec-arena-pulse 5s ease-in-out infinite; }
   @keyframes ec-arena-pulse {
     0%, 100% { box-shadow: 0 0 0 transparent; }

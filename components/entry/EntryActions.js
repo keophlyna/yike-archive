@@ -9,7 +9,7 @@ import formText from "../../utils/form/formText.js";
 
 const styles = {
   bar: { display: "flex", gridColumn: "1 / -1", order: 0, alignItems: "center", justifyContent: "flex-end", gap: 10, flexWrap: "wrap", marginBottom: -22 },
-  action: { display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: 44, padding: "10px 17px", border: "1px solid var(--surface-border)", borderRadius: 999, background: "var(--ink)", color: "var(--page-bg)", font: "600 12px var(--font-google-sans), sans-serif", textDecoration: "none", cursor: "pointer", transition: "opacity 180ms ease, transform 180ms ease" },
+  action: { display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: 44, padding: "10px 17px", border: "1px solid var(--surface-border)", borderRadius: 999, background: "var(--ink)", color: "var(--page-bg)", font: "600 12px var(--font-google-sans), sans-serif", textDecoration: "none", cursor: "pointer", transition: "opacity var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out)" },
   danger: { borderColor: "var(--surface-border)", background: "var(--surface)", color: "var(--red)" },
   message: { margin: 0, color: "var(--red)", font: "600 13px/1.5 var(--font-google-sans), sans-serif" },
 };

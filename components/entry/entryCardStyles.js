@@ -27,7 +27,7 @@ export const styles = {
   detailRule: { width: "100%", height: 2, margin: "clamp(24px, 4vw, 40px) 0 28px", border: 0, background: "var(--gold)" },
   description: { maxWidth: "56ch", minWidth: 0, margin: 0, color: "var(--ink-soft)", font: `400 16px/1.7 ${fontSans}`, overflowWrap: "anywhere" },
   detailDescription: { maxWidth: "none", width: "100%", textAlign: "left" },
-  readMore: { display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 10, minHeight: 44, marginTop: 18, padding: "0 18px", border: "1px solid var(--jade)", borderRadius: 999, background: "var(--jade)", color: "var(--page-bg)", font: `600 13px ${fontSans}`, textDecoration: "none", transition: "background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease" },
+  readMore: { display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 10, minHeight: 44, marginTop: 18, padding: "0 18px", border: "1px solid var(--jade)", borderRadius: 999, background: "var(--jade)", color: "var(--page-bg)", font: `600 13px ${fontSans}`, textDecoration: "none", transition: "background-color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out)" },
   published: { margin: "12px 0 0", color: "var(--ink-soft)", font: `400 13px/1.5 ${fontSans}` },
   detailContributor: { margin: "10px 0 0", color: "var(--ink)", font: `500 14px/1.5 ${fontSans}` },
   footer: { display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 24, marginTop: 32, paddingTop: 16, borderTop: "1px solid var(--rule)" },

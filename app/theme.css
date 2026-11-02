@@ -16,6 +16,23 @@
   --hero-rule: rgba(245,234,214,.25);
   --focus: #A3301F;
   --shadow: rgba(37,27,18,.12);
+
+  /* Motion, shape and depth tokens. Every transition, corner and shadow should
+     come from here so the whole archive moves and looks like one product. */
+  --dur-fast: 140ms;
+  --dur-base: 220ms;
+  --dur-slow: 560ms;
+  --ease-out: cubic-bezier(.2, .7, .2, 1);
+  --ease-in-out: cubic-bezier(.65, 0, .35, 1);
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-pill: 999px;
+  --shadow-1: 0 2px 8px var(--shadow);
+  --shadow-2: 0 14px 36px var(--shadow);
+
+  /* Built from palette colors, so they follow the light/dark theme on their own. */
+  --avatar-bg: var(--jade);
+  --avatar-fg: var(--page-bg);
 }
 [data-theme="dark"] {
   --page-bg: #17120D;
