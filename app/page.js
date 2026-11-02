@@ -11,6 +11,7 @@ import { useTheme } from "../components/theme/ThemeContext.js";
 import ThemeToggle from "../components/theme/ThemeToggle.js";
 import MyEntriesToggle from "../components/auth/MyEntriesToggle.js";
 import LoginPrompt from "../components/auth/LoginPrompt.js";
+import SearchSuggestions, { MAX_SHOWN } from "../components/search/SearchSuggestions.js";
 
 const contentWidth = "min(90vw, 1760px)";
 const fontSans = "var(--font-google-sans), sans-serif";
@@ -23,6 +24,8 @@ const translations = {
     searchPlaceholder: "Search the archive",
     searchLabel: "Search",
     matchingEntries: "Matching entries",
+    seeAll: (count) => `Press Enter to see all ${count} results`,
+    navLabel: "Your archive",
     latestEntries: "Latest entries",
     myEntries: "My entries",
     viewMine: "View my entries",
@@ -75,6 +78,8 @@ const translations = {
     searchPlaceholder: "ស្វែងរកក្នុងបណ្ណសារ",
     searchLabel: "ស្វែងរក",
     matchingEntries: "ឯកសារដែលត្រូវគ្នា",
+    seeAll: (count) => `ចុច Enter ដើម្បីមើលលទ្ធផលទាំងអស់ ${count}`,
+    navLabel: "បណ្ណសាររបស់អ្នក",
     latestEntries: "ឯកសារថ្មីៗ",
     noResults: () => "គ្មានឯកសារណាត្រូវនឹង",
     clearSearch: "សម្អាតការស្វែងរក",
@@ -96,26 +101,22 @@ const translations = {
 };
 
 const styles = {
-  header: { position: "sticky", top: 0, zIndex: 40, width: "100%", background: "var(--page-bg)", borderBottomWidth: 1, borderBottomStyle: "solid", borderBottomColor: "transparent", transition: "box-shadow 250ms ease, border-color 250ms ease" },
+  header: { position: "sticky", top: 0, zIndex: 40, width: "100%", background: "var(--page-bg)", borderBottomWidth: 1, borderBottomStyle: "solid", borderBottomColor: "transparent", transition: "box-shadow var(--dur-base) var(--ease-out), border-color var(--dur-base) var(--ease-out)" },
   headerScrolled: { borderBottomWidth: 1, borderBottomStyle: "solid", borderBottomColor: "var(--rule)", boxShadow: "0 8px 24px var(--shadow)" },
   headerInner: { width: contentWidth, margin: "0 auto", padding: "16px 0 13px" },
-  headerTop: { display: "grid", gridTemplateColumns: "1fr minmax(280px, 520px) auto", alignItems: "start", gap: "clamp(20px, 5vw, 90px)" },
-  wordmark: { display: "flex", alignItems: "center", gap: 10, fontFamily: fontSans, fontWeight: 600, fontSize: 24, color: "var(--ink)", margin: 0, lineHeight: 1.1 },
-  searchAndAdd: { display: "flex", alignItems: "center", gap: 18, minWidth: 0 },
-  searchWrap: { flex: "1 1 auto", minWidth: 0 },
-  searchField: { position: "relative", display: "flex", alignItems: "center", borderBottom: "1px solid var(--ink-soft)" },
-  searchInput: { width: "100%", padding: "5px 0 8px 36px", border: 0, background: "transparent", color: "var(--ink)", fontFamily: fontSans, fontWeight: 400, fontSize: 15, outline: "none" },
-  searchButton: { position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", display: "flex", alignItems: "center", justifyContent: "center", width: 28, height: 28, padding: 0, border: 0, background: "transparent", cursor: "pointer", opacity: 1, transition: "opacity 220ms ease, transform 220ms ease" },
+  // Equal outer columns keep the search box centred on the page, not just
+  // between the logo and the buttons. Smaller screens restack via home.css.
+  headerTop: { display: "grid", gridTemplateColumns: "minmax(max-content, 1fr) minmax(320px, 640px) minmax(max-content, 1fr)", gridTemplateAreas: '"logo search actions"', alignItems: "center", gap: "clamp(20px, 3vw, 48px)" },
+  wordmark: { gridArea: "logo", display: "flex", alignItems: "center", gap: 10, fontFamily: fontSans, fontWeight: 600, fontSize: 24, color: "var(--ink)", margin: 0, lineHeight: 1.1 },
+  searchWrap: { gridArea: "search", position: "relative", minWidth: 0 },
+  headerActions: { gridArea: "actions", display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 18 },
+  headerNav: { display: "flex", alignItems: "center", gap: 14 },
+  headerControls: { display: "flex", alignItems: "center", gap: 12 },
+  searchField: { position: "relative", display: "flex", alignItems: "center", height: 44, padding: "0 12px", border: "1px solid var(--surface-border)", borderRadius: "var(--radius-pill)", background: "var(--surface)" },
+  searchInput: { width: "100%", height: "100%", padding: "0 30px 0 30px", border: 0, background: "transparent", color: "var(--ink)", fontFamily: fontSans, fontWeight: 400, fontSize: 15, outline: "none" },
+  searchButton: { position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", display: "flex", alignItems: "center", justifyContent: "center", width: 28, height: 28, padding: 0, border: 0, background: "transparent", cursor: "pointer", opacity: 1, transition: "opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out)" },
   searchSpinner: { width: 14, height: 14, borderRadius: "50%", border: "2px solid var(--ink-soft)", borderTopColor: "var(--gold)", borderRightColor: "var(--gold)" },
-  clearBtn: { position: "absolute", right: 0, width: 24, height: 24, border: 0, background: "transparent", color: "var(--ink-soft)", cursor: "pointer", fontSize: 14 },
-  resultLabel: { margin: "14px 0 0", color: "var(--gold)", font: `600 10px ${fontSans}`, letterSpacing: ".08em", textTransform: "uppercase" },
-  resultLinks: { display: "grid", gap: 0, margin: "4px 0 0", padding: 0, listStyle: "none", borderTop: "1px solid var(--rule)" },
-  resultItem: { borderBottom: "1px solid var(--rule)" },
-  resultLink: { display: "grid", gridTemplateColumns: "24px 1fr auto", alignItems: "baseline", gap: 8, width: "100%", padding: "9px 6px", color: "var(--red)", font: `500 12px ${fontSans}`, textDecoration: "none", transition: "background-color 220ms ease, color 220ms ease" },
-  resultNumber: { color: "var(--ink-soft)", font: `500 11px ${fontSans}` },
-  resultInfo: { display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: "3px 8px", minWidth: 0 },
-  resultKhmer: { color: "var(--ink-soft)", font: `400 14px ${fontKhmer}`, textDecoration: "none" },
-  resultCategory: { color: "var(--ink-soft)", font: `600 10px ${fontSans}`, letterSpacing: ".04em" },
+  clearBtn: { position: "absolute", right: 10, display: "inline-flex", alignItems: "center", justifyContent: "center", width: 26, height: 26, border: 0, borderRadius: "50%", background: "transparent", color: "var(--ink-soft)", cursor: "pointer", fontSize: 18, lineHeight: 1 },
   hero: { backgroundColor: "var(--hero-bg)", backgroundImage: "linear-gradient(rgba(0, 0, 0, .48), rgba(0, 0, 0, .48)), url('/entries/hero-image.jpg')", backgroundPosition: "center", backgroundSize: "cover", color: "var(--hero-fg)" },
   heroInner: { width: contentWidth, margin: "0 auto", padding: "clamp(58px, 10vw, 138px) 0 clamp(50px, 8vw, 112px)" },
   kicker: { margin: "0 0 18px", color: "var(--gold)", font: `600 12px ${fontSans}`, letterSpacing: ".08em" },
@@ -138,12 +139,12 @@ const styles = {
   footer: { paddingTop: 22, borderTop: "1px solid var(--rule)", color: "var(--ink-soft)", font: `400 13px/1.6 ${fontSans}` },
   topButton: { position: "fixed", right: "clamp(18px, 3vw, 48px)", bottom: 24, zIndex: 30, width: 46, height: 46, border: "1px solid var(--surface-border)", borderRadius: "50%", background: "var(--surface)", color: "var(--ink)", cursor: "pointer", fontSize: 20 },
   authLink: { color: "var(--red)", font: `600 12px ${fontSans}`, textDecoration: "none" },
-  addEntryLink: { display: "inline-flex", flexShrink: 0, alignItems: "center", justifyContent: "center", gap: 7, minHeight: 40, padding: "0 15px", border: "1px solid var(--red)", borderRadius: 999, background: "var(--red)", color: "var(--hero-fg)", font: `600 13px ${fontSans}`, textDecoration: "none", whiteSpace: "nowrap", transition: "opacity 180ms ease, transform 180ms ease" },
+  addEntryLink: { display: "inline-flex", flexShrink: 0, alignItems: "center", justifyContent: "center", gap: 7, minHeight: 40, padding: "0 15px", border: "1px solid var(--red)", borderRadius: 999, background: "var(--red)", color: "var(--hero-fg)", font: `600 13px ${fontSans}`, textDecoration: "none", whiteSpace: "nowrap", transition: "opacity var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out)" },
   authButton: { padding: "7px 10px", border: "1px solid var(--surface-border)", background: "var(--surface)", color: "var(--ink)", cursor: "pointer", font: `600 12px ${fontSans}` },
   authEmail: { maxWidth: 150, overflow: "hidden", color: "var(--ink-soft)", font: `400 12px ${fontSans}`, textOverflow: "ellipsis", whiteSpace: "nowrap" },
   profileWrap: { position: "relative" },
   profileTrigger: { display: "inline-flex", alignItems: "center", gap: 7, padding: 3, border: "1px solid var(--surface-border)", borderRadius: 999, background: "var(--surface)", color: "var(--ink)", cursor: "pointer" },
-  profileAvatar: { display: "inline-flex", alignItems: "center", justifyContent: "center", width: 34, height: 34, borderRadius: "50%", background: "var(--blue, #075da8)", color: "#fff", font: `600 16px ${fontSans}`, textTransform: "uppercase" },
+  profileAvatar: { display: "inline-flex", alignItems: "center", justifyContent: "center", width: 34, height: 34, borderRadius: "50%", background: "var(--avatar-bg)", color: "var(--avatar-fg)", font: `600 16px ${fontSans}`, textTransform: "uppercase" },
   profileChevron: { padding: "0 8px 0 1px", color: "var(--ink-soft)", font: `500 13px ${fontSans}` },
   profileMenu: { position: "absolute", top: "calc(100% + 10px)", right: 0, zIndex: 60, width: "min(330px, calc(100vw - 32px))", padding: 12, background: "var(--surface)", color: "var(--ink)", border: "1px solid var(--surface-border)", borderRadius: 16, boxShadow: "0 14px 36px var(--shadow)" },
   profileEyebrow: { margin: "4px 8px 10px", color: "var(--ink-soft)", font: `500 12px ${fontSans}` },
@@ -193,6 +194,7 @@ export default function Home() {
   const [query, setQuery] = useState("");
   const [committedQuery, setCommittedQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
   const [isSearching, setIsSearching] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [showTop, setShowTop] = useState(false);
@@ -210,6 +212,7 @@ export default function Home() {
   const profileRef = useRef(null);
   const profileTriggerRef = useRef(null);
   const inputRef = useRef(null);
+  const searchWrapRef = useRef(null);
   const searchTimerRef = useRef(null);
   const supabaseRef = useRef(null);
   const searchIconSrc = theme === "dark" ? "/entries/search-icon-sand.png" : "/entries/search-icon.png";
@@ -315,6 +318,14 @@ export default function Home() {
     window.addEventListener("pointerdown", onPointerDown);
     return () => { window.removeEventListener("keydown", onKeyDown); window.removeEventListener("pointerdown", onPointerDown); };
   }, [showLoginPrompt]);
+
+  // The suggestions float over the page, so a click anywhere else closes them.
+  useEffect(() => {
+    if (!showSuggestions) return;
+    const onPointerDown = (event) => { if (!searchWrapRef.current?.contains(event.target)) setShowSuggestions(false); };
+    window.addEventListener("pointerdown", onPointerDown);
+    return () => window.removeEventListener("pointerdown", onPointerDown);
+  }, [showSuggestions]);
 
   useEffect(() => {
     if (!profileOpen) return;
@@ -448,6 +459,25 @@ export default function Home() {
     if (language === "kh" && entry.titleKh) return entry.titleKh;
     return entry.title;
   };
+  const suggestionsOpen = showSuggestions && normalizedQuery.length > 0 && suggestionResults.length > 0;
+  const shownCount = Math.min(suggestionResults.length, MAX_SHOWN);
+  const pickSuggestion = (entry) => {
+    const label = getDisplayTitle(entry);
+    setQuery(label);
+    setActiveIndex(-1);
+    commitSearch(label);
+  };
+  // Arrow keys move through the suggestions; Enter picks the highlighted one,
+  // or searches for the typed text when nothing is highlighted.
+  const handleSearchKeyDown = (event) => {
+    if (event.key === "ArrowDown" && suggestionsOpen) { event.preventDefault(); setActiveIndex((index) => (index + 1) % shownCount); }
+    else if (event.key === "ArrowUp" && suggestionsOpen) { event.preventDefault(); setActiveIndex((index) => (index <= 0 ? shownCount - 1 : index - 1)); }
+    else if (event.key === "Enter") {
+      event.preventDefault();
+      if (suggestionsOpen && activeIndex >= 0) pickSuggestion(suggestionResults[activeIndex]);
+      else { setActiveIndex(-1); commitSearch(event.currentTarget.value); }
+    }
+  };
   const profileName = user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split("@")[0] || t.member;
   const profileInitial = (user?.email?.[0] || profileName[0] || "Y").toLocaleUpperCase();
 
@@ -461,37 +491,22 @@ export default function Home() {
               <Image src="/entries/lakhon-yike-logo.png" alt="" width={2000} height={1414} priority style={{ display: "block", width: 64, height: "auto", objectFit: "contain" }} />
               {t.wordmark}
             </Link>
-            <div className="yk-search-wrap" style={styles.searchAndAdd}>
-            <form style={styles.searchWrap} role="search" onSubmit={(event) => { event.preventDefault(); commitSearch(); }}>
+            <div ref={searchWrapRef} className="yk-search-wrap" style={styles.searchWrap}>
+            <form role="search" onSubmit={(event) => { event.preventDefault(); commitSearch(); }}>
               <label htmlFor="archive-search" style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0,0,0,0)" }}>{t.searchLabel}</label>
-              <div style={styles.searchField}>
-                <input id="archive-search" ref={inputRef} type="search" value={query} onChange={(event) => { const nextValue = event.target.value; setQuery(nextValue); setShowSuggestions(nextValue.trim().length > 0); }} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); commitSearch(event.currentTarget.value); } }} placeholder={t.searchPlaceholder} className="yk-search-input" style={styles.searchInput} autoComplete="off" />
+              <div className="yk-search-field" style={styles.searchField}>
+                <input id="archive-search" ref={inputRef} type="search" role="combobox" aria-expanded={suggestionsOpen} aria-controls="archive-suggestions" aria-autocomplete="list" aria-activedescendant={suggestionsOpen && activeIndex >= 0 ? `archive-suggestions-${activeIndex}` : undefined} value={query} onChange={(event) => { const nextValue = event.target.value; setQuery(nextValue); setActiveIndex(-1); setShowSuggestions(nextValue.trim().length > 0); }} onFocus={() => setShowSuggestions(query.trim().length > 0)} onKeyDown={handleSearchKeyDown} placeholder={t.searchPlaceholder} className="yk-search-input" style={styles.searchInput} autoComplete="off" />
                 <button type="button" aria-label={t.searchLabel} onClick={() => commitSearch()} style={styles.searchButton}>
                   {isSearching ? <span className="yk-search-spinner" style={styles.searchSpinner} aria-hidden="true" /> : <Image src={searchIconSrc} alt="" width={18} height={18} priority={false} style={{ display: "block", opacity: 1 }} />}
                 </button>
-                {query ? <button type="button" className="yk-clear-btn" style={styles.clearBtn} onClick={clearSearch} aria-label={t.clearSearch}>x</button> : null}
+                {query ? <button type="button" className="yk-clear-btn" style={styles.clearBtn} onClick={clearSearch} aria-label={t.clearSearch}>×</button> : null}
               </div>
-              {showSuggestions && normalizedQuery && suggestionResults.length > 0 && <>
-                <p style={styles.resultLabel}>{t.matchingEntries}</p>
-                <ul style={styles.resultLinks} aria-label={t.matchingEntries}>
-                  {suggestionResults.map((entry, index) => {
-                    const suggestionLabel = getDisplayTitle(entry);
-                    return (
-                      <li style={styles.resultItem} key={`${entry.title}-${index}`}>
-                        <a className="yk-result-link" style={styles.resultLink} href="#" onClick={(event) => { event.preventDefault(); setQuery(suggestionLabel); commitSearch(suggestionLabel); }}>
-                          <span style={styles.resultNumber}>{String(index + 1).padStart(2, "0")}</span>
-                          <span style={styles.resultInfo}><span>{suggestionLabel}</span>{language === "kh" && entry.titleKh ? <span className="yk-result-khmer" style={styles.resultKhmer}>{entry.titleKh}</span> : null}</span>
-                          {entry.category && <span style={styles.resultCategory}>{entry.category}</span>}
-                        </a>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </>}
             </form>
-            {user && <><Link href="/my-entries" style={styles.authLink}>{language === "kh" ? "ឯកសាររបស់ខ្ញុំ" : "My entries"}</Link>{isReviewer && <Link href="/review" style={styles.authLink}>{language === "kh" ? "ពិនិត្យ" : "Review"}</Link>}<Link href="/contribute" style={styles.addEntryLink}><span aria-hidden="true" style={{ fontSize: 18, lineHeight: 1 }}>+</span>{t.addEntry}</Link></>}
+            {suggestionsOpen && <SearchSuggestions id="archive-suggestions" results={suggestionResults} query={query} language={language} activeIndex={activeIndex} onPick={pickSuggestion} onHover={setActiveIndex} labels={{ matchingEntries: t.matchingEntries, seeAll: t.seeAll }} />}
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div className="yk-header-actions" style={styles.headerActions}>
+            {user && <nav className="yk-header-nav" aria-label={t.navLabel} style={styles.headerNav}><Link href="/my-entries" style={styles.authLink}>{language === "kh" ? "ឯកសាររបស់ខ្ញុំ" : "My entries"}</Link>{isReviewer && <Link href="/review" style={styles.authLink}>{language === "kh" ? "ពិនិត្យ" : "Review"}</Link>}<Link href="/contribute" style={styles.addEntryLink}><span aria-hidden="true" style={{ fontSize: 18, lineHeight: 1 }}>+</span>{t.addEntry}</Link></nav>}
+            <div className="yk-header-controls" style={styles.headerControls}>
               <div ref={profileRef} style={styles.profileWrap}>
                 <button ref={profileTriggerRef} type="button" aria-label={t.accountMenu} aria-expanded={profileOpen} aria-haspopup="dialog" onClick={() => setProfileOpen((open) => !open)} style={styles.profileTrigger}>
                   <span aria-hidden="true" style={styles.profileAvatar}>{profileInitial}</span><span aria-hidden="true" style={styles.profileChevron}>⌄</span>
@@ -526,6 +541,7 @@ export default function Home() {
                 {getLanguageLabel(language)}
               </button>
               <ThemeToggle />
+            </div>
             </div>
           </div>
         </div>

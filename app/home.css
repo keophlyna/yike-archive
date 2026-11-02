@@ -2,23 +2,41 @@
    screen overrides. Was an inline <style> built from a string in app/page.js;
    moved here as a plain stylesheet. */
 .yk-search-input::placeholder { color: var(--ink-soft); opacity: 1; }
-.yk-result-link:hover, .yk-result-link:focus-visible { background: var(--surface); color: var(--jade) !important; }
+.yk-search-field { transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out); }
+.yk-search-field:focus-within { border-color: var(--red) !important; box-shadow: 0 0 0 3px color-mix(in srgb, var(--red) 18%, transparent); }
+/* Hovering a suggestion also makes it the active one, so one rule covers mouse and keyboard. */
+.yk-suggest-item { transition: background-color var(--dur-fast) var(--ease-out); }
+.yk-suggest-item[aria-selected="true"] { background: color-mix(in srgb, var(--red) 9%, transparent); }
+.yk-suggest-item[aria-selected="true"] .yk-suggest-title { color: var(--red) !important; }
 .yk-clear-btn:hover, .yk-empty-clear:hover { background: var(--red) !important; color: var(--hero-fg) !important; }
 .yk-search-spinner { display: inline-block; }
-.yk-back-top { opacity: 0; pointer-events: none; transform: translateY(8px); transition: opacity 220ms ease, transform 220ms ease; }
+.yk-back-top { opacity: 0; pointer-events: none; transform: translateY(8px); transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out); }
 .yk-back-top.is-visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
 @media (prefers-reduced-motion: no-preference) {
   .yk-search-spinner { animation: yk-search-spin 0.9s linear infinite; }
   @keyframes yk-search-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-  .yk-reveal { opacity: 0; transform: translateY(28px); transition: opacity 700ms ease, transform 700ms ease; }
+  .yk-reveal { opacity: 0; transform: translateY(28px); transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out); }
   .yk-reveal.is-visible { opacity: 1; transform: translateY(0); }
+  .yk-suggest { animation: yk-suggest-in var(--dur-base) var(--ease-out); }
+  @keyframes yk-suggest-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+}
+/* Header restacking. Wide screens: logo | centred search | actions (set inline
+   in app/page.js). Below 1100px the actions wrapper dissolves so its two parts,
+   the nav links and the account controls, can sit on their own rows. */
+@media (max-width: 1100px) {
+  .yk-header-top { grid-template-columns: minmax(0, 1fr) auto !important; grid-template-areas: "logo controls" "search nav" !important; row-gap: 14px !important; }
+  .yk-header-actions { display: contents !important; }
+  .yk-header-nav { grid-area: nav; justify-content: flex-end; }
+  .yk-header-controls { grid-area: controls; justify-content: flex-end; }
+  /* Signed-out visitors have no nav links, so search takes the whole row. */
+  .yk-header-top:not(:has(.yk-header-nav)) { grid-template-areas: "logo controls" "search search" !important; }
 }
 @media (prefers-reduced-motion: reduce) {
   .yk-search-spinner { animation: none; }
 }
 @media (max-width: 720px) {
-  .yk-header-top { grid-template-columns: 1fr auto !important; }
-  .yk-search-wrap { grid-column: 1 / -1; }
+  .yk-header-top { grid-template-areas: "logo controls" "search search" "nav nav" !important; }
+  .yk-header-nav { justify-content: flex-start; flex-wrap: wrap; }
   .yk-meta { min-width: 50%; padding: 20px 18px 0 0 !important; border-left: 0 !important; }
 }
 @media (max-width: 520px) {
