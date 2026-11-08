@@ -28,13 +28,18 @@ export default function ReviewQueue({ allowed, initialEntries = [], loadFailed =
 
   if (!allowed) return <main style={styles.page}><p style={styles.message}>{t.reviewersOnly}</p></main>;
 
-  const decide = async (entryId, decision) => {
+  const decide = async (entryId, decision, note) => {
     if (busyId) return;
     setBusyId(entryId);
     setFailedId(null);
+    // Only a return carries a note, and only when the reviewer wrote one. An
+    // empty box sends no note at all rather than an empty string.
+    const args = { entry_id: entryId, decision };
+    const trimmed = typeof note === "string" ? note.trim() : "";
+    if (decision === "returned" && trimmed) args.note = trimmed;
     let saved = false;
     try {
-      const { data, error } = await createClient().rpc("review_entry", { entry_id: entryId, decision });
+      const { data, error } = await createClient().rpc("review_entry", args);
       saved = !error && data === true;
     } catch (_) {}
     if (saved) setEntries((current) => current.filter((entry) => entry.id !== entryId));

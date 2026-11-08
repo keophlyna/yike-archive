@@ -29,6 +29,7 @@ const formText = {
     categoryList: "Choose a category from the list", placeList: "Choose a place from the list", contributorRequired: "Contributor is required",
     textAllowed: "Only letters, numbers, and spaces are allowed.", chars100: "Use 100 characters or fewer", nameNotUrl: "Enter a name, not a link or URL", unknownName: "Name the person or organization, not “unknown”",
     confirmDeleteTitle: "Delete “{title}”? This cannot be undone.",
+    reviewNoteLabel: "Note to contributor (optional)", reviewerNote: "Reviewer's note",
   },
   kh: {
     archive: "បណ្ណសារខ្មែររស់", welcome: "សូមស្វាគមន៍មកវិញ", createAccount: "បង្កើតគណនី",
@@ -60,6 +61,7 @@ const formText = {
     categoryList: "សូមជ្រើសរើសប្រភេទពីបញ្ជី", placeList: "សូមជ្រើសរើសទីកន្លែងពីបញ្ជី", contributorRequired: "ត្រូវបញ្ចូលឈ្មោះអ្នកចូលរួម",
     textAllowed: "អនុញ្ញាតតែអក្សរ លេខ និងដកឃ្លាប៉ុណ្ណោះ។", chars100: "ប្រើមិនលើស ១០០ តួអក្សរ", nameNotUrl: "សូមបញ្ចូលឈ្មោះ មិនមែនតំណភ្ជាប់ ឬ URL ទេ", unknownName: "សូមបញ្ជាក់ឈ្មោះបុគ្គល ឬអង្គការ មិនមែន «មិនស្គាល់» ទេ",
     confirmDeleteTitle: "លុប “{title}” មែនទេ? មិនអាចត្រឡប់វិញបានទេ។",
+    reviewNoteLabel: "កំណត់ចំណាំជូនអ្នកចូលរួម (ជាជម្រើស)", reviewerNote: "កំណត់ចំណាំពីអ្នកពិនិត្យ",
   },
 };
 

@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import PendingPhoto from "../entry/PendingPhoto.js";
 import { fontKhmer } from "../entry/entryCardStyles.js";
+import formText from "../../utils/form/formText.js";
 
 const styles = {
   item: { display: "flex", flexWrap: "wrap", gap: 24, padding: "28px 0", borderBottom: "1px solid var(--rule)" },
@@ -17,6 +19,9 @@ const styles = {
   button: { minHeight: 44, padding: "10px 17px", border: "1px solid var(--surface-border)", borderRadius: 999, background: "var(--ink)", color: "var(--page-bg)", font: "600 13px var(--font-google-sans), sans-serif", cursor: "pointer" },
   secondary: { background: "var(--surface)", color: "var(--red)" },
   error: { margin: "12px 0 0", color: "var(--red)", font: "600 13px/1.5 var(--font-google-sans), sans-serif" },
+  note: { display: "flex", flexDirection: "column", gap: 6, flex: "1 1 240px", fontSize: 13, color: "var(--ink-soft)" },
+  // Google Sans has no Khmer glyphs, so Khmer typed here falls through to Noto Serif Khmer.
+  noteBox: { minHeight: 44, padding: "8px 12px", border: "1px solid var(--surface-border)", borderRadius: 12, background: "var(--surface)", color: "var(--ink)", font: `14px/1.6 var(--font-google-sans), ${fontKhmer}`, resize: "vertical" },
 };
 
 // The time zone is fixed so the server render and the browser render print the
@@ -32,6 +37,8 @@ function both(english, khmer) {
 }
 
 export default function ReviewItem({ entry, t, language, busy, failed, onDecide }) {
+  const [note, setNote] = useState("");
+  const noteLabel = (formText[language] || formText.en).reviewNoteLabel;
   const facts = [
     [t.category, entry.category],
     [t.place, both(entry.place, entry.place_kh)],
@@ -53,7 +60,11 @@ export default function ReviewItem({ entry, t, language, busy, failed, onDecide 
         </dl>
         <div style={styles.actions}>
           <button type="button" disabled={busy} onClick={() => onDecide(entry.id, "published")} style={styles.button}>{busy ? t.saving : t.publish}</button>
-          <button type="button" disabled={busy} onClick={() => onDecide(entry.id, "returned")} style={{ ...styles.button, ...styles.secondary }}>{busy ? t.saving : t.return}</button>
+          <button type="button" disabled={busy} onClick={() => onDecide(entry.id, "returned", note)} style={{ ...styles.button, ...styles.secondary }}>{busy ? t.saving : t.return}</button>
+          <label style={{ ...styles.note, ...(language === "kh" ? styles.khmer : null) }}>
+            {noteLabel}
+            <textarea value={note} onChange={(event) => setNote(event.target.value)} maxLength={500} rows={2} disabled={busy} style={styles.noteBox} />
+          </label>
         </div>
         {failed ? <p role="alert" style={styles.error}>{t.notSaved}</p> : null}
       </article>
