@@ -3,7 +3,9 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import NameFields from "./NameFields.js";
 import useLanguage from "../hooks/useLanguage.js";
+import { signUpUser } from "../../utils/auth/signUpUser.js";
 import formText from "../../utils/form/formText.js";
 import { createClient } from "../../utils/supabase/client.js";
 
@@ -26,6 +28,8 @@ export default function AuthForm({ mode }) {
 	const language = useLanguage();
 	const t = formText[language];
 	const router = useRouter();
+	const [firstName, setFirstName] = useState("");
+	const [lastName, setLastName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [message, setMessage] = useState("");
@@ -46,14 +50,14 @@ export default function AuthForm({ mode }) {
 
 		const result = isLogin
 			? await supabase.auth.signInWithPassword({ email, password })
-			: await supabase.auth.signUp({ email, password });
+			: await signUpUser({ supabase, email, password, firstName, lastName, language });
 
 		setIsSubmitting(false);
-		if (result.error) {
-			setMessage(isLogin ? t.invalidLogin : t.createFailed);
+		if (isLogin ? result.error : !result.ok) {
+			setMessage(isLogin ? t.invalidLogin : result.message);
 			return;
 		}
-		if (isLogin || result.data.session) {
+		if (isLogin || result.session) {
 			router.replace("/");
 			return;
 		}
@@ -67,6 +71,7 @@ export default function AuthForm({ mode }) {
 				<h1 style={styles.title}>{isLogin ? t.welcome : t.createAccount}</h1>
 				<p style={styles.intro}>{isLogin ? t.signInIntro : t.joinIntro}</p>
 				<form className="yk-auth-form" style={styles.form} onSubmit={handleSubmit}>
+					{!isLogin && <NameFields t={t} firstName={firstName} lastName={lastName} onFirstNameChange={setFirstName} onLastNameChange={setLastName} labelStyle={styles.label} inputStyle={styles.input} />}
 					<label style={styles.label}>{t.email}<input style={styles.input} type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" required /></label>
 					<label style={styles.label}>{t.password}<input style={styles.input} type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete={isLogin ? "current-password" : "new-password"} minLength={6} required /></label>
 					{message && <p role="alert" style={styles.message}>{message}</p>}

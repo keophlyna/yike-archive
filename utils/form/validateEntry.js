@@ -16,6 +16,7 @@ const LETTER = /\p{L}/u;
 const CONTROL = /\p{Cc}/u;
 const TEXT_ENTRY_ALLOWED = /^[\p{L}\p{M}\p{N} ]+$/u;
 const TITLE_ENTRY_ALLOWED = /^[\p{L}\p{M}\p{N} &,():]+$/u;
+const NAME_ALLOWED = /^[\p{L}\p{M} '’-]+$/u;
 export const TEXT_ENTRY_ERROR = "Only letters, numbers, and spaces are allowed.";
 export const TITLE_TEXT_ENTRY_ERROR = "Use letters, numbers, spaces, &, commas, parentheses, and colons only.";
 export const isAllowedTextEntry = (value) => value === "" || TEXT_ENTRY_ALLOWED.test(value);
@@ -110,6 +111,18 @@ function checkContributor(value) {
   if (value.length > 100) return "Use 100 characters or fewer";
   if (URL_LIKE.test(value)) return "Enter a name, not a link or URL";
   if (/\bunknown\b/i.test(value)) return "Name the person or organization, not \u201cunknown\u201d";
+  return "";
+}
+
+// Used by sign-up, not /contribute. \p{M} is what lets Khmer through: its vowels
+// and subscripts are combining marks, so \p{L} alone would reject real names.
+// The 60-character limit is mirrored by the CHECK constraints on public.profiles.
+export function checkName(value, language = "en") {
+  const t = formText[language] || formText.en;
+  if (!value) return t.nameRequired;
+  if (!NAME_ALLOWED.test(value)) return t.nameAllowed;
+  if (value.length > 60) return t.chars60;
+  if (!LETTER.test(value)) return t.letterRequired;
   return "";
 }
 
