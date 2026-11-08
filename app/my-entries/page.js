@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createClient } from "../../utils/supabase/client.js";
 import useLanguage from "../../components/hooks/useLanguage.js";
+import formText from "../../utils/form/formText.js";
 
 const text = {
   en: { title: "My entries", loading: "Loading your entries…", login: "Log in to see your entries.", loginLink: "Log in", empty: "You haven't submitted any entries yet.", failed: "Your entries could not be loaded. Please try again.", back: "Back to the archive", pending: "Waiting for review", published: "Published", returned: "Returned for changes" },
@@ -18,6 +19,9 @@ const styles = {
   row: { display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 20, padding: "18px 4px", borderBottom: "1px solid var(--rule)" },
   entry: { color: "var(--ink)", fontSize: 17, fontWeight: 600 },
   status: { color: "var(--ink-soft)", fontSize: 14, whiteSpace: "nowrap" },
+  statusBox: { minWidth: 0, maxWidth: 420 },
+  note: { margin: "8px 0 0", color: "var(--ink)", fontSize: 14, lineHeight: 1.6, whiteSpace: "pre-wrap", overflowWrap: "anywhere", fontFamily: "var(--font-google-sans), var(--font-noto-serif-khmer), sans-serif" },
+  noteLabel: { display: "block", color: "var(--ink-soft)", fontSize: 13, fontWeight: 600 },
   message: { color: "var(--ink-soft)", fontSize: 16, lineHeight: 1.6 },
 };
 
@@ -34,9 +38,13 @@ export default function MyEntriesPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!active) return;
       if (!user) { setState("signed-out"); return; }
-      const { data, error } = await supabase.from("entries").select("id, title, title_kh, status").eq("owner", user.id).order("created_at", { ascending: false });
+      const load = (columns) => supabase.from("entries").select(columns).eq("owner", user.id).order("created_at", { ascending: false });
+      let { data, error } = await load("id, title, title_kh, status, review_note");
+      // 42703 = undefined column. If the hosted database has not had the
+      // review_note migration yet, still show the statuses, just without notes.
+      if (error?.code === "42703") ({ data, error } = await load("id, title, title_kh, status"));
       if (!active) return;
-      if (error) { setState("error"); return; }
+      if (error) { console.error(error); setState("error"); return; }
       setEntries(data || []);
       setState("ready");
     })().catch(() => { if (active) setState("error"); });
@@ -52,7 +60,11 @@ export default function MyEntriesPage() {
           : entries.length === 0 ? <p style={styles.message}>{t.empty}</p>
             : <ul className="yk-my-entries-list" style={styles.list}>{entries.map((entry) => <li key={entry.id} style={styles.row}>
               <Link className="yk-my-entry-title" href={`/entries/${entry.id}`} style={styles.entry}>{language === "kh" && entry.title_kh ? entry.title_kh : entry.title}</Link>
-              <span className="yk-my-entry-status" style={styles.status}>{t[entry.status] || entry.status}</span>
+              <div style={styles.statusBox}>
+                <span className="yk-my-entry-status" style={styles.status}>{t[entry.status] || entry.status}</span>
+                {/* The note is shown only on returned entries, and React escapes it as plain text. */}
+                {entry.status === "returned" && entry.review_note?.trim() ? <p style={styles.note}><span style={styles.noteLabel}>{formText[language].reviewerNote}</span>{entry.review_note}</p> : null}
+              </div>
             </li>)}</ul>}
   </main>;
 }
