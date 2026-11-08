@@ -9,14 +9,13 @@ import { getTextEntryConstraintError, isMissingSourcesSchema } from "../form/val
 // can prove a row really came back before telling anyone the change was saved
 // (a blocked update returns zero rows with no error, which the length check catches).
 //
+// Every edit sends the entry back to review, including a reviewer's own entry:
+// the owner filter means nobody edits someone else's entry here, so there is no
+// case where skipping the reset would be right.
+//
 // Returns { ok: true, id } or { ok: false, step, error, message }.
 export async function updateEntry({ supabase, entryId, userId, cleaned, image, photoFile, language = "en" }) {
   const t = formText[language] || formText.en;
-  let isReviewer = false;
-  try {
-    const result = await supabase.rpc("is_reviewer");
-    isReviewer = result.data === true;
-  } catch (_) {}
   let upload = null;
 
   if (image && photoFile) {
@@ -37,9 +36,8 @@ export async function updateEntry({ supabase, entryId, userId, cleaned, image, p
     sources: cleaned.sources,
     sources_kh: cleaned.sources_kh,
     photo_is_ai: cleaned.photo_is_ai,
+    status: "pending",
   };
-
-  if (!isReviewer) changes.status = "pending";
 
   if (upload) changes.photo_url = upload.publicUrl;
 
