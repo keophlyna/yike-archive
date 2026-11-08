@@ -67,7 +67,7 @@ export default function EntryCard({ id, canManage, userId, onDeleted, title, tit
       {/* These sections are nullable columns in the database, and a default
           parameter only covers undefined, so null is coalesced before .map. */}
       {category === "Performance" && Array.isArray(phases) && phases.length > 0 && <PerformanceSection accent={accent} phases={phases} language={language} />}
-      {category === "Costume" && <CostumeSection accent={accent} characters={characters || []} garments={garments || []} language={language} />}
+      {category === "Costume" && ((Array.isArray(characters) && characters.length > 0) || (Array.isArray(garments) && garments.length > 0)) && <CostumeSection accent={accent} characters={characters || []} garments={garments || []} language={language} />}
     </article>
   );
 }
