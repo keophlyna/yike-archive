@@ -27,8 +27,9 @@ const copy = (rel) => {
 };
 
 copy("utils/form/places.js");
+copy("utils/form/formText.js");
 const validatePath = copy("utils/form/validateEntry.js");
-const { validateEntry, CATEGORIES } = await import(pathToFileURL(validatePath).href);
+const { validateEntry, checkName, CATEGORIES } = await import(pathToFileURL(validatePath).href);
 const { default: PLACES } = await import(pathToFileURL(path.join(temp, "places.mjs")).href);
 
 let pass = 0;
@@ -109,6 +110,17 @@ try {
   check("its Khmer title is stored unchanged", allKhmer.cleaned.title, SENTENCE.trim().slice(0, 60));
   check("category list still matches the spec", CATEGORIES.join("|"),
     "History|Performance|Music|Costume|Oral History");
+
+  // --- sign-up names: Khmer vowels and subscripts are combining marks ---
+  check("name: Khmer name accepted", checkName("សុខា"), "");
+  check("name: Khmer name with a subscript accepted", checkName("ស្រីពៅ"), "");
+  check("name: hyphen, apostrophe and space accepted", checkName("Mary-Anne O'Neil"), "");
+  check("name: exactly 60 Khmer characters accepted", checkName("ក".repeat(60)), "");
+  check("name: 61 Khmer characters rejected", checkName("ក".repeat(61)), "Use 60 characters or fewer");
+  check("name: empty rejected", checkName(""), "Enter your first and last name");
+  check("name: digits rejected", checkName("Sokha1"), "Names can only use letters, spaces, hyphens, and apostrophes.");
+  check("name: punctuation alone rejected", checkName("--"), "Add at least one letter");
+  check("name: Khmer error message used", checkName("", "kh"), "សូមបញ្ចូលនាមខ្លួន និងនាមត្រកូល");
 } catch (err) {
   fail += 1;
   console.log("HARNESS ERROR: " + (err && err.stack ? err.stack : err));
