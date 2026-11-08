@@ -113,7 +113,7 @@ const styles = {
   headerNav: { display: "flex", alignItems: "center", gap: 14 },
   headerControls: { display: "flex", alignItems: "center", gap: 12 },
   searchField: { position: "relative", display: "flex", alignItems: "center", height: 44, padding: "0 12px", border: "1px solid var(--surface-border)", borderRadius: "var(--radius-pill)", background: "var(--surface)" },
-  searchInput: { width: "100%", height: "100%", padding: "0 30px 0 30px", border: 0, background: "transparent", color: "var(--ink)", fontFamily: fontSans, fontWeight: 400, fontSize: 15, outline: "none" },
+  searchInput: { width: "100%", height: "100%", padding: "0 30px 0 30px", border: 0, background: "transparent", color: "var(--ink)", fontFamily: fontSans, fontWeight: 400, fontSize: 16, outline: "none" },
   searchButton: { position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", display: "flex", alignItems: "center", justifyContent: "center", width: 28, height: 28, padding: 0, border: 0, background: "transparent", cursor: "pointer", opacity: 1, transition: "opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out)" },
   searchSpinner: { width: 14, height: 14, borderRadius: "50%", border: "2px solid var(--ink-soft)", borderTopColor: "var(--gold)", borderRightColor: "var(--gold)" },
   clearBtn: { position: "absolute", right: 10, display: "inline-flex", alignItems: "center", justifyContent: "center", width: 26, height: 26, border: 0, borderRadius: "50%", background: "transparent", color: "var(--ink-soft)", cursor: "pointer", fontSize: 18, lineHeight: 1 },
@@ -484,7 +484,7 @@ export default function Home() {
   return (
     <>
       <a className="yk-skip-link" href="#main">Skip to entries</a>
-      <header style={{ ...styles.header, ...(scrolled ? styles.headerScrolled : {}) }}>
+      <header className="yk-site-header" style={{ ...styles.header, ...(scrolled ? styles.headerScrolled : {}) }}>
         <div className="yk-header-inner" style={styles.headerInner}>
           <div className="yk-header-top" style={styles.headerTop}>
             <Link href="/" className="yk-wordmark" style={{ ...styles.wordmark, textDecoration: "none" }} aria-label={t.wordmark}>

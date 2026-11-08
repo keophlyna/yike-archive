@@ -44,3 +44,18 @@
   .yk-hero-title { font-size: 42px !important; }
   .yk-meta { min-width: 100%; }
 }
+/* The account controls need about 195px, and the Khmer wordmark is one long
+   word that cannot wrap much, so it ran under them on narrow phones. A smaller
+   wordmark fits from 360px; below that the logo gives up its space, and the
+   link keeps its aria-label and visible name. */
+@media (max-width: 400px) {
+  .yk-wordmark { font-size: 17px !important; }
+}
+@media (max-width: 359px) {
+  .yk-wordmark img { display: none !important; }
+}
+/* A sticky two-row header covers a third of a phone held sideways, so on short
+   screens it scrolls away with the page. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .yk-site-header { position: static !important; }
+}

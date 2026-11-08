@@ -4,6 +4,12 @@ button, input, select, textarea { font: inherit; }
 button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
 img { max-width: 100%; }
 
+/* 100vh ignores a phone's sliding address bar, so full-height pages could run
+   past the visible screen. dvh tracks it; older browsers keep the inline 100vh. */
+@supports (min-height: 100dvh) {
+  .yk-auth-page, .yk-form-page, .yk-entry-page { min-height: 100dvh !important; }
+}
+
 /* Keep the content comfortable to read on large laptop displays. */
 @media (min-width: 1200px) {
   .yk-header-inner { width: min(90vw, 1600px) !important; }

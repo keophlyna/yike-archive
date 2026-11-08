@@ -54,7 +54,7 @@ export default function EntryDetail({ id }) {
   useRevealOnScroll(Boolean(entry));
 
   const shell = (children) => (
-    <main style={styles.page}>
+    <main className="yk-entry-page" style={styles.page}>
       <div style={styles.inner}>
         <nav style={styles.bar}>
           <Link href="/" style={styles.back}>{t.backToArchive}</Link>
