@@ -265,6 +265,7 @@ export default function Home() {
       .then(({ data, error }) => {
         if (!active) return;
         if (error) {
+          console.error("Could not load published entries:", error.code || error.status, error.message);
           setEntriesError(true);
           setEntriesLoading(false);
           return;
