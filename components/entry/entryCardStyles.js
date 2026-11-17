@@ -42,7 +42,7 @@ export const styles = {
   timeline: { position: "relative", display: "grid", gap: "clamp(28px, 5vw, 72px)", marginTop: "clamp(28px, 5vh, 56px)" },
   timelineLine: { position: "absolute", top: 0, bottom: 0, left: 11, width: 1, background: "var(--rule)", transformOrigin: "top", zIndex: 0 },
   timelineItem: { position: "relative", display: "grid", gridTemplateColumns: "minmax(180px, .7fr) 1.3fr", gap: "clamp(28px, 5vw, 72px)", paddingLeft: 40 },
-  timelineMarker: { position: "absolute", top: 4, left: 0, width: 24, height: 24, border: "1px solid var(--rule)", background: "var(--page-bg)", zIndex: 1 },
+  timelineMarker: { position: "absolute", top: 4, left: 0, width: 24, height: 24, border: "1px solid var(--rule)", borderRadius: "50%", background: "var(--page-bg)", zIndex: 1 },
   featureTitle: { margin: 0, color: "var(--ink)", font: `600 clamp(22px, 2.4vw, 32px)/1.15 ${fontSerif}` },
   featureKhmer: { margin: "9px 0 0", color: "var(--ink-soft)", font: `400 clamp(16px, 1.6vw, 21px)/1.4 ${fontKhmer}` },
   featureDescription: { maxWidth: "56ch", margin: "14px 0 0", color: "var(--ink-soft)", font: `400 15px/1.7 ${fontSans}` },

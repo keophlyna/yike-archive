@@ -58,14 +58,15 @@ export default function ReviewItem({ entry, t, language, busy, failed, onDecide 
         <dl style={styles.facts}>
           {facts.map(([label, value]) => <div key={label} style={{ display: "contents" }}><dt style={styles.term}>{label}</dt><dd style={styles.value}>{value || "—"}</dd></div>)}
         </dl>
-        <div style={styles.actions}>
+        {/* review_entry refuses a reviewer's own entry, so no buttons are offered for it. */}
+        {entry.isOwn ? <p style={{ ...styles.text, ...(language === "kh" ? styles.khmer : null) }}>{t.ownEntry}</p> : <div style={styles.actions}>
           <button type="button" disabled={busy} onClick={() => onDecide(entry.id, "published")} style={styles.button}>{busy ? t.saving : t.publish}</button>
           <button type="button" disabled={busy} onClick={() => onDecide(entry.id, "returned", note)} style={{ ...styles.button, ...styles.secondary }}>{busy ? t.saving : t.return}</button>
           <label style={{ ...styles.note, ...(language === "kh" ? styles.khmer : null) }}>
             {noteLabel}
             <textarea value={note} onChange={(event) => setNote(event.target.value)} maxLength={500} rows={2} disabled={busy} style={styles.noteBox} />
           </label>
-        </div>
+        </div>}
         {failed ? <p role="alert" style={styles.error}>{t.notSaved}</p> : null}
       </article>
     </li>

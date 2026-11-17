@@ -101,8 +101,9 @@ create policy "owners add their own entries" on public.entries
   with check ((select auth.uid()) = owner and status = 'pending');
 
 -- Owners may edit only their own rows, and a non-reviewer's edit must leave the
--- row pending. Known gap, described in README section 4: the "or is_reviewer()"
--- lets a reviewer set their own entry to published from the console.
+-- row pending. The "or is_reviewer()" let a reviewer set their own entry to
+-- published from the console; 20261117000100_reviewers_cannot_self_publish.sql
+-- removes it.
 drop policy if exists "owners edit their own entries" on public.entries;
 create policy "owners edit their own entries" on public.entries
   for update to authenticated
