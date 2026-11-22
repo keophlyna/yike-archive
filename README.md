@@ -222,14 +222,14 @@ npm run build && npm start      # production build
 - Logged out, the API returns nothing pending or returned: yes, tested 22 November 2026 (anon REST query returns only the 9 published rows; anon insert, update and `review_entry` are all refused)
 - Contributors can edit and delete only their own entries: yes. See `utils/entries/updateEntry.js` and `deleteEntry.js` (filtered by `id` + `owner`, row count checked) and the RLS policies in §3
 - No secrets anywhere in the repo history: yes, checked with `git log --all -p` searched for `service_role`, `sb_secret` and JWT (`eyJhbGci`) patterns, no matches. `.env*` is gitignored
-- At least eight real entries, each with a credited source: yes, 9
+- At least eight real entries, each with a credited source: yes, 9 entries
 - Khmer renders on every screen a user meets, including the queue: yes
 - Works at phone width: yes, tested on an iPhone 16 Pro Max (440 × 956)
 - No test entries, lorem ipsum or TODO comments in shipped pages: yes
 - No console errors on the main pages: yes
 - jesseorndorff is a collaborator on this repo: yes
-- Supabase project restored and awake on 20 November 2026
-- Demo video link opens in a private window: yes, ⟨FILL IN: link⟩
+- Supabase project restored and awake on 22 November 2026
+- Demo video link opens in a private window: yes, Link: https://drive.google.com/file/d/1K89O3esNmvJ7OLTYOxBxiyiU2c_ZCSHO/view?usp=drive_link 
 - Reflection pasted in the Canvas submission: yes
 - Posted in the Show Your Archive discussion: yes
 - Q&A slot booked for 04 December, 12:10 PM TO 12:15 PM
