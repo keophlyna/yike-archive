@@ -8,7 +8,7 @@ A bilingual (English / Khmer) living archive of Lakhon Yike, built by Keo Phlyna
 
 ## 1. What this is
 
-Yike is a traditional Khmer theater form that combines music, dance and storytelling. It carries Khmer stories, language, music and cultural knowledge from one generation to the next, and much of that knowledge was disrupted during the Khmer Rouge period. This archive collects what survives: performance phases, character types, costumes, music, history and oral history. The material comes from community elders, Yike performances and workshops, and published articles on Khmer performing arts. Anyone can browse and search the 9 published entries in English or Khmer. Anyone who signs up can contribute a new entry with a photo. No entry goes public until a reviewer has read it and published it.
+Yike is a traditional Khmer theater form that combines music, dance and storytelling. It carries Khmer stories, language, music and cultural knowledge from one generation to the next, and much of that knowledge was disrupted during the Khmer Rouge period. This archive collects what survives: performance phases, character types, costumes, music, history and oral history. The material comes from published sources: articles on Khmer performing arts, institutions such as the Royal University of Fine Arts and the Ministry of Culture and Fine Arts, and recorded interviews with Yike practitioners. Anyone can browse and search the 9 published entries in English or Khmer. Anyone who signs up can contribute a new entry with a photo. No entry goes public until a reviewer has read it and published it.
 
 ## 2. Who it's for
 
@@ -42,7 +42,7 @@ contributor submits ─► pending ─┬─► published   (shown to everyone)
 ```
 
 - New entries are inserted without a status, so the database default `pending` applies. The insert policy also rejects any row whose status isn't `pending`, so even a hand-made console insert can't start out published.
-- An edit by the owner always resets the entry to `pending` (`utils/entries/updateEntry.js`). A reviewer's own entry is no exception.
+- An edit by the owner always resets the entry to `pending` (`utils/entries/updateEntry.js`). A reviewer's own entry is no exception: the update policy requires the saved row to be `pending` for everyone, reviewers included.
 - Only `published` entries are loaded by the home page and its search.
 
 **Policies: who can read and write what**
@@ -51,7 +51,7 @@ contributor submits ─► pending ─┬─► published   (shown to everyone)
 |---|---|---|---|
 | Logged out | published rows only | none | view photos through their public URL; no upload or delete |
 | Signed-in contributor | published rows + their own rows of any status | insert only as `owner = auth.uid()` with status `pending`; update own rows, and the result must still be `pending`; delete own rows | upload and delete only inside their own `<user id>/` folder; no overwrite (there is no update policy) |
-| Reviewer | every row (`is_reviewer()` in the read policy) | the same as a contributor, plus decisions through `review_entry()` | same as a contributor |
+| Reviewer | every row (`is_reviewer()` in the read policy) | the same as a contributor, plus decisions through `review_entry()` on other people's pending entries (never their own) | same as a contributor |
 | `profiles` | own row only (`profiles_select_own`) | nobody. Only the sign-up trigger writes it | n/a |
 
 The policies, as they exist in Supabase:
@@ -60,7 +60,7 @@ The policies, as they exist in Supabase:
 |---|---|---|
 | `entries` | *anyone can read published entries* (SELECT, public) | `status = 'published' OR auth.uid() = owner OR is_reviewer()` |
 | `entries` | *owners add their own entries* (INSERT, authenticated) | check: `auth.uid() = owner AND status = 'pending'` |
-| `entries` | *owners edit their own entries* (UPDATE, authenticated) | using: `auth.uid() = owner`; check: `auth.uid() = owner AND (status = 'pending' OR is_reviewer())` |
+| `entries` | *owners edit their own entries* (UPDATE, authenticated) | using: `auth.uid() = owner`; check: `auth.uid() = owner AND status = 'pending'` |
 | `entries` | *owners delete their own entries* (DELETE, public) | `auth.uid() = owner` |
 | `storage.objects` | *contributors upload into their own folder* / *contributors delete their own photos* | `bucket_id = 'photos'` and the first folder of the path equals `auth.uid()` |
 | `profiles` | `profiles_select_own` (SELECT, authenticated) | `id = auth.uid()` |
@@ -80,20 +80,23 @@ The database also enforces CHECK constraints (title and contributor characters, 
 1. the caller isn't in `reviewers` (`is_reviewer()` must be exactly true; null counts as no),
 2. the decision isn't `published` or `returned`,
 3. the note is longer than 500 characters (an empty note is stored as no note),
-4. the entry isn't currently `pending`. The update is `WHERE id = entry_id AND status = 'pending'`, and it returns `true` only if exactly one row changed.
+4. the entry isn't currently `pending`,
+5. the caller owns the entry. A reviewer's own pending entry is left alone and waits for a second reviewer.
+
+The update is `WHERE id = entry_id AND status = 'pending' AND owner <> auth.uid()`, and it returns `true` only if exactly one row changed.
 
 When an entry is published, any old note is cleared. Only a returned entry keeps one. `is_reviewer()` itself is `security definer` with an empty `search_path` and simply checks whether `auth.uid()` has a row in `reviewers`.
 
 Why in the database: anyone can open the browser console and call Supabase directly with the public key. Hiding the Publish button or the *Review* link only keeps the page tidy for non-reviewers, and it stops nobody. What actually stops a stranger from publishing their own entry is in the database:
 - the insert policy only accepts `pending` rows,
-- the update policy only lets a non-reviewer save their own entry if it stays `pending`,
+- the update policy only lets anyone, reviewers included, save their own entry if it stays `pending`,
 - `review_entry()` refuses anyone who isn't a reviewer.
 
-**Known gap: reviewers and their own entries.** Two rules together mean a reviewer can publish their *own* entry without anyone else looking at it:
-- `review_entry()` doesn't check `owner <> auth.uid()`, so a reviewer can approve their own pending entry in the queue.
-- The update policy's `OR is_reviewer()` means a reviewer can set their own entry to `published` straight from the console.
+**Reviewers can't publish their own entries.** Every published entry has been read by someone other than the person who wrote it. Earlier versions had a gap here: `review_entry()` didn't check the owner, and the update policy had `OR is_reviewer()`, so a reviewer could publish their own entry from the queue or straight from the console. This was fixed on 17 November 2026 by `supabase/migrations/20261117000100_reviewers_cannot_self_publish.sql`:
+- the update policy now requires `status = 'pending'` for everyone, so no one can set their own entry to `published` from the console. `review_entry()` doesn't need the old exception because it is `security definer`, and row-level security doesn't restrict it.
+- `review_entry()` skips entries the caller owns (rule 5 above).
 
-Today the only reviewer is the curator, so this is the curator's own judgement and not a stranger's. Strangers are still fully blocked. ⟨FILL IN: either "I accept this because…" or "fixed on ___ by removing `OR is_reviewer()` from the update policy and adding `AND owner <> auth.uid()` to `review_entry`."⟩
+The review queue still lists a reviewer's own pending entries so they can see them. Those entries are marked "This is your own entry. Another reviewer has to publish or return it." (in English and Khmer), and they show no Publish or Return buttons. The owner id is used on the server only and is never sent to the browser. Hiding the buttons is a courtesy. The database rules above are what actually enforce this.
 
 **Decisions the briefs left to me**
 
@@ -115,15 +118,21 @@ Today the only reviewer is the curator, so this is the curator's own judgement a
 
 | Tool / model | What it did | Kept or rewrote, and why | How I checked |
 |---|---|---|---|
-| Cline with Claude Sonnet 5.5 (main partner) | Sprint 1–3 features: Supabase client setup, sign-up/login pages, auth status in the header, the contribution form with photo upload, edit/delete own entries, Khmer localisation of the forms, splitting `EntryCard`, entries waiting for review, the review queue, design tokens, the search bar | ⟨FILL IN⟩ | ⟨FILL IN: e.g. ran it, read every diff, tested with a second "stranger" account⟩ |
-| Claude Opus 5.5 (code construction once my Pro plan ran out) | ⟨FILL IN: e.g. the November "review fix" commits: profiles migration, first/last name at sign-up, reviewer note, edits re-queue an entry, header/mobile fixes; `CLAUDE.md`⟩ | ⟨FILL IN⟩ | ⟨FILL IN⟩ |
-| Codex (GPT Luna 6) | ⟨FILL IN⟩ | ⟨FILL IN⟩ | ⟨FILL IN⟩ |
+| Cline with Claude Sonnet 5.5 (main partner) | Sprint 1–3 features: Supabase client setup (`utils/supabase/client.js`, `server.js`), sign-up/login pages, auth status in the header, the contribution form with photo upload, edit/delete own entries, Khmer localisation of the forms (`formText.js`, `entryCardText.js`, `reviewText.js`), splitting `EntryCard` into `PerformanceSection`, `CostumeSection` and `PendingPhoto`, entries waiting for review, the review queue (`/review`, `ReviewQueue`, `ReviewItem`), design tokens (`theme.css`), the search bar with suggestions (`SearchSuggestions.js`) | **Kept:** the structure of the form, the owner-only edit/delete (every query filters on `id` and `owner` and ends in `.select()`, so a blocked change is not reported as saved), and the validation, which checks a photo's real type from its first bytes instead of trusting the file extension.<br>**Re-prompted:** the search (Enter-to-search broke the dropdown colours), the language toggle (it did not translate everything), and the missing "back to archive" button after submitting an entry. I did not hand-edit these. I described the bug and had the agent fix it, because I need to be able to defend each diff, not write it myself. | Ran every change in the browser in English and Khmer, light and dark. Read each diff before approving, using Plan Mode before Act Mode. Tested as a stranger: a second account could not edit or delete my entries, a logged-out visitor could not see pending entries, and a non-reviewer opening `/review` saw only "reviewers only". |
+| Claude Opus 5.5 (code construction once my Pro plan ran out) | The November "review fix" commits: profiles migration (a trigger copies the first/last name from sign-up metadata into `public.profiles`, with 60-character CHECK constraints), first/last name at sign-up (`NameFields.js`, `checkName`, which lets Khmer combining marks through), the reviewer note (`review_entry` now takes a note, clears it on publish, and the owner sees it on My entries), edits re-queue an entry (`updateEntry` always resets `status` to `pending`), header/mobile fixes (`responsive.css`, `home.css`), `CLAUDE.md`, the SQL and diagnosis of the security holes, and the 17 November fix that stops reviewers publishing their own entries (`20261117000100_reviewers_cannot_self_publish.sql`: `review_entry` skips the caller's own entries and the update policy requires `pending` for everyone; the queue shows a reviewer's own entries without Publish/Return, in English and Khmer) | **Kept:** the SQL as written, and the rule that an edit always returns an entry to review, since only the owner can edit it.<br>**Re-prompted:** the header on narrow phones, until the Khmer wordmark no longer ran under the account controls. **[CONFIRM: any other change you asked it to redo]** | Read the migration before running it. Tested the reviewer note end to end: returning an entry showed the note to its owner, and publishing cleared it. Confirmed `review_entry` returns `true` and treated `false` as a refusal, because it returns `false` with no error when it refuses. Re-ran the attack tests after each SQL change. |
+| Codex (GPT Luna 6) | Sprint 3 features and bug fixes: the thank-you screen after submitting an entry, which tells the contributor the entry is waiting for review and gives them a "Back to the archive" button so they aren't left on a dead end; the *My entries* page (`/my-entries`), which lists only the signed-in user's own entries with their status (Waiting for review, Published, or Returned for changes) in English and Khmer; and the owner-only check, so a contributor sees and manages only their own entries | **Kept** all three as written. Each one did what I asked the first time, and none of them needed rewriting. They also follow the project rules: the strings exist in both English and Khmer, and the owner check filters on the signed-in user's id from the session, not on anything the form sends. | Ran each flow in the browser. Submitted a new entry and confirmed that the thank-you message appeared, that "Back to the archive" returned to the home page, and that the entry showed on *My entries* as "Waiting for review" and not on the public home page. Read each diff before accepting it. Signed in with a second account and confirmed it could not see the first account's pending entry on *My entries*. |
+| Cline with Claude Opus 4.7 (Sprint 1) | The first EntryCards, UI design and bug fixes. I chose it after comparing models because it handled UI design best | **Kept:** the card layout and typography. **Rewrote:** a font change it made broke the site, so I stopped letting it edit files unreviewed and re-prompted from a clean state. | Ran the site after each change. Reviewed the diff before allowing writes. Counted tokens, which showed that letting the agent run commands used the most. |
+| Cline with Claude Sonnet 4.6 and Fable 5 (trial only) | The same EntryCard task, to compare output quality across models | **Discarded.** I kept Opus 4.7's result because its UI was stronger. | Compared the outputs side by side in the browser. |
+| GitHub Copilot (GPT Luna 5.2) | Built features, edited files, generated SQL and planned implementation. One strong prompt gave the redesigned layout: cleaner, larger scale, better typography | **Kept:** the redesign and the SQL. **Re-prompted:** the search and the animations, which felt awkward. | Ran it, read the generated SQL before running it in the Supabase editor, and checked the row-level security policies by attacking them. |
+| Claude Sonnet 5.5 (chat) | Prompt refinement, planning, lab walkthroughs, review-queue messages and labels, and finding the leftover database rules that let a second account publish its own entry | **Kept** the plans and the review-queue wording. It wrote no code that I used directly. | Followed its steps in the Supabase SQL editor and confirmed the fix by re-testing: after dropping the old policies, every entry had to pass a reviewer. |
+| Gemini (Flash 3.5, Pro, Plus) | Researched the topic and prepared **all the Khmer text, English descriptions and entry content**. Also grammar, content templates, prompt refinement and the first HTML/CSS prototypes | **Kept** the content as prepared. I pasted it into the agent, which put it in the site and the Supabase migration. The images were not from Gemini. **[CONFIRM: whether anyone checked the Khmer for accuracy]** | The migration preserved the Khmer exactly, and I checked it displays correctly in the browser. **[CONFIRM: how you checked the content against your sources]** |
+| ChatGPT / GPT-5.6 Luna (chat) | Brainstorming the archive idea, improving my English wording, and backup debugging when Claude and Gemini ran out of tokens | **Kept** the wording help. Used for debugging only as a fallback. | Ran each suggested fix and discarded the ones that did not work. |
 
 Every AI-assisted commit is tagged `(AI-assisted)` in the history. The AI agents followed the rules in `AGENTS.md`: no new dependencies, no TypeScript, no secrets in files, small scoped diffs, and Khmer kept as real content.
 
 ## 6. Sources and credits
 
-All 9 published entries were researched and entered by the curator. Each entry names its source on its page.
+All 9 published entries were researched from the published sources below with Gemini's help (see §5), then checked and entered by the curator. Each entry names its source on its page.
 
 | Entry | Source | Place |
 |---|---|---|
@@ -139,8 +148,8 @@ All 9 published entries were researched and entered by the curator. Each entry n
 
 **People**
 
-- Master Sobpa Sith, Yike practitioner, credited from published *Khmer Times* reporting. ⟨FILL IN: or "with his permission" if you spoke to him directly⟩
-- The percussionists, costume designers and wardrobe masters above are credited by role, not by name. ⟨FILL IN: say if any of them asked not to be named⟩
+- Master Sobpa Sith, Yike practitioner. The information comes from a *Khmer Times* video interview. I didn't speak to Master Sobpa Sith myself, so the name is credited as it appears in that published interview and not by personal permission.
+- The percussionists, costume designers and wardrobe masters above are credited by role, the way the published sources describe them. I gathered this material from online sources and didn't contact any of them directly, so nobody was asked about being named and nobody asked not to be named.
 - The community of Wat Svay Andet, Kandal, for its records of Lakhon Khol.
 
 **Institutions and published sources**
@@ -195,11 +204,11 @@ npm run build && npm start      # production build
 - At least eight real entries, each with a credited source: yes, 9
 - Khmer renders on every screen a user meets, including the queue: yes
 - Works at phone width: yes, tested on an iPhone 16 Pro Max (440 × 956)
-- No test entries, lorem ipsum or TODO comments in shipped pages: ⟨FILL IN: yes, once the returned test entry is deleted⟩
+- No test entries, lorem ipsum or TODO comments in shipped pages: yes
 - No console errors on the main pages: yes
 - jesseorndorff is a collaborator on this repo: yes
-- Supabase project restored and awake on 12 November 2026
+- Supabase project restored and awake on 20 November 2026
 - Demo video link opens in a private window: yes, ⟨FILL IN: link⟩
 - Reflection pasted in the Canvas submission: yes
 - Posted in the Show Your Archive discussion: yes
-- Q&A slot booked for ⟨FILL IN: date and time⟩
+- Q&A slot booked for 04 November, 12:10 AM TO 12:15 AM
