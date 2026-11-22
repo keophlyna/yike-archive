@@ -2,21 +2,21 @@
 
 A bilingual (English / Khmer) living archive of Lakhon Yike, built by Keo Phlyna for ICT 340 at AUPP, Fall 2026.
 
-**Live site:** ⟨FILL IN: Vercel URL⟩
+**Live site:** https://ict340-archive-keophlyna.vercel.app/
 
 ---
 
 ## 1. What this is
 
-Yike is a traditional Khmer theater form that combines music, dance and storytelling. It carries Khmer stories, language, music and cultural knowledge from one generation to the next, and much of that knowledge was disrupted during the Khmer Rouge period. This archive collects what survives: performance phases, character types, costumes, music, history and oral history. The material comes from community elders, Yike performances and workshops, and published articles on Khmer performing arts. Anyone can browse and search the 9 published entries in English or Khmer. Anyone who signs up can contribute a new entry with a photo. No entry goes public until a reviewer has read it and published it.
+Yike is a traditional Khmer theater form that combines music, dance and storytelling. It carries Khmer stories, language, music and cultural knowledge from one generation to the next, and much of that knowledge was disrupted during the Khmer Rouge period. This archive collects what survives: performance phases, character types, costumes, music, history and oral history. The material comes from published articles, institutions such as RUFA and the Ministry of Culture and Fine Arts, and press reporting on living Yike performers. Anyone can browse and search the 9 published entries in English or Khmer. Anyone who signs up can contribute a new entry with a photo. No entry goes public until a reviewer has read it and published it.
 
 ## 2. Who it's for
 
-The archive is for people in Cambodia: students and teachers of Khmer arts, Yike troupes and their families, and anyone who wants to learn about the form in their own language. What I did for them:
+The archive is for people in Cambodia: students and teachers of Khmer arts, Yike troupes and their families, and anyone who wants to learn about the form in their own language. Because most of these readers will read and write in Khmer, often on a phone, I gave every entry its own Khmer fields instead of translating only the interface, and I made the main buttons large enough to tap easily. What I did for them:
 
 - **Khmer is a first-class language, not a translation layer.** Every screen a user meets has `en` and `kh` strings. That covers the home page, entry pages, the forms, *My entries* and the review queue. One toggle switches the language and remembers the choice (`localStorage["yike-language"]`). Every entry has Khmer fields for title, description, place, contributor and sources. Khmer text uses Noto Serif Khmer, because the main UI font has no Khmer glyphs.
 - **Validation never damages Khmer.** The form rules use Unicode letter/mark/number classes, not ASCII regexes, so Khmer vowels and subscripts pass through unchanged. The database constraints use a code-point helper that does the same (`has_only_letters_numbers_spaces`). `scripts/check-khmer.mjs` proves that real Khmer text is accepted byte for byte.
-- **Phones first.** Layouts are fluid (`app/responsive.css`, `clamp()` type sizes), and buttons are at least 44 px tall so they are easy to tap.
+- **Phones first.** Layouts are fluid (`app/responsive.css`, `clamp()` type sizes), and the main action buttons (Edit, Delete, Publish, Return) are at least 44 px tall so they are easy to tap.
 - **Slow connections.** Photos are capped at 5 MB and limited to JPG, PNG and WebP. They are served through Next.js image optimisation. The theme is set before first paint (`public/theme-bootstrap.js`), so pages don't flash on slow loads.
 - **Sources are named and credited.** Each entry has a contributor (English and Khmer) and an optional sources note in both languages. If a photo was AI-generated, the contributor must say so, and the entry then shows an "AI-generated image" badge.
 
@@ -60,7 +60,7 @@ The policies, as they exist in Supabase:
 |---|---|---|
 | `entries` | *anyone can read published entries* (SELECT, public) | `status = 'published' OR auth.uid() = owner OR is_reviewer()` |
 | `entries` | *owners add their own entries* (INSERT, authenticated) | check: `auth.uid() = owner AND status = 'pending'` |
-| `entries` | *owners edit their own entries* (UPDATE, authenticated) | using: `auth.uid() = owner`; check: `auth.uid() = owner AND (status = 'pending' OR is_reviewer())` |
+| `entries` | *owners edit their own entries* (UPDATE, authenticated) | using: `auth.uid() = owner`; check: `auth.uid() = owner AND status = 'pending'` |
 | `entries` | *owners delete their own entries* (DELETE, public) | `auth.uid() = owner` |
 | `storage.objects` | *contributors upload into their own folder* / *contributors delete their own photos* | `bucket_id = 'photos'` and the first folder of the path equals `auth.uid()` |
 | `profiles` | `profiles_select_own` (SELECT, authenticated) | `id = auth.uid()` |
@@ -80,20 +80,28 @@ The database also enforces CHECK constraints (title and contributor characters, 
 1. the caller isn't in `reviewers` (`is_reviewer()` must be exactly true; null counts as no),
 2. the decision isn't `published` or `returned`,
 3. the note is longer than 500 characters (an empty note is stored as no note),
-4. the entry isn't currently `pending`. The update is `WHERE id = entry_id AND status = 'pending'`, and it returns `true` only if exactly one row changed.
+4. the entry isn't currently `pending`,
+5. the entry belongs to the reviewer. Nobody reviews their own work.
+
+The update is `WHERE id = entry_id AND status = 'pending' AND owner <> auth.uid()`, and it returns `true` only if exactly one row changed.
 
 When an entry is published, any old note is cleared. Only a returned entry keeps one. `is_reviewer()` itself is `security definer` with an empty `search_path` and simply checks whether `auth.uid()` has a row in `reviewers`.
 
 Why in the database: anyone can open the browser console and call Supabase directly with the public key. Hiding the Publish button or the *Review* link only keeps the page tidy for non-reviewers, and it stops nobody. What actually stops a stranger from publishing their own entry is in the database:
 - the insert policy only accepts `pending` rows,
-- the update policy only lets a non-reviewer save their own entry if it stays `pending`,
+- the update policy only lets anyone save their own entry if it stays `pending`,
 - `review_entry()` refuses anyone who isn't a reviewer.
 
-**Known gap: reviewers and their own entries.** Two rules together mean a reviewer can publish their *own* entry without anyone else looking at it:
-- `review_entry()` doesn't check `owner <> auth.uid()`, so a reviewer can approve their own pending entry in the queue.
-- The update policy's `OR is_reviewer()` means a reviewer can set their own entry to `published` straight from the console.
+**A gap I found and closed: reviewers publishing their own entries.** Checking the live policies for this README, I found two rules that let a reviewer publish their *own* entry without anyone else looking at it:
+- `review_entry()` didn't check who owned the entry, so a reviewer could approve their own pending entry in the queue.
+- The update policy said `status = 'pending' OR is_reviewer()`, so a reviewer could set their own entry to `published` straight from the console.
 
-Today the only reviewer is the curator, so this is the curator's own judgement and not a stranger's. Strangers are still fully blocked. ⟨FILL IN: either "I accept this because…" or "fixed on ___ by removing `OR is_reviewer()` from the update policy and adding `AND owner <> auth.uid()` to `review_entry`."⟩
+Strangers were never affected, but "every entry is reviewed" should mean reviewed by someone else. I closed the gap on 17 November 2026 with `supabase/migrations/20261117000100_reviewers_cannot_self_publish.sql`:
+- the update policy now requires `pending` for everyone,
+- `review_entry()` skips entries the caller owns,
+- `/review` shows the reviewer's own entries marked "This is your own entry", with no Publish/Return buttons.
+
+The `OR is_reviewer()` was never needed, because `review_entry()` runs with the table owner's rights, which RLS doesn't restrict. The trade-off: a reviewer's own new entries now wait for a second reviewer.
 
 **Decisions the briefs left to me**
 
@@ -128,7 +136,7 @@ All 9 published entries were researched and entered by the curator. Each entry n
 | Entry | Source | Place |
 |---|---|---|
 | History & Cultural Context of Lakhon Yike | Royal University of Fine Arts (RUFA) | Takeo |
-| Performance Structure, Staging & Movement | the Wikipedia article on Yike | Cambodia |
+| Performance Structure, Staging & Movement | Wikipedia, "Yike" | Cambodia |
 | Music, Instrumentation & Narrative Soundscapes | master Yike percussionists; acoustic field recordings and musical transcriptions | Cambodia |
 | Costume Symbolism and Character Archetypes | costume designers of the Department of Performing Arts; senior wardrobe masters | Cambodia |
 | Living Traditions: Oral History of Yike Performers | Master Sobpa Sith and other living Yike practitioners across generations, as reported by *Khmer Times* | Cambodia |
@@ -139,8 +147,8 @@ All 9 published entries were researched and entered by the curator. Each entry n
 
 **People**
 
-- Master Sobpa Sith, Yike practitioner, credited from published *Khmer Times* reporting. ⟨FILL IN: or "with his permission" if you spoke to him directly⟩
-- The percussionists, costume designers and wardrobe masters above are credited by role, not by name. ⟨FILL IN: say if any of them asked not to be named⟩
+- Master Sobpa Sith, Yike practitioner, is credited from public *Khmer Times* reporting, not a personal interview.
+- The percussionists, costume designers and wardrobe masters above are credited by role because the sources didn't name them.
 - The community of Wat Svay Andet, Kandal, for its records of Lakhon Khol.
 
 **Institutions and published sources**
@@ -155,7 +163,24 @@ All 9 published entries were researched and entered by the curator. Each entry n
 
 **Photos**
 
-- ⟨FILL IN: who took each photo in `public/entries/` and in the uploaded entries, or "taken by the curator"⟩
+The photos are not mine. They come from these photographers, pages and channels:
+
+- Arena photo: Nai Phun (Facebook)
+- Momvan dance (Kiripost)
+- Va Sonyka (*Khmer Times*)
+- Abong Abong (Facebook)
+- Tourism Cambodia
+- Cambodia Living Arts (Pinterest)
+- បុរាណាចារ្យ (Facebook)
+- Say Tola (*Khmer Times*)
+- Chap Chamroeun Tola (Facebook)
+- ចាប សុីដាណាល់ – Chab Sydanal (Facebook)
+- Wikimedia Commons
+- Wikipedia
+- Fresh News
+- BTV Cambodia
+- TII Record (YouTube)
+- Chorvy Basak (YouTube)
 - No entry uses an AI-generated photo. The form still asks, so a future AI image would be labelled.
 
 ## 7. Running it locally
@@ -187,18 +212,18 @@ npm run build && npm start      # production build
 
 ## 8. Submission checklist
 
-- Live URL loads logged out and shows published entries only: yes, ⟨FILL IN: URL⟩
+- Live URL loads logged out and shows published entries only: yes, https://ict340-archive-keophlyna.vercel.app/
 - A stranger cannot publish their own entry through the page or the console: yes, tested 6 November 2026
-- Logged out, the API returns nothing pending or returned: yes, tested 6 November 2026
+- Logged out, the API returns nothing pending or returned: yes, tested 20 November 2026 (anon REST query returns only the 9 published rows; anon insert, update and `review_entry` are all refused)
 - Contributors can edit and delete only their own entries: yes. See `utils/entries/updateEntry.js` and `deleteEntry.js` (filtered by `id` + `owner`, row count checked) and the RLS policies in §3
 - No secrets anywhere in the repo history: yes, checked with `git log --all -p` searched for `service_role`, `sb_secret` and JWT (`eyJhbGci`) patterns, no matches. `.env*` is gitignored
 - At least eight real entries, each with a credited source: yes, 9
 - Khmer renders on every screen a user meets, including the queue: yes
 - Works at phone width: yes, tested on an iPhone 16 Pro Max (440 × 956)
-- No test entries, lorem ipsum or TODO comments in shipped pages: ⟨FILL IN: yes, once the returned test entry is deleted⟩
+- No test entries, lorem ipsum or TODO comments in shipped pages: yes
 - No console errors on the main pages: yes
 - jesseorndorff is a collaborator on this repo: yes
-- Supabase project restored and awake on 12 November 2026
+- Supabase project restored and awake on 20 November 2026
 - Demo video link opens in a private window: yes, ⟨FILL IN: link⟩
 - Reflection pasted in the Canvas submission: yes
 - Posted in the Show Your Archive discussion: yes
